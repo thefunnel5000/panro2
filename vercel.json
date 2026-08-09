@@ -1,0 +1,6 @@
+{
+  "functions": { "api/onboard.js": { "maxDuration": 10 } },
+  "headers": [
+    { "source": "/api/(.*)", "headers": [ { "key": "Cache-Control", "value": "s-maxage=86400, stale-while-revalidate" } ] }
+  ]
+}
