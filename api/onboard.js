@@ -43,7 +43,9 @@ export default async function handler(req, res) {
     let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 8000);
     if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
       r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt, 8000); }
-    if (!r?.data) globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
+    if (!r?.data) { globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`,
+        { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(KEY)}` } }, 8000); }
     return r;
   })();
 
