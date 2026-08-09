@@ -559,6 +559,15 @@ function runOnboard(){
 async function finishOnboard(raw){
   profile={bizno:raw, masked:raw.slice(0,3)+'-**-***'+raw.slice(8), mti:'cos', mkt:'jp', stage:'novice'};
   try{ liveBiz = await Promise.race([window.__bizFetch, new Promise(r=>setTimeout(()=>r(null), API.timeout))]); }catch(e){ liveBiz=null; }
+  // 국세청: 서버 경유 실패 시 브라우저 직접 조회 폴백 (odcloud CORS 허용 실측)
+  if(liveBiz && liveBiz.ok && liveBiz.nts?.status!=='LIVE'){
+    try{
+      const NK="MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D";
+      const nr=await fetch(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${NK}`,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({b_no:[raw]})}).then(x=>x.json());
+      const row=nr?.data?.[0];
+      if(row){ liveBiz.nts={status:'LIVE',b_stt:row.b_stt||null,b_stt_cd:row.b_stt_cd||null,tax_type:row.tax_type||null}; liveBiz.registered=!!row.b_stt_cd; }
+    }catch(e){}
+  }
   if(liveBiz && liveBiz.ok && (liveBiz.nts?.status==='LIVE' || liveBiz.ftc?.status==='LIVE' || liveBiz.nps?.status==='LIVE')){
     // 실조회 성공 — LIVE 라벨 표시
     [1,2,3].forEach(i=>{const el=document.getElementById('pl'+i); if(el) el.textContent=' LIVE';});
