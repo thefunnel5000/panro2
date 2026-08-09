@@ -36,13 +36,13 @@ export default async function handler(req, res) {
   // ── 1. 국세청 사업자 상태 (POST) — 인코딩 키 → 실패 시 디코딩 키 재시도
   const ntsOpt = {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: { "Content-Type": "application/json; charset=utf-8", Accept: "application/json", "User-Agent": "panro2/1.0" },
     body: JSON.stringify({ b_no: [bizno] })
   };
   const ntsP = (async () => {
-    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}`, ntsOpt);
+    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt);
     if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}`, ntsOpt); }
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt); }
     if (!r?.data) globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
     return r;
   })();
@@ -59,8 +59,9 @@ export default async function handler(req, res) {
       list = items(base);
     }
     if (req.query.debug) globalThis.__npsRaw = (base?.__xml || JSON.stringify(base||{})).slice(0,400);
-    if (!list.length) return { status: "NONE" };
+    if (!list.length) return { status: "NONE", __list: [] };
     list.sort((a, b) => String(b.dataCrtYm || "").localeCompare(String(a.dataCrtYm || "")));
+    globalThis.__npsList = list;
     const top = list[0];
     const det = top.seq != null
       ? await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getDetailInfoSearchV2?serviceKey=${KEY}&seq=${top.seq}&_type=json`)
@@ -100,8 +101,19 @@ export default async function handler(req, res) {
       sales: f?.enpSaleAmt ?? null, opInc: f?.enpBzopPft ?? null, asset: f?.enpTastAmt ?? null
     };
   }
-  const nps = await npsP;
+  let nps = await npsP;
 
+  // ftc 상호와 대조해 6자리 프리픽스 동명이인 사업장 교정
+  const hint = (ftcRow?.bzmnNm || "").replace(/[^가-힣A-Za-z]/g, "").slice(0, 4);
+  if (hint && Array.isArray(globalThis.__npsList)) {
+    const better = globalThis.__npsList.find(x => String(x.wkplNm || "").replace(/[^가-힣A-Za-z]/g, "").includes(hint));
+    if (better && nps?.name !== better.wkplNm) {
+      const det2 = better.seq != null ? await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getDetailInfoSearchV2?serviceKey=${KEY}&seq=${better.seq}&_type=json`) : null;
+      const d2 = items(det2)[0] || {};
+      nps = { status: "LIVE", name: better.wkplNm || null, cnt: d2.jnngpCnt ?? better.jnngpCnt ?? null,
+              sector: d2.vldtVlKrnNm || null, adptDt: d2.adptDt || null, addr: better.wkplRoadNmDtlAddr || null, ym: better.dataCrtYm || null };
+    }
+  }
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
   const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
   res.status(200).json({
