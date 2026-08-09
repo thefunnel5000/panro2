@@ -24,24 +24,31 @@ export default async function handler(req, res) {
   const bizno = String(req.query.bizno || "").replace(/\D/g, "");
   if (!/^\d{10}$/.test(bizno)) return res.status(400).json({ ok: false, error: "invalid bizno" });
 
-  // ── 1. 국세청 사업자 상태 (POST)
-  const ntsP = j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}`, {
+  // ── 1. 국세청 사업자 상태 (POST) — 인코딩 키 → 실패 시 디코딩 키 재시도
+  const ntsOpt = {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ b_no: [bizno] })
-  });
+  };
+  const ntsP = (async () => {
+    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}`, ntsOpt);
+    if (!r?.data) r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${encodeURIComponent(decodeURIComponent(KEY))}`, ntsOpt);
+    if (!r?.data) r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}`, ntsOpt);
+    return r;
+  })();
 
   // ── 2. 공정위 통신판매 등록상세 (pageNo/numOfRows 필수)
   const ftcP = j(`https://apis.data.go.kr/1130000/MllBsDtl_3Service/getMllBsInfoDetail_3?serviceKey=${KEY}&brno=${bizno}&pageNo=1&numOfRows=10&resultType=json`);
 
   // ── 3. 국민연금 (camelCase 파라미터, 2단계: 기본 → 상세)
   const npsP = (async () => {
-    let base = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&bzowrRgstNo=${bizno}&_type=json&numOfRows=100&pageNo=1`);
+    let base = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&bzowrRgstNo=${bizno.slice(0, 6)}&_type=json&numOfRows=100&pageNo=1`);
     let list = items(base);
-    if (!list.length) { // 데이터셋이 앞 6자리만 공개하는 경우 대비
-      base = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&bzowrRgstNo=${bizno.slice(0, 6)}&_type=json&numOfRows=100&pageNo=1`);
+    if (!list.length) {
+      base = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&bzowrRgstNo=${bizno}&_type=json&numOfRows=100&pageNo=1`);
       list = items(base);
     }
+    if (req.query.debug) globalThis.__npsRaw = JSON.stringify(base||{}).slice(0,300);
     if (!list.length) return { status: "NONE" };
     list.sort((a, b) => String(b.dataCrtYm || "").localeCompare(String(a.dataCrtYm || "")));
     const top = list[0];
@@ -86,8 +93,9 @@ export default async function handler(req, res) {
   const nps = await npsP;
 
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
+  const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null } : undefined;
   res.status(200).json({
-    ok: true, bizno,
+    ok: true, bizno, dbg,
     registered: !!(ntsRow && ntsRow.b_stt_cd && ntsRow.b_stt_cd !== ""),
     nts: ntsRow ? { status: "LIVE", b_stt: ntsRow.b_stt || null, b_stt_cd: ntsRow.b_stt_cd || null, tax_type: ntsRow.tax_type || null, end_dt: ntsRow.end_dt || null } : { status: "FAIL" },
     ftc: ftcRow ? {
