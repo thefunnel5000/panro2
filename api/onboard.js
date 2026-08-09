@@ -40,9 +40,9 @@ export default async function handler(req, res) {
     body: JSON.stringify({ b_no: [bizno] })
   };
   const ntsP = (async () => {
-    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt);
+    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 8000);
     if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt); }
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt, 8000); }
     if (!r?.data) globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
     return r;
   })();
