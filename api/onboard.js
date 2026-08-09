@@ -11,11 +11,20 @@ async function j(url, opt = {}, ms = 4500) {
   try {
     const r = await fetch(url, { ...opt, signal: c.signal });
     const text = await r.text();
-    try { return JSON.parse(text); } catch { return { __raw: text.slice(0, 300) }; }
+    try { return JSON.parse(text); } catch { return { __xml: text }; }
   } catch (e) { return null; }
   finally { clearTimeout(t); }
 }
 const items = d => {
+  if (d?.__xml) { // data.go.kr XML 응답 폴백 파서
+    const out = [];
+    for (const m of d.__xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+      const o = {};
+      for (const f of m[1].matchAll(/<(\w+)>([\s\S]*?)<\/\1>/g)) o[f[1]] = f[2];
+      out.push(o);
+    }
+    return out;
+  }
   const it = d?.response?.body?.items?.item ?? d?.items ?? null;
   return it == null ? [] : Array.isArray(it) ? it : [it];
 };
@@ -32,8 +41,9 @@ export default async function handler(req, res) {
   };
   const ntsP = (async () => {
     let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}`, ntsOpt);
-    if (!r?.data) r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${encodeURIComponent(decodeURIComponent(KEY))}`, ntsOpt);
-    if (!r?.data) r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}`, ntsOpt);
+    if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}`, ntsOpt); }
+    if (!r?.data) globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
     return r;
   })();
 
@@ -48,7 +58,7 @@ export default async function handler(req, res) {
       base = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&bzowrRgstNo=${bizno}&_type=json&numOfRows=100&pageNo=1`);
       list = items(base);
     }
-    if (req.query.debug) globalThis.__npsRaw = JSON.stringify(base||{}).slice(0,300);
+    if (req.query.debug) globalThis.__npsRaw = (base?.__xml || JSON.stringify(base||{})).slice(0,400);
     if (!list.length) return { status: "NONE" };
     list.sort((a, b) => String(b.dataCrtYm || "").localeCompare(String(a.dataCrtYm || "")));
     const top = list[0];
@@ -93,7 +103,7 @@ export default async function handler(req, res) {
   const nps = await npsP;
 
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
-  const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null } : undefined;
+  const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
   res.status(200).json({
     ok: true, bizno, dbg,
     registered: !!(ntsRow && ntsRow.b_stt_cd && ntsRow.b_stt_cd !== ""),
