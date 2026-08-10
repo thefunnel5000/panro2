@@ -596,8 +596,14 @@ function applyLive(){
                 : sales >= 1e11 || emp >= 300  ? 'growth'
                 : sales >= 1e10 || emp >= 50   ? 'promising'
                 : emp >= 5                     ? 'novice' : 'domestic';
-  profile.auto = { sector: sectorTxt || itemTxt || null, emp, sales,
-    why: `${sectorTxt||itemTxt||'업종 정보'} · 연금 가입자 ${emp.toLocaleString()}명${sales?' · 매출 '+(sales>=1e12?(sales/1e12).toFixed(1)+'조원':Math.round(sales/1e8).toLocaleString()+'억원'):''} 기준 자동 판정` };
+  // 소재지 시도 추출 (공정위 주소 → 판판대로 지역 표기 정규화)
+  const addrTxt = liveBiz.ftc?.addr || liveBiz.nps?.addr || '';
+  const RG=[['서울','서울시'],['부산','부산시'],['대구','대구시'],['인천','인천시'],['광주','광주시'],['대전','대전시'],['울산','울산시'],['세종','세종시'],
+    ['경기','경기도'],['강원','강원특별자치도'],['충북','충청북도'],['충남','충청남도'],['전북','전북특별자치도'],['전남','전라남도'],
+    ['경북','경상북도'],['경남','경상남도'],['제주','제주특별자치도']];
+  profile.region = (RG.find(([k])=>addrTxt.includes(k))||[])[1] || null;
+  profile.auto = { sector: sectorTxt || itemTxt || null, emp, sales, region: profile.region,
+    why: `${sectorTxt||itemTxt||'업종 정보'}${profile.region?' · '+profile.region:''} · 연금 가입자 ${emp.toLocaleString()}명${sales?' · 매출 '+(sales>=1e12?(sales/1e12).toFixed(1)+'조원':Math.round(sales/1e8).toLocaleString()+'억원'):''} 기준 자동 판정` };
   const stt = liveBiz.nts?.b_stt || '확인 불가';
   const cnt = liveBiz.nps?.cnt;
   const sector = liveBiz.nps?.sector || liveBiz.ftc?.items || '';
@@ -751,7 +757,8 @@ function recalc(){
       let sc=48;
       if(p.tg===tgWord) sc+=18; else if(p.tg.includes(tgWord)) sc+=9;   // 대상 정합(전용 공고 우대)
       sc+= p.st==='공고중'?10 : p.st==='운영중'?5 : 0;                    // 진행상태
-      sc+= !p.rg?3 : (p.rg.includes('서울')?6:-10);                      // 지역
+      const myRg = profile.region;
+      sc+= !p.rg ? 3 : (myRg && p.rg.includes(myRg.replace(/(특별자치도|특별시|광역시|도|시)$/,'')) ? 8 : -12); // 지역 정합
       sc+= p.e>='25'?8 : p.e>='24'?4 : 0;                                // 최신 공고 가점
       sc+= p.pc>=20?5 : p.pc>=5?2 : 0;                                   // 상품등록 활성도
       sc+= (PRG_CATN[p.c]||0)>=50?3 : 0;                                 // 주력 카테고리
@@ -761,7 +768,7 @@ function recalc(){
       <div class="card mcard">
         <div class="top"><div><span class="chip chip-dday ${p.st==='공고중'?'':'far'}">${p.st}</span> <span class="cat" style="margin-left:4px">${p.o}</span><h4>${p.n}</h4></div><span class="chip chip-fit">적합 ${p.score}%</span></div>
         <div style="font-size:14px;color:var(--ink2)">${p.C} · ${p.c}${p.t?' · '+p.t:''}</div>
-        <div class="why"><b>왜 추천했나요?</b> 대상(${p.tg||'전체'})에 ${tgWord}이 포함되고, ${p.rg?p.rg+' 지역':'전국'} 사업입니다. 같은 유형(${p.c}) 공고가 '23~'25 ${PRG_CATN[p.c]||1}건 운영된 판판대로 주요 트랙${p.pc?` · 등록 상품 ${p.pc}개`:''}.</div>
+        <div class="why"><b>왜 추천했나요?</b> 대상(${p.tg||'전체'})에 ${tgWord}이 포함되고, ${p.rg? p.rg+' 지역 한정' : '전국'} 사업입니다.${p.rg&&profile.region?` (우리 회사 소재지: ${profile.region})`:''} 같은 유형(${p.c}) 공고가 '23~'25 ${PRG_CATN[p.c]||1}건 운영된 판판대로 주요 트랙${p.pc?` · 등록 상품 ${p.pc}개`:''}.</div>
         <div class="meta"><span>모집 ${p.s||'-'} ~ ${p.e||'-'}</span><span>${p.rg||'전국'}</span></div>
         <div class="acts"><button class="btn btn-p" onclick="openPortal('pnp')">공고 보기 ↗ 판판대로</button><button class="btn btn-ghost" onclick="toStudio()">이 결과로 콘텐츠 만들기</button></div>
       </div>`).join('');
