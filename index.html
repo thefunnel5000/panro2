@@ -346,7 +346,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
       <select id="condMkt" onchange="recalc()"></select>
       <select id="condStage" onchange="recalc()"></select>
       <select id="condBiz" onchange="recalc()"></select>
-      <span class="hint">자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다. 바꾸면 결과가 즉시 다시 계산됩니다.</span>
+      <span class="hint" id="condHint">자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다. 바꾸면 결과가 즉시 다시 계산됩니다.</span>
     </div>
 
     <div class="tabs">
@@ -417,7 +417,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
       <div class="kv"><span>사업자번호</span><b id="kvBizno">123-**-***91</b></div>
       <div class="kv"><span>사업자 상태</span><b id="kvStt">계속사업자</b></div>
       <div class="kv"><span>과세 유형</span><b id="kvTax">부가가치세 일반과세자</b></div>
-      <div class="kv"><span>개업일</span><b id="kvOpen">2017-03-15</b></div>
+      <div class="kv"><span>통신판매 신고일</span><b id="kvOpen">2017-03-15</b></div>
     </div>
     <div class="card panel">
       <h4>통신판매·사업장 정보 <small>공정거래위원회</small></h4>
@@ -557,7 +557,7 @@ function runOnboard(){
   tick();
 }
 async function finishOnboard(raw){
-  profile={bizno:raw, masked:raw.slice(0,3)+'-**-***'+raw.slice(8), mti:'cos', mkt:'jp', stage:'novice'};
+  profile={bizno:raw, masked:raw.slice(0,3)+'-**-***'+raw.slice(8), mti:'cos', mkt:'us', stage:'novice', biz:'micro', auto:null};
   try{ liveBiz = await Promise.race([window.__bizFetch, new Promise(r=>setTimeout(()=>r(null), API.timeout))]); }catch(e){ liveBiz=null; }
   // 국세청: 서버 경유 실패 시 브라우저 직접 조회 폴백 (odcloud CORS 허용 실측)
   if(liveBiz && liveBiz.ok && liveBiz.nts?.status!=='LIVE'){
@@ -579,8 +579,25 @@ function applyLive(){
   const name = liveBiz?.ftc?.name || liveBiz?.nps?.name || liveBiz?.fsc?.corpNm || null;
   const isLive = !!(liveBiz && liveBiz.ok && name);
   const set=(id,v)=>{const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v;};
+  const dt=v=>{const s=String(v||'').replace(/\D/g,''); return s.length===8?`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6)}`:(s.length===6?`${s.slice(0,4)}년 ${s.slice(4)}월`:v);};
+  const SELL={'01':'인터넷','02':'인터넷·카탈로그','03':'TV홈쇼핑','04':'기타','05':'인터넷·TV'};
   const won=v=>{const n=Number(v); return isNaN(n)||!n?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':n>=1e8?Math.round(n/1e8).toLocaleString()+'억원':Math.round(n/1e4).toLocaleString()+'만원');};
   if(!isLive){ return; } // 미등록·데모 번호 → 기존 데모 데이터 유지
+  /* ★ 실데이터 → 매칭 조건 자동 도출 (국민연금 업종 · 가입자수 · 금융위 매출)
+     기준: 중진공 실집행 52,953건 수출단계 분포 · 판판대로 76,794개사 규모 분포(소상공인 67.7%) */
+  const sectorTxt = liveBiz.nps?.sector || '';
+  const itemTxt   = liveBiz.ftc?.items || '';
+  profile.mti = guessMti(sectorTxt, itemTxt);
+  const emp = Number(liveBiz.nps?.cnt) || 0;
+  const sales = Number(liveBiz.fsc?.sales) || 0;
+  profile.biz = emp >= 100 || sales >= 1e12 ? 'mid' : (emp >= 10 || sales >= 1e11 ? 'small' : 'micro');
+  // 수출단계: 규모·매출 기반 추정 (실제 수출액 데이터가 없으므로 규모 프록시 — 사용자가 수정 가능)
+  profile.stage = sales >= 1e12 || emp >= 1000 ? 'strong'
+                : sales >= 1e11 || emp >= 300  ? 'growth'
+                : sales >= 1e10 || emp >= 50   ? 'promising'
+                : emp >= 5                     ? 'novice' : 'domestic';
+  profile.auto = { sector: sectorTxt || itemTxt || null, emp, sales,
+    why: `${sectorTxt||itemTxt||'업종 정보'} · 연금 가입자 ${emp.toLocaleString()}명${sales?' · 매출 '+(sales>=1e12?(sales/1e12).toFixed(1)+'조원':Math.round(sales/1e8).toLocaleString()+'억원'):''} 기준 자동 판정` };
   const stt = liveBiz.nts?.b_stt || '확인 불가';
   const cnt = liveBiz.nps?.cnt;
   const sector = liveBiz.nps?.sector || liveBiz.ftc?.items || '';
@@ -593,9 +610,12 @@ function applyLive(){
   set('pSumm', `${sector||'업종 정보 미공개'} 기업. ${liveBiz.ftc?.addr||''} ${cnt!=null?`· 국민연금 가입자 ${cnt}명`:''} · 공공데이터 실시간 조회 결과입니다.`);
   const pd=document.getElementById('pDemoBadge'); if(pd) pd.style.display='none';
   set('kvName', name); set('kvBizno', profile.masked); set('kvStt', stt); set('kvTax', liveBiz.nts?.tax_type||'-');
-  set('kvMail', liveBiz.ftc?.mailNo||'-'); set('kvAddr', liveBiz.ftc?.addr||'-'); set('kvMethod', liveBiz.ftc?.method||'-');
-  set('kvItems', liveBiz.ftc?.items||'-'); set('kvDclr', liveBiz.ftc?.dclrDate||'-');
-  set('kvCnt', cnt!=null?cnt+'명':'-'); set('kvSector', liveBiz.nps?.sector||'-'); set('kvAdpt', liveBiz.nps?.adptDt||'-'); set('kvDelta', liveBiz.nps?.ym?`기준월 ${liveBiz.nps.ym}`:'-');
+  set('kvMail', liveBiz.ftc?.mailNo||'-'); set('kvAddr', liveBiz.ftc?.addr||'-');
+  set('kvMethod', SELL[liveBiz.ftc?.method] || liveBiz.ftc?.method || '-');
+  set('kvItems', liveBiz.ftc?.items||'-'); set('kvDclr', dt(liveBiz.ftc?.dclrDate)||'-');
+  set('kvOpen', dt(liveBiz.ftc?.dclrDate)||'정보 없음');
+  set('kvCnt', cnt!=null?Number(cnt).toLocaleString()+'명':'-'); set('kvSector', liveBiz.nps?.sector||'-');
+  set('kvAdpt', dt(liveBiz.nps?.adptDt)||'-'); set('kvDelta', liveBiz.nps?.ym?dt(liveBiz.nps.ym)+' 기준':'-');
   if(liveBiz.fsc?.disclosed){ set('kvDisc','공시 ('+(liveBiz.fsc.bizYear||'최근')+'년)'); set('kvSales', won(liveBiz.fsc.sales)||'-'); set('kvOp', won(liveBiz.fsc.opInc)||'-'); set('kvFinNote','금융위 공시 기준 요약 재무입니다'); }
   set('pFresh', `국세청·공정위·국민연금·금융위 ${new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})} 실시간 조회`);
   const fd=document.getElementById('pFreshDemo'); if(fd) fd.textContent='공공데이터 실시간 조회 결과입니다';
@@ -606,7 +626,32 @@ function applyLive(){
    — 목표국가 비중: 미국 52% · 일본 8.5% · 중국 8.2% · 베트남 5.3% · 독일 3.5%
    — 이용금액 중앙값 500만원 · 자부담율 중앙값 30%
    — 수출단계 분포: 내수 27 / 초보 23 / 유망 24 / 성장 12 / 강소 13 (%)     */
-const MTIS={cos:'화장품 (기초 스킨케어)',food:'식품 (가공식품)',elec:'전자부품'};
+/* 품목 분류 — 판판대로 선정기업 76,794개사 업종 분포 + 중진공 바우처 상위 업종 기준 */
+const MTIS={cos:'화장품·뷰티',food:'식품·가공식품',elec:'전자·전기기기',mach:'기계·부품',
+  tex:'섬유·패션',chem:'화학·플라스틱',med:'의료기기·헬스케어',sw:'소프트웨어·콘텐츠',
+  agri:'농수산물',life:'생활용품·잡화',etc:'기타 제조·유통'};
+/* KSIC 업종명 → 품목 자동 매핑 (국민연금 업종명·공정위 취급품목 키워드 매칭) */
+const MTI_KEYWORDS=[
+  ['cos',['화장품','뷰티','미용','코스','향수','세안']],
+  ['food',['식료품','식품','음료','제과','건강기능','농축수산물 가공','주류','커피','반찬']],
+  ['elec',['전자','반도체','영상','통신기기','가전','디스플레이','배터리','전지','전기장비','컴퓨터']],
+  ['mach',['기계','부품','금속','자동차','장비','공구','베어링','조선','항공']],
+  ['tex',['섬유','의복','의류','패션','신발','가방','직물','봉제','편조']],
+  ['chem',['화학','플라스틱','고무','도료','비료','수지','정밀화학']],
+  ['med',['의료','의약','헬스','진단','바이오','제약','치과','재활']],
+  ['sw',['소프트웨어','시스템','응용','정보서비스','게임','콘텐츠','포털','플랫폼','앱']],
+  ['agri',['농업','축산','어업','수산','임업','종자','원예']],
+  ['life',['생활용품','문구','완구','가구','주방','청소','위생','잡화','인테리어']]
+];
+function guessMti(...texts){
+  let t=texts.filter(Boolean).join(' ');
+  // '전자상거래'(판판대로 1위 업종 10,511개사)는 유통 채널이지 전자제품이 아님 — 오분류 방지
+  const isEcom=/전자상거래|통신판매|온라인 ?쇼핑/.test(t);
+  t=t.replace(/전자상거래|통신판매/g,'');
+  for(const [k,ws] of MTI_KEYWORDS){ if(ws.some(w=>t.includes(w))) return k; }
+  if(isEcom || /소매|도매|판매|유통/.test(t)) return 'life';
+  return 'etc';
+}
 const BIZTYPES={micro:'소상공인 (선정기업의 67.7%)',small:'소기업',mid:'중기업'};
 const MKTS={us:'미국 (실집행 52%)',jp:'일본 (8.5%)',cn:'중국 (8.2%)',vn:'베트남 (5.3%)',de:'독일 (3.5%)'};
 const STAGES={domestic:'내수 (수출 전)',novice:'수출초보',promising:'수출유망',growth:'수출성장',strong:'수출강소'};
@@ -667,6 +712,10 @@ function renderMatchPage(){
   }
   selM.value=profile.mti; selK.value=profile.mkt; selS.value=profile.stage;
   document.getElementById('condBiz').value=profile.biz||'micro';
+  const ch=document.getElementById('condHint');
+  if(ch) ch.textContent = profile.auto
+    ? `공공데이터 자동 판정: ${profile.auto.why} — 실제와 다르면 직접 수정하세요. 바꾸면 결과가 즉시 다시 계산됩니다.`
+    : '자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다. 바꾸면 결과가 즉시 다시 계산됩니다.';
   recalc();
 }
 function setTrack(t){track=t;document.getElementById('tabA').classList.toggle('on',t==='A');document.getElementById('tabB').classList.toggle('on',t==='B');recalc();}
