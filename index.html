@@ -1184,7 +1184,8 @@ async function runBiznoSearch(bizno){
   applyLive();
   const nm=profile.coName||'조회한 기업';
   const st=r?.store;
-  out.innerHTML=`<div class="nres-h">공공데이터 조회 결과 1건 — 기업 프로필에 저장했습니다.</div>`
+  const cachedNote = r?.cached ? '저장된 조회 결과를 불러왔습니다' : '공공데이터 조회 결과 1건 — 기업 프로필에 저장했습니다';
+  out.innerHTML=`<div class="nres-h">${cachedNote}.</div>`
     + coCard({name:nm, sub:[liveBiz?.nps?.sector, liveBiz?.ftc?.addr?.split(' ').slice(0,2).join(' '),
         liveBiz?.nps?.cnt!=null?`연금 가입자 ${Number(liveBiz.nps.cnt).toLocaleString()}명`:null].filter(Boolean).join(' · ')||'공공데이터 조회 완료'},
         `go('profile')`, '기업 프로필 →')
@@ -1545,6 +1546,9 @@ function renderAgencies(){
   if(sub) sub.innerHTML='공공데이터 4개 기관에서 조회한 값입니다.'
     + (isDemo?' <span class="chip chip-demo" id="mDemoBadge">예시 데이터</span>':'');
   const L=liveBiz||{}; const demo=!(L.ok && (L.ftc?.name||L.nps?.name||L.fsc?.corpNm));
+  const cachedAll=!!L.cached; const cAt=L.cachedAt;
+  const ago=t=>{ if(!t) return ''; const m=Math.round((Date.now()-new Date(t))/60000);
+    return m<60?`${m}분 전`:(m<1440?`${Math.round(m/60)}시간 전`:`${Math.round(m/1440)}일 전`); };
   const dt=v=>{const t=String(v||'').replace(/\D/g,''); return t.length===8?`${t.slice(0,4)}.${t.slice(4,6)}.${t.slice(6)}`:(t.length===6?`${t.slice(0,4)}.${t.slice(4)}`:'');};
   const won=v=>{const n=Number(v); return !n||isNaN(n)?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':Math.round(n/1e8).toLocaleString()+'억원');};
   const cards=[
@@ -1555,6 +1559,11 @@ function renderAgencies(){
     {t:'금융위원회', ok:!!L.fsc?.disclosed, v:won(L.fsc?.sales)||'비공시', s:L.fsc?.disclosed?((L.fsc.bizYear||'최근')+'년 매출 · 영업이익 '+(won(L.fsc.opInc)||'-')):'외부감사 대상이 아닌 기업입니다', why:'공시 재무'}
   ];
   box.innerHTML=cards.map(c=>{
+    if(cachedAll && (c.ok||c.cached)){
+      return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
+        <span class="live" style="color:var(--ink2);background:var(--bg)">저장된 값</span></div>
+        <div class="ag-v">${c.v}</div><div class="ag-s">${c.s}</div></div>`;
+    }
     if(c.cached){
       const at=c.cachedAt?new Date(c.cachedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):null;
       return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
@@ -1573,7 +1582,9 @@ function renderAgencies(){
   const t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('sec1Foot').textContent = demo
     ? '데모 번호로 조회한 예시입니다. 실제 사업자번호를 넣으면 공공데이터 실시간 조회 결과가 표시됩니다.'
-    : `근거: 국세청·공정거래위원회·국민연금공단·금융위원회 공공 API · ${t} 조회 · 조회 결과는 24시간 캐시로 보관되며 이용자 정보는 저장하지 않습니다.`;
+    : cachedAll
+      ? `근거: 국세청·공정거래위원회·국민연금공단·금융위원회 공공 API · ${ago(cAt)} 조회해 둔 값입니다. 24시간이 지나면 변경 여부를 확인하기 위해 자동으로 다시 조회합니다.`
+      : `근거: 국세청·공정거래위원회·국민연금공단·금융위원회 공공 API · ${t} 조회 · 조회 결과는 24시간 캐시로 보관되며 이용자 정보는 저장하지 않습니다.`;
 }
 
 /* ── 스티키 요약 바 ── */
