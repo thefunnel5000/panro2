@@ -93,13 +93,14 @@ export default async function handler(req, res) {
   };
   // 실측상 Authorization: Infuser 헤더 방식이 가장 안정적이므로 이것을 1순위로 둔다.
   // 함수 전체 제한이 10초라 재시도 타임아웃 합이 그 안에 들어와야 한다 (3.2s × 3 ≈ 9.6s).
+  // 국세청 odcloud는 serviceKey를 쿼리로 넘기면 code -5를 돌려준다(실측). Authorization: Infuser 헤더만 동작한다.
+  // 다만 응답이 느려 넉넉한 타임아웃이 필요하다 — 3.2초에서는 매번 타임아웃, 7초면 응답한다.
+  // 함수 전체 제한이 10초이므로 7초 + 예비 2초로 구성한다.
   const ntsP = (async () => {
     const hdrOpt = { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(KEY)}` } };
-    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, 3200);
+    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, 7000);
     if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,200);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 3200); }
-    if (!r?.data) { globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,200);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt, 3200); }
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 2000); }
     return r;
   })();
 
