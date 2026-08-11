@@ -91,13 +91,15 @@ export default async function handler(req, res) {
     headers: { "Content-Type": "application/json; charset=utf-8", Accept: "application/json", "User-Agent": "panro2/1.0" },
     body: JSON.stringify({ b_no: [bizno] })
   };
+  // 실측상 Authorization: Infuser 헤더 방식이 가장 안정적이므로 이것을 1순위로 둔다.
+  // 함수 전체 제한이 10초라 재시도 타임아웃 합이 그 안에 들어와야 한다 (3.2s × 3 ≈ 9.6s).
   const ntsP = (async () => {
-    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 8000);
-    if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt, 8000); }
-    if (!r?.data) { globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,300);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`,
-        { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(KEY)}` } }, 8000); }
+    const hdrOpt = { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(KEY)}` } };
+    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, 3200);
+    if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,200);
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 3200); }
+    if (!r?.data) { globalThis.__nts2 = (r?.__xml || JSON.stringify(r||{})).slice(0,200);
+      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${decodeURIComponent(KEY)}&returnType=JSON`, ntsOpt, 3200); }
     return r;
   })();
 
