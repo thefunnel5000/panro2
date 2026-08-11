@@ -1540,8 +1540,10 @@ function renderAgencies(){
     document.getElementById('sec1Foot').textContent='근거: 한국중소벤처기업유통원 판판대로 선정기업 제품정보 73,034건(상품 40,941종·카테고리 281종) 상품명 색인.';
     return;
   }
+  const L0=liveBiz||{}; const isDemo=!(L0.ok && (L0.ftc?.name||L0.nps?.name||L0.fsc?.corpNm));
   if(hd) hd.textContent='기업 확인 결과';
-  if(sub) sub.innerHTML='공공데이터 4개 기관에서 조회한 값입니다. <span class="chip chip-demo" id="mDemoBadge">데모 데이터</span>';
+  if(sub) sub.innerHTML='공공데이터 4개 기관에서 조회한 값입니다.'
+    + (isDemo?' <span class="chip chip-demo" id="mDemoBadge">예시 데이터</span>':'');
   const L=liveBiz||{}; const demo=!(L.ok && (L.ftc?.name||L.nps?.name||L.fsc?.corpNm));
   const dt=v=>{const t=String(v||'').replace(/\D/g,''); return t.length===8?`${t.slice(0,4)}.${t.slice(4,6)}.${t.slice(6)}`:(t.length===6?`${t.slice(0,4)}.${t.slice(4)}`:'');};
   const won=v=>{const n=Number(v); return !n||isNaN(n)?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':Math.round(n/1e8).toLocaleString()+'억원');};
