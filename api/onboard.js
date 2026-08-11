@@ -15,7 +15,8 @@ const KEYS = [
   process.env.DATA_GO_KR_KEY3,
   "MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D"
 ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
-const KEY = KEYS[0];
+const NTS_KEYS = ["ecd158b8c38f42bc51fcc8806e657717bd65e3d9ff85c593d340927fe597bf53", ...KEYS].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);  // 국세청 전용(시범용 공개키)
+const KEY = process.env.DATA_GO_KR_KEY || KEYS[KEYS.length - 1];
 
 async function j(url, opt = {}, ms = 4500) {
   const c = new AbortController();
@@ -122,20 +123,21 @@ export default async function handler(req, res) {
   const ntsTry = async (key, ms) => {
     const hdrOpt = { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(key)}` } };
     const r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, ms);
+    globalThis.__ntsRaw = (globalThis.__ntsRaw || []).concat([r === null ? 'timeout' : (r.__xml || JSON.stringify(r)).replace(/\s+/g,' ').slice(0,110)]);
     return r?.data ? r : null;
   };
   const ntsP = (async () => {
     const budget = 11000;                       // 함수 제한 15초 안에서 국세청에 쓸 총 예산
-    const per = Math.floor(budget / Math.min(KEYS.length, 3));
-    const notes = [];
-    for (let i = 0; i < Math.min(KEYS.length, 3); i++) {
-      const r = await ntsTry(KEYS[i], per);
+    const per = Math.floor(budget / Math.min(NTS_KEYS.length, 3));
+    const notes = []; globalThis.__ntsRaw = [];
+    for (let i = 0; i < Math.min(NTS_KEYS.length, 3); i++) {
+      const r = await ntsTry(NTS_KEYS[i], per);
       if (r) { globalThis.__ntsKey = i; return r; }
       notes.push(`key${i}: no data`);
     }
     // 헤더 방식이 전부 실패하면 쿼리 방식으로 마지막 한 번
     globalThis.__nts1 = notes.join(' / ');
-    const q = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 2500);
+    const q = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${NTS_KEYS[0]}&returnType=JSON`, ntsOpt, 2500);
     globalThis.__nts2 = q?.data ? 'query ok' : (q?.__xml || JSON.stringify(q || {})).slice(0, 160);
     return q;
   })();
@@ -208,7 +210,7 @@ export default async function handler(req, res) {
     }
   }
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
-  const dbg = req.query.debug ? { keys: KEYS.length, usedKey: globalThis.__ntsKey ?? null, npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
+  const dbg = req.query.debug ? { keys: KEYS.length, ntsKeys: NTS_KEYS.length, ntsRaw: (globalThis.__ntsRaw || []).join(' | '), usedKey: globalThis.__ntsKey ?? null, npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
 
   // ── 5. 조회 결과 축적 (공개 공공데이터만 보관, 이용자 식별 정보는 저장하지 않음)
   const name = ftcRow?.bzmnNm || nps?.name || fsc?.corpNm || null;
