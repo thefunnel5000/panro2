@@ -23,7 +23,7 @@
   --r:14px; --r-sm:10px; --shadow:0 1px 3px rgba(26,36,55,.06),0 4px 14px rgba(26,36,55,.05);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:clip}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 a{color:var(--blue);text-decoration:none}
@@ -215,17 +215,152 @@ nav.gnb{margin-left:auto;display:flex;gap:2px;align-items:center}
 /* ── 푸터 ─────────────────────────── */
 footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;color:var(--ink3);font-size:13px;line-height:1.8}
 
+/* ── 고지 배너 슬롯 (기관 검수 시 문구 교체 가능) ── */
+.notice-slot{background:var(--blue-bg);border-bottom:1px solid #D6E2F8;color:var(--blue);font-size:13.5px;font-weight:600;text-align:center;padding:11px 16px}
+
+/* ── 세로 리포트 골격 ───────────────── */
+.rwrap{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:30px;align-items:start}
+.rmain{min-width:0}
+.rnav{position:sticky;top:132px;display:flex;flex-direction:column;gap:1px}
+.rnav a{display:block;padding:7px 12px;border-left:2px solid var(--line);color:var(--ink3);font-size:13px;font-weight:700;line-height:1.3}
+.rnav a.on{border-left-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.sticky-sum{position:sticky;top:64px;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -24px;padding:0 24px}
+.sticky-sum .in{display:flex;align-items:center;gap:12px;height:56px}
+.sticky-sum .av{width:32px;height:32px;border-radius:9px;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+.sticky-sum .nm{font-weight:800;font-size:15px;white-space:nowrap;flex:none}
+.sticky-sum .cc{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.sticky-sum .cc::-webkit-scrollbar{display:none}
+.sticky-sum .cc span{background:var(--blue-bg);color:var(--blue);font-size:12.5px;font-weight:700;border-radius:20px;padding:4px 11px;white-space:nowrap}
+.sticky-sum .rt{margin-left:auto;display:flex;gap:6px;flex:none}
+.sticky-sum .rt button{font-size:13px;font-weight:700;color:var(--ink2);border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px}
+.rsec{padding:52px 0;border-top:1px solid var(--line)}
+.rsec.alt{background:var(--bg);margin:0 -24px;padding-left:24px;padding-right:24px}
+.rsec .shd{display:flex;align-items:center;gap:12px}
+.rsec .snum{width:30px;height:30px;border-radius:9px;background:var(--blue-bg);color:var(--blue);font-weight:800;display:grid;place-items:center;flex:none;font-size:15px}
+.rsec .shd h3{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+.rsec .ssub{color:var(--ink2);font-size:15px;margin:8px 0 20px 42px}
+.rsec .grid3{grid-template-columns:1fr 1fr}
+.rsec .sfoot{color:var(--ink3);font-size:13px;margin-top:16px;padding-top:13px;border-top:1px solid var(--line)}
+.term{color:var(--ink3);font-weight:600}
+
+/* 기관 조회 카드 2×2 */
+.agv{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.agv .card{padding:18px 20px}
+.agv .ag-h{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:9px}
+.agv .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:var(--ok);background:var(--ok-bg);border-radius:20px;padding:3px 8px;margin-left:auto}
+.agv .live .d{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.agv .ag-v{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.35}
+.agv .ag-s{color:var(--ink3);font-size:12.5px;margin-top:5px}
+.agv .card.fail{background:var(--err-bg);border-color:#EFC7C1}
+.agv .card.fail .ag-v{color:var(--err);font-size:16px}
+.agv .card.fail .retry{margin-top:10px;border:1.5px solid var(--err);color:var(--err);background:#fff;border-radius:9px;padding:7px 13px;font-weight:700;font-size:13px}
+
+/* 정렬 칩 · 필터 */
+.sortbar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.sortchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;min-width:0;padding-bottom:2px}
+.sortchips::-webkit-scrollbar{display:none}
+.sortchips button{flex:none;height:36px;padding:0 16px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink2);font-size:13.5px;font-weight:700;white-space:nowrap}
+.sortchips button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.fbtn{flex:none;height:36px;padding:0 15px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink2);font-weight:700;font-size:13.5px;margin-left:auto}
+.fbtn.act{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+.drawer-bg{display:none;position:fixed;inset:0;background:rgba(26,36,55,.42);z-index:80}
+.drawer-bg.on{display:block}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:400px;max-width:90vw;background:#fff;z-index:81;transform:translateX(101%);transition:transform .25s ease;display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.drawer .dh{display:flex;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+.drawer .dh b{font-size:17px}
+.drawer .dh .x{margin-left:auto;font-size:24px;color:var(--ink3);line-height:1;padding:0 4px}
+.drawer .db{flex:1;overflow-y:auto;padding:20px 22px}
+.drawer .fg{margin-bottom:24px}
+.drawer .fg b{display:block;font-size:14px;margin-bottom:11px}
+.drawer .fo{display:flex;gap:8px;flex-wrap:wrap}
+.drawer .fo label{border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--ink2);cursor:pointer}
+.drawer .fo label.on{border-color:var(--blue);background:var(--blue-bg);color:var(--blue)}
+.drawer .df{display:flex;gap:10px;padding:16px 22px;border-top:1px solid var(--line)}
+.drawer .df .btn{flex:1}
+
+/* 적합도 막대 · 더보기 */
+.fitwrap{flex:none;text-align:right;min-width:80px}
+.fitbar{height:4px;border-radius:2px;background:var(--blue-bg);margin-top:7px;overflow:hidden}
+.fitbar i{display:block;height:100%;background:var(--blue);border-radius:2px}
+.morebtn{width:100%;margin-top:18px;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--blue);font-weight:700;font-size:15px}
+.morebtn:hover{border-color:var(--blue);background:var(--blue-bg)}
+
+/* 컨설팅 2트랙 */
+.duo2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.duo2 .card{padding:24px}
+.duo2 .tk{font-size:13px;font-weight:800;color:var(--blue);margin-bottom:6px}
+.duo2 .tk.b{color:var(--orange)}
+.duo2 h4{font-size:18px;margin-bottom:10px}
+.duo2 .dg{color:var(--ink2);font-size:14.5px;margin-bottom:14px}
+.duo2 .act{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--bg);font-size:14px;color:var(--ink2)}
+.duo2 .act i{width:19px;height:19px;border-radius:6px;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:800;display:grid;place-items:center;flex:none;font-style:normal;margin-top:2px}
+.duo2 .dim{opacity:.62}
+.fxlist{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.fxrow{display:flex;align-items:center;gap:14px}
+.fxn{width:150px;flex:none;font-size:14.5px;font-weight:700}
+.fxb{flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:hidden;min-width:0}
+.fxb i{display:block;height:100%;border-radius:5px}
+.fxv{width:120px;flex:none;text-align:right}
+.fxv b{font-size:16px}
+.fxv small{display:block;color:var(--ink3);font-size:11.5px}
+.fxnote{font-size:13.5px;color:var(--ink2);background:var(--bg);border-radius:10px;padding:13px 15px;line-height:1.7}
+.fxwarn{margin-top:10px;font-size:13px;color:#7A4A21;background:var(--orange-bg);border:1px solid #F5D9C2;border-radius:10px;padding:12px 15px;line-height:1.7}
+.sig{margin-top:22px;font-size:12px;color:var(--ink3);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.01em}
+.hero-search{padding:48px 0 8px}
+.msearch{max-width:760px;margin:26px auto 0}
+.msearch .ask-bar input{font-size:16.5px}
+.mq-out{text-align:left;margin-top:22px}
+.mq-out .nres-h{margin-top:0}
+.saved{display:none}
+.onb-tabs{display:inline-flex;background:#EDF1F7;border-radius:13px;padding:5px;margin-bottom:18px}
+.onb-tabs button{padding:10px 20px;border-radius:9px;font-weight:700;font-size:15px;color:var(--ink2)}
+.onb-tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.priv-note{margin-top:12px;font-size:13px;color:var(--ink3);line-height:1.7}
+.name-ex{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.name-ex button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 13px;font-size:13px;color:var(--ink2);font-weight:600}
+.name-ex button:hover{border-color:var(--blue);color:var(--blue)}
+.nres-h{font-size:14px;font-weight:700;color:var(--ink2);margin:22px 0 12px;padding-top:18px;border-top:1px solid var(--line)}
+.nres{display:flex;align-items:center;gap:13px;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:9px;cursor:pointer;background:#fff;width:100%;text-align:left}
+.nres:hover{border-color:var(--blue);background:var(--blue-bg)}
+.nres .ic{width:38px;height:38px;border-radius:10px;background:var(--blue-bg);color:var(--blue);display:grid;place-items:center;font-weight:800;font-size:16px;flex:none}
+.nres b{display:block;font-size:15px}
+.nres small{color:var(--ink3);font-size:12.5px}
+.nres .go{margin-left:auto;color:var(--blue);font-weight:800;flex:none}
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.quad .card{padding:20px}
+.quad .kicker{font-size:12.5px;font-weight:700;margin-bottom:7px}
+.quad h4{font-size:16px;margin-bottom:7px;letter-spacing:-.01em}
+.quad p{color:var(--ink2);font-size:13.5px;margin-bottom:14px}
+.quad .btn{width:100%;padding:10px;font-size:14px}
+
 /* ── 모바일 ────────────────────────── */
 .bottom-nav{display:none}
 @media (max-width:1000px){
   .grid3{grid-template-columns:1fr 1fr}
   .steps3{grid-template-columns:1fr}
   .stats b{font-size:27px}
+  .rwrap{grid-template-columns:minmax(0,1fr)}
+  .rnav{display:none}
+  .quad{grid-template-columns:1fr 1fr}
 }
 @media (max-width:700px){
   .wrap{padding:0 16px}
   nav.gnb{display:none}
-  .duo,.grid2,.grid3{grid-template-columns:1fr}
+  .duo,.grid2,.grid3,.agv,.duo2,.rsec .grid3{grid-template-columns:1fr}
+  .fxrow{flex-wrap:wrap}
+  .fxn{width:100%}
+  .fxv{width:auto;margin-left:auto;text-align:right}
+  .fxb{order:3;width:100%;flex:none}
+  .quad{grid-template-columns:1fr 1fr}
+  .rsec{padding:34px 0}
+  .rsec.alt{margin:0 -16px;padding-left:16px;padding-right:16px}
+  .sticky-sum{margin:0 -16px;padding:0 16px}
+  .sticky-sum .nm{max-width:96px;overflow:hidden;text-overflow:ellipsis}
+  .rsec .shd h3{font-size:20px}
+  .rsec .ssub{margin-left:0}
+  .drawer{width:100%;max-width:100%;left:0;top:auto;height:82vh;border-radius:18px 18px 0 0;transform:translateY(101%)}
+  .drawer.on{transform:none}
   .stats{grid-template-columns:1fr}
   .page{padding:22px 0 110px}
   .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:60;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
@@ -254,46 +389,55 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
   </div>
 </header>
 
+<!-- 고지 배너 슬롯 — 기관 검수 시 문구 교체 가능 -->
+<div class="notice-slot" id="noticeSlot">개인정보·민감정보는 입력하지 마세요. 조회 결과는 공공데이터 캐시로 보관되며, 이용자 정보는 수집하지 않습니다.</div>
+
 <main class="wrap">
 
 <!-- ═══ 홈 ═══ -->
 <section class="page on" id="pg-home">
-  <div class="hero">
+  <div class="hero hero-search">
     <span class="chip chip-blue">● 수출바우처 · 판판대로 지원사업 매칭</span>
-    <h1>사업자번호 하나로<br>우리 회사에 맞는 판로를 찾아드립니다</h1>
-    <p>복잡한 지원사업 공고를 뒤질 필요 없이, 공공데이터로 우리 회사를 분석해 신청할 수 있는 판로만 골라 보여드립니다.</p>
-    <div class="hero-cta">
-      <button class="btn btn-p" onclick="go('onboard')">사업자번호로 시작하기</button>
-      <button class="btn btn-o" onclick="go('ask')">AI에게 질문하기</button>
+    <h1>무엇이든 넣어 보세요</h1>
+    <p>사업자번호·회사명·상품명·HS코드 가운데 아는 것 하나만 있으면 됩니다. 공공데이터로 우리 회사를 찾아 맞는 판로를 골라 드립니다.</p>
+    <div class="msearch">
+      <div class="ask-bar">
+        <input id="mq" placeholder="사업자번호, 회사명, 상품명, HS코드 중 하나를 입력하세요"
+               onkeydown="if(event.key==='Enter')mainSearch()">
+        <button class="btn btn-p" id="mqBtn" onclick="mainSearch()">찾기</button>
+      </div>
+      <div class="ask-chips" id="mqChips"></div>
+      <div class="mq-out" id="mqOut" style="display:none"></div>
     </div>
-    <div class="hero-demo">실제 사업자번호 대신 <b>데모 번호</b>로 체험할 수 있습니다</div>
   </div>
 
   <div class="duo">
     <div class="card">
       <div class="kicker k-a">수출을 준비 중이라면</div>
       <h3>수출바우처 서비스 매칭</h3>
-      <p>우리 회사 품목에 맞는 수행기관과 서비스를 실적 데이터 기반으로 추천해 드립니다.</p>
+      <p>우리 회사 품목에 맞는 지원 서비스를 실제 집행 데이터 기준으로 골라 드립니다.</p>
       <button class="btn btn-o" onclick="go('onboard')">시작하기 →</button>
     </div>
     <div class="card">
       <div class="kicker k-b"><span class="pre">판판대로</span><br>받을 수 있는 지원이 궁금하다면</div>
       <h3>지원사업 매칭</h3>
-      <p>진행 중인 지원사업 411건 중 우리 회사가 신청할 수 있는 사업만 골라 보여드립니다.</p>
+      <p>판판대로 실제 공고 372건 중 우리 회사가 신청할 수 있는 사업만 골라 보여드립니다.</p>
       <button class="btn btn-o" onclick="go('onboard')">시작하기 →</button>
     </div>
   </div>
 
   <div class="stats">
-    <div><b>76,794</b><span style="font-size:15px;font-weight:700"> 개사</span><small>분석된 선정기업 데이터</small></div>
-    <div><b>52,953</b><span style="font-size:15px;font-weight:700"> 건</span><small>학습된 수행기관 실적</small></div>
-    <div><b>411</b><span style="font-size:15px;font-weight:700"> 건</span><small>매칭 대상 지원사업</small></div>
+    <div><b>76,794</b><span style="font-size:15px;font-weight:700"> 건</span><small>선정 이력 (30,119개사)</small></div>
+    <div><b>51,212</b><span style="font-size:15px;font-weight:700"> 건</span><small>분석한 수출바우처 이용실적</small></div>
+    <div><b>372</b><span style="font-size:15px;font-weight:700"> 건</span><small>매칭 대상 지원사업 공고</small></div>
   </div>
+
+  <div class="saved" id="savedBox"></div>
 
   <h2 class="sect-title">이렇게 작동해요</h2>
   <div class="steps3">
-    <div class="card"><div class="num">1</div><h4>사업자번호 입력</h4><p>번호 하나만 있으면 됩니다. 회원가입도, 서류도 필요 없어요.</p></div>
-    <div class="card"><div class="num">2</div><h4>공공데이터 자동 분석</h4><p>국세청·국민연금 등 4개 기관 데이터로 회사를 파악합니다.</p></div>
+    <div class="card"><div class="num">1</div><h4>아는 것 하나만 입력</h4><p>사업자번호·회사명·상품명·HS코드 무엇이든 됩니다. 회원가입도, 서류도 필요 없어요.</p></div>
+    <div class="card"><div class="num">2</div><h4>공공데이터 자동 분석</h4><p>국세청·공정거래위원회·국민연금공단·금융위원회에서 실제 값을 조회합니다.</p></div>
     <div class="card"><div class="num">3</div><h4>맞춤 판로 확인</h4><p>신청 가능한 지원사업과 수출 서비스만 골라 보여드립니다.</p></div>
   </div>
 </section>
@@ -301,23 +445,41 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
 <!-- ═══ 온보딩 ═══ -->
 <section class="page" id="pg-onboard">
   <div class="onb">
-    <h2>사업자번호를 입력해 주세요</h2>
-    <div class="sub">번호 하나로 공공데이터를 조회해 우리 회사에 맞는 판로를 찾습니다</div>
-    <div class="card onb-card">
+    <h2>우리 회사를 알려주세요</h2>
+    <div class="sub">사업자번호가 있으면 공공데이터로 정확히 조회하고, 없으면 상품·서비스명으로 찾아드립니다</div>
+
+    <div class="onb-tabs">
+      <button id="otabBiz" class="on" onclick="setEntry('biz')">사업자번호로 찾기</button>
+      <button id="otabName" onclick="setEntry('name')">상품·서비스명으로 찾기</button>
+    </div>
+
+    <div class="card onb-card" id="entryBiz">
       <label for="bizno">사업자등록번호</label>
       <input class="biz-input" id="bizno" inputmode="numeric" placeholder="000-00-00000" maxlength="12" oninput="fmtBiz(this)">
-      <div class="demo-note">
-        실제 번호 대신 <b>데모 번호</b>를 이용해 주세요. 입력한 번호는 저장되지 않습니다.<br>
-        <button class="demo-btn" onclick="fillDemo()">데모 번호 넣기 123-45-67891</button>
-      </div>
-      <div class="err-msg" id="bizErr">사업자번호 형식이 올바르지 않습니다. 국세청 검증 규칙(체크섬)에 맞지 않는 번호예요 — 데모 번호로 체험해 보세요.</div>
+      <div class="priv-note">입력한 번호는 공공데이터 조회에만 사용하며, 조회 결과(공개 정보)는 24시간 캐시로 보관합니다.
+        <button class="demo-btn" onclick="fillDemo()">예시 번호 넣기 123-45-67891</button></div>
+      <div class="err-msg" id="bizErr">사업자번호 형식이 올바르지 않습니다. 국세청 검증 규칙(체크섬)에 맞지 않는 번호입니다.</div>
       <button class="btn btn-p onb-go" id="onbGo" disabled onclick="runOnboard()">판로 찾기 시작</button>
+    </div>
+
+    <div class="card onb-card" id="entryName" style="display:none">
+      <label for="pname">상품명 · 서비스명 · 회사명</label>
+      <input class="biz-input" id="pname" style="font-size:18px;letter-spacing:0" placeholder="예: 수제 딸기잼, 비건 세럼, 또는 회사 이름"
+             oninput="onNameInput()" onkeydown="if(event.key==='Enter')searchByName()">
+      <div class="priv-note">회사명을 넣으면 국민연금 가입 사업장에서 검색하고, 상품명을 넣으면 판판대로 등록 상품 73,034건에서 같은 종류를 찾아 품목을 판정합니다.</div>
+      <div class="name-ex" id="nameEx"></div>
+      <button class="btn btn-p onb-go" id="nameGo" disabled onclick="searchByName()">검색하기</button>
+      <div id="coOut" style="display:none"></div>
+      <div id="nameOut" style="display:none">
+        <div class="nres-h" id="nresH"></div>
+        <div id="nresList"></div>
+      </div>
     </div>
     <div class="card pipe" id="pipe">
       <div class="pipe-hd"><b>공공데이터 조회 중</b><span class="pct" id="pipePct">0%</span></div>
       <div id="pipeSteps"></div>
     </div>
-    <div class="src-note">출처: 중소벤처기업진흥공단·국세청·공정거래위원회·국민연금공단 공공데이터</div>
+    <div class="src-note">출처: 한국중소벤처기업유통원(판판대로)·중소벤처기업진흥공단(수출바우처)·국세청·공정거래위원회·국민연금공단·금융위원회 공공데이터</div>
   </div>
 </section>
 
@@ -326,38 +488,147 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
   <div id="matchEmpty" class="card empty-state" style="display:none">
     <div class="big">🔎</div>
     <h3>먼저 분석을 시작하세요</h3>
-    <p>사업자번호(데모 번호 가능) 하나면 우리 회사에 맞는 판로를 찾아드립니다.</p>
-    <button class="btn btn-p" onclick="go('onboard')">사업자번호로 시작하기</button>
+    <p>사업자번호 또는 상품·서비스명 하나면 우리 회사에 맞는 판로를 찾아드립니다.</p>
+    <button class="btn btn-p" onclick="go('onboard')">분석 시작하기</button>
   </div>
   <div id="matchBody" style="display:none">
-    <div class="card co-card">
-      <div class="co-avatar" id="mAvatar">한</div>
-      <div>
-        <h3 id="mName">(주)한빛코스메틱</h3> <span class="chip chip-demo" id="mDemoBadge">데모 데이터</span>
-        <div class="sub" id="coSub">화장품 제조업 · 서울 성동구 · 업력 9년 · 사업자 상태 정상</div>
+
+    <!-- ── 섹션 0 · 스티키 요약 바 ── -->
+    <div class="sticky-sum">
+      <div class="in">
+        <div class="av" id="sAvatar">한</div>
+        <div class="nm" id="sName">(주)한빛코스메틱</div>
+        <div class="cc" id="sChips"></div>
+        <div class="rt">
+          <button onclick="jump('sec2')">조건 변경</button>
+          <button onclick="go('onboard')">처음부터</button>
+        </div>
       </div>
-      <div class="spacer"></div>
-      <button class="btn btn-ghost" onclick="go('profile')">기업 프로필 보기</button>
     </div>
 
-    <div class="cond-bar">
-      <span class="lbl">분석된 조건</span>
-      <select id="condMti" onchange="recalc()"></select>
-      <select id="condMkt" onchange="recalc()"></select>
-      <select id="condStage" onchange="recalc()"></select>
-      <select id="condBiz" onchange="recalc()"></select>
-      <span class="hint" id="condHint">자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다. 바꾸면 결과가 즉시 다시 계산됩니다.</span>
-    </div>
+    <div class="rwrap">
+      <div class="rmain">
 
-    <div class="tabs">
-      <button id="tabA" class="on" onclick="setTrack('A')">수출바우처 서비스</button>
-      <button id="tabB" onclick="setTrack('B')"><small>판판대로</small>지원사업 매칭</button>
+        <!-- ── 1. 기업 확인 결과 ── -->
+        <section class="rsec" id="sec1">
+          <div class="shd"><div class="snum">1</div><h3>기업 확인 결과</h3></div>
+          <p class="ssub">공공데이터 4개 기관에서 조회한 값입니다. <span class="chip chip-demo" id="mDemoBadge">데모 데이터</span></p>
+          <div class="agv" id="agvGrid"></div>
+          <div class="sfoot" id="sec1Foot"></div>
+        </section>
+
+        <!-- ── 2. 자동 도출된 조건 ── -->
+        <section class="rsec alt" id="sec2">
+          <div class="shd"><div class="snum">2</div><h3>이 조건으로 찾아드립니다</h3></div>
+          <p class="ssub">조회한 값으로 자동 판정했습니다. 실제와 다르면 바꿔 주세요 — 아래 결과가 즉시 다시 계산됩니다.</p>
+          <div class="cond-bar">
+            <span class="lbl">분석된 조건</span>
+            <select id="condMti" onchange="recalc()"></select>
+            <select id="condMkt" onchange="recalc()"></select>
+            <select id="condStage" onchange="recalc()"></select>
+            <select id="condBiz" onchange="recalc()"></select>
+            <span class="hint" id="condHint">자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다.</span>
+          </div>
+          <div class="sfoot" id="sec2Foot"></div>
+        </section>
+
+        <!-- ── 3. 수출바우처 서비스 매칭 ── -->
+        <section class="rsec" id="sec3">
+          <div class="shd"><div class="snum">3</div><h3>수출바우처 서비스 매칭</h3></div>
+          <p class="ssub"><span class="term">수출바우처 — 정부가 수출 준비 비용의 일부를 지원해 주는 제도입니다.</span><br>비슷한 조건의 기업들이 실제로 어떤 서비스를 썼는지 집계해 순서를 매겼습니다.</p>
+          <div id="domBox" style="display:none;margin-bottom:22px"></div>
+          <div class="sortbar">
+            <div class="sortchips" id="sortA"></div>
+            <button class="fbtn" id="fbtnA" onclick="openFilter('A')">필터</button>
+          </div>
+          <div class="basis" id="basisA"></div>
+          <div class="grid3" id="gridA"></div>
+          <button class="morebtn" id="moreA" onclick="showMore('A')" style="display:none"></button>
+          <div class="fxnote" id="budgetNote" style="margin-top:18px"></div>
+          <div class="sfoot" id="footA"></div>
+        </section>
+
+        <!-- ── 4. 판판대로 지원사업 매칭 ── -->
+        <section class="rsec alt" id="sec4">
+          <div class="shd"><div class="snum">4</div><h3>판판대로 지원사업 매칭</h3></div>
+          <p class="ssub"><span class="term">판판대로 — 중소기업·소상공인의 판로 개척을 돕는 정부 지원사업 포털입니다.</span><br>2023~2025년 실제 공고 이력에서 우리 회사가 신청할 수 있는 사업만 골랐습니다. 모집 종료일이 지난 공고도 어떤 사업이 반복 운영되는지 참고가 되도록 함께 보여드립니다.</p>
+          <div class="sortbar">
+            <div class="sortchips" id="sortB"></div>
+            <button class="fbtn" id="fbtnB" onclick="openFilter('B')">필터</button>
+          </div>
+          <div class="basis" id="basisB"></div>
+          <div class="grid3" id="gridB"></div>
+          <button class="morebtn" id="moreB" onclick="showMore('B')" style="display:none"></button>
+          <div class="sfoot" id="footB"></div>
+        </section>
+
+        <!-- ── 5. 국내판매 · 수출 컨설팅 ── -->
+        <section class="rsec" id="sec5">
+          <div class="shd"><div class="snum">5</div><h3>지금 무엇을 하면 되나요</h3></div>
+          <p class="ssub">국내 판로와 해외 수출, 두 갈래로 나눠 다음 할 일을 정리했습니다.</p>
+          <div class="duo2" id="consultBox"></div>
+          <div class="sfoot" id="footC"></div>
+        </section>
+
+        <!-- ── 6. 다음 단계 ── -->
+        <section class="rsec alt" id="sec6">
+          <div class="shd"><div class="snum">6</div><h3>이어서 해보기</h3></div>
+          <p class="ssub">매칭 결과를 바탕으로 홍보 콘텐츠를 만들거나, 궁금한 점을 물어보실 수 있습니다.</p>
+          <div class="quad">
+            <div class="card">
+              <div class="kicker k-a">콘텐츠 스튜디오</div>
+              <h4>상세페이지·홍보 문구 초안</h4>
+              <p>같은 카테고리 상품들의 표현 패턴을 참고해 초안을 만들어 드립니다.</p>
+              <button class="btn btn-o" onclick="toStudio()">콘텐츠 만들기</button>
+            </div>
+            <div class="card">
+              <div class="kicker k-b">AI 검색</div>
+              <h4>궁금한 것을 물어보세요</h4>
+              <p>「적합한 지원사업 찾아줘」처럼 편하게 물어보시면 데이터에서 찾아 답합니다.</p>
+              <button class="btn btn-o" onclick="go('ask')">질문하기</button>
+            </div>
+            <div class="card">
+              <div class="kicker k-a">기업 프로필</div>
+              <h4>조회된 정보 전체 보기</h4>
+              <p>4개 기관에서 받아온 항목을 표 형태로 한 번에 확인하실 수 있습니다.</p>
+              <button class="btn btn-o" onclick="go('profile')">프로필 보기</button>
+            </div>
+            <div class="card">
+              <div class="kicker k-a">지식 지형도</div>
+              <h4>판로 지식 연결 지도</h4>
+              <p>수출 절차·인증·시장 정보가 어떻게 이어지는지 그림으로 살펴보세요.</p>
+              <button class="btn btn-o" onclick="go('map')">지형도 열기</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="src-note">출처: 한국중소벤처기업유통원(판판대로)·중소벤처기업진흥공단(수출바우처)·국세청·공정거래위원회·국민연금공단·금융위원회 공공데이터<br>적합도는 100점 만점이며, 비슷한 조건 기업들의 실제 이용·선정 데이터를 집계해 산출한 값입니다. 순위는 통계 규칙으로만 계산하므로 같은 조건을 넣으면 항상 같은 결과가 나옵니다.
+          <div class="sig" id="runSig"></div></div>
+      </div>
+
+      <!-- 섹션 내비게이션 (1000px 이상) -->
+      <nav class="rnav" id="rnav">
+        <a onclick="jump('sec1')" data-s="sec1" class="on">기업 확인</a>
+        <a onclick="jump('sec2')" data-s="sec2">분석 조건</a>
+        <a onclick="jump('sec3')" data-s="sec3">수출바우처</a>
+        <a onclick="jump('sec4')" data-s="sec4">지원사업</a>
+        <a onclick="jump('sec5')" data-s="sec5">컨설팅</a>
+        <a onclick="jump('sec6')" data-s="sec6">이어서 해보기</a>
+      </nav>
     </div>
-    <div class="basis" id="basisLine"></div>
-    <div class="grid3" id="matchGrid"></div>
-    <div class="src-note">출처: 중소벤처기업진흥공단·국세청·공정거래위원회·국민연금공단 공공데이터 · 적합도는 유사 기업의 실제 선택 데이터를 기반으로 계산됩니다</div>
   </div>
 </section>
+
+<!-- 필터 드로어 -->
+<div class="drawer-bg" id="drawerBg" onclick="closeFilter()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-label="필터">
+  <div class="dh"><b id="drawerTitle">필터</b><button class="x" onclick="closeFilter()" aria-label="닫기">×</button></div>
+  <div class="db" id="drawerBody"></div>
+  <div class="df">
+    <button class="btn btn-ghost" onclick="resetFilter()">초기화</button>
+    <button class="btn btn-p" onclick="closeFilter()" id="drawerApply">결과 보기</button>
+  </div>
+</aside>
 
 <!-- ═══ 콘텐츠 스튜디오 ═══ -->
 <section class="page" id="pg-studio">
@@ -370,23 +641,28 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
     <button class="btn btn-ghost" onclick="renderStudio(curStudio)">다시 생성</button>
     <span class="guest-note" id="copyMsg">복사하면 어디든 붙여넣어 쓸 수 있습니다.</span>
   </div>
-  <div class="src-note">본 콘텐츠는 데모 정보 기반의 초안 예시입니다 · 출처: 공공데이터 기반 분석</div>
+  <div class="src-note">초안 예시이며 그대로 쓰기 전 사실관계를 확인해 주세요 · 근거: 판판대로 선정기업 제품정보(2023~2025) 표현 패턴</div>
 </section>
 
 <!-- ═══ AI 검색 ═══ -->
 <section class="page" id="pg-ask">
   <div class="ask">
-    <span class="live-badge"><span class="dot"></span>전용 AI 서버에서 실시간 생성</span>
+    <span class="live-badge"><span class="dot"></span>공공데이터 원본에서 바로 찾아 답합니다</span>
     <h2>수출·지원사업, 무엇이든 물어보세요</h2>
-    <div class="sub">AI가 공공데이터 52,953건에서 근거를 찾아 답변합니다</div>
+    <div class="sub">수출바우처 이용실적 51,212건과 판판대로 공고 372건에서 근거를 찾아 답합니다</div>
     <div class="ask-bar">
       <input id="askInput" placeholder="예: 화장품 수출이 처음인데 뭐부터 하나요?" onkeydown="if(event.key==='Enter')doAsk()">
       <button class="btn btn-p" onclick="doAsk()">질문하기</button>
     </div>
     <div class="ask-chips">
-      <button onclick="askPreset('화장품 수출이 처음인데 뭐부터 하나요?')">화장품 수출이 처음인데 뭐부터 하나요?</button>
+      <button onclick="askPreset('우리 회사에게 적합한 지원사업 찾아줘')">우리 회사에게 적합한 지원사업 찾아줘</button>
+      <button onclick="askPreset('우리 회사 수출하고 싶어. 뭘 해야 돼?')">우리 회사 수출하고 싶어. 뭘 해야 돼?</button>
+      <button onclick="askPreset('지금 신청할 수 있는 사업만 보여줘')">지금 신청할 수 있는 사업만 보여줘</button>
+      <button onclick="askPreset('마감 임박한 사업 알려줘')">마감 임박한 사업 알려줘</button>
+      <button onclick="askPreset('온라인 판매를 늘리고 싶어')">온라인 판매를 늘리고 싶어</button>
+      <button onclick="askPreset('미국 시장에 진출하려면?')">미국 시장에 진출하려면?</button>
       <button onclick="askPreset('수출바우처는 얼마나 지원되나요?')">수출바우처는 얼마나 지원되나요?</button>
-      <button onclick="askPreset('우리 회사도 지원사업 대상이 되나요?')">우리 회사도 지원사업 대상이 되나요?</button>
+      <button onclick="askPreset('우리 상품 상세페이지 문구 만들어줘')">우리 상품 상세페이지 문구 만들어줘</button>
     </div>
     <div class="ask-loading" id="askLoading"><span class="spin"></span>공공데이터에서 근거를 찾고 있어요…</div>
     <div class="ask-out" id="askOut">
@@ -397,7 +673,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
         <div id="askRefs"></div>
       </div>
     </div>
-    <div class="src-note">답변은 공공데이터 지식베이스 검색 결과이며 법적 효력이 없습니다 · 출처: 중소벤처기업진흥공단 공공데이터</div>
+    <div class="src-note">답변은 공공데이터 집계 결과이며 법적 효력이 없습니다 · 출처: 한국중소벤처기업유통원(판판대로)·중소벤처기업진흥공단(수출바우처) 공공데이터</div>
   </div>
 </section>
 
@@ -407,7 +683,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
     <div class="co-avatar" id="pAvatar">한</div>
     <div>
       <h2><span id="pName">(주)한빛코스메틱 </span><span class="chip chip-demo" id="pDemoBadge">데모 데이터</span> <span class="badge-ok">정상 영업</span></h2>
-      <div class="summ" id="pSumm">화장품 제조업 분야의 법인 기업. 서울 성동구 소재, 업력 9년차, 국민연금 가입자 12명 규모로 일본·미국 시장 진출을 준비하고 있습니다.</div>
+      <div class="summ" id="pSumm">화장품 제조업 분야의 법인 기업. 서울 성동구 소재, 업력 9년차, 국민연금 가입자 12명 규모로 미국·일본 시장 진출을 준비하고 있습니다.</div>
     </div>
   </div>
   <div class="grid2">
@@ -454,7 +730,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
 <section class="page" id="pg-map">
   <div class="map-top">
     <h2 class="sect-title" style="margin:0">지식 지형도</h2>
-    <span class="muted">판로 지식 130개 문서의 연결 지도 — 노드를 눌러 살펴보세요</span>
+    <span class="muted">판로 지식 130개 개념의 연결 지도 — 노드를 눌러 살펴보세요</span>
     <div class="map-legend" id="mapLegend" style="margin-left:auto"></div>
   </div>
   <div class="map-wrap">
@@ -478,8 +754,8 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
 
 <footer>
   <div class="wrap">
-    출처: 중소벤처기업진흥공단·국세청·공정거래위원회·국민연금공단 공공데이터<br>
-    본 화면의 기업·수치는 체험을 위한 데모 데이터입니다. 입력한 번호는 저장되지 않습니다.
+    출처: 한국중소벤처기업유통원(판판대로)·중소벤처기업진흥공단(수출바우처)·국세청·공정거래위원회·국민연금공단·금융위원회 공공데이터<br>
+    조회 결과는 국세청·공정거래위원회·국민연금공단·금융위원회가 공개한 공공데이터이며, 재조회 부담을 줄이기 위해 24시간 단위로 갱신되는 캐시로 보관합니다. 이용자를 식별하는 정보는 수집·저장하지 않습니다.
   </div>
 </footer>
 
@@ -497,6 +773,7 @@ function go(p){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('pg-'+p).classList.add('on');
   document.querySelectorAll('#gnb button,#bnav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  if(p==='home') initHome();
   if(p==='match') renderMatchPage();
   if(p==='studio') initStudio();
   if(p==='map') initMap();
@@ -557,17 +834,10 @@ function runOnboard(){
   tick();
 }
 async function finishOnboard(raw){
-  profile={bizno:raw, masked:raw.slice(0,3)+'-**-***'+raw.slice(8), mti:'cos', mkt:'us', stage:'novice', biz:'micro', auto:null};
+  profile={bizno:raw, masked:raw.slice(0,3)+'-**-***'+raw.slice(8), mti:'chem', mkt:'us', stage:'novice', biz:'micro', auto:null, coName:'(주)한빛코스메틱'};
   try{ liveBiz = await Promise.race([window.__bizFetch, new Promise(r=>setTimeout(()=>r(null), API.timeout))]); }catch(e){ liveBiz=null; }
-  // 국세청: 서버 경유 실패 시 브라우저 직접 조회 폴백 (odcloud CORS 허용 실측)
-  if(liveBiz && liveBiz.ok && liveBiz.nts?.status!=='LIVE'){
-    try{
-      const NK="MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D";
-      const nr=await fetch(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${NK}`,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({b_no:[raw]})}).then(x=>x.json());
-      const row=nr?.data?.[0];
-      if(row){ liveBiz.nts={status:'LIVE',b_stt:row.b_stt||null,b_stt_cd:row.b_stt_cd||null,tax_type:row.tax_type||null}; liveBiz.registered=!!row.b_stt_cd; }
-    }catch(e){}
-  }
+  // 국세청 조회는 서버리스 함수(api/onboard)에서만 수행한다.
+  // 프론트엔드 직접 호출은 인증키가 클라이언트에 노출되므로 사용하지 않는다.
   if(liveBiz && liveBiz.ok && (liveBiz.nts?.status==='LIVE' || liveBiz.ftc?.status==='LIVE' || liveBiz.nps?.status==='LIVE')){
     // 실조회 성공 — LIVE 라벨 표시
     [1,2,3].forEach(i=>{const el=document.getElementById('pl'+i); if(el) el.textContent=' LIVE';});
@@ -584,7 +854,7 @@ function applyLive(){
   const won=v=>{const n=Number(v); return isNaN(n)||!n?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':n>=1e8?Math.round(n/1e8).toLocaleString()+'억원':Math.round(n/1e4).toLocaleString()+'만원');};
   if(!isLive){ return; } // 미등록·데모 번호 → 기존 데모 데이터 유지
   /* ★ 실데이터 → 매칭 조건 자동 도출 (국민연금 업종 · 가입자수 · 금융위 매출)
-     기준: 중진공 실집행 52,953건 수출단계 분포 · 판판대로 76,794개사 규모 분포(소상공인 67.7%) */
+     기준: 중진공 실집행 52,953건 수출단계 분포 · 판판대로 선정이력 76,794건·30,119개사 규모 분포(소상공인 67.7%) */
   const sectorTxt = liveBiz.nps?.sector || '';
   const itemTxt   = liveBiz.ftc?.items || '';
   profile.mti = guessMti(sectorTxt, itemTxt);
@@ -609,6 +879,7 @@ function applyLive(){
   const stt = liveBiz.nts?.b_stt || '확인 불가';
   const cnt = liveBiz.nps?.cnt;
   const sector = liveBiz.nps?.sector || liveBiz.ftc?.items || '';
+  profile.coName = name;
   // 매칭 결과 회사 카드
   set('mName', name); set('mAvatar', name.replace(/[^가-힣A-Za-z]/g,'').charAt(0)||'기');
   set('coSub', [sector, liveBiz.ftc?.addr?.split(' ').slice(0,2).join(' '), cnt!=null?`연금 가입자 ${cnt}명`:null, `사업자 상태 ${stt}`].filter(Boolean).join(' · '));
@@ -634,7 +905,7 @@ function applyLive(){
    — 목표국가 비중: 미국 52% · 일본 8.5% · 중국 8.2% · 베트남 5.3% · 독일 3.5%
    — 이용금액 중앙값 500만원 · 자부담율 중앙값 30%
    — 수출단계 분포: 내수 27 / 초보 23 / 유망 24 / 성장 12 / 강소 13 (%)     */
-/* 품목 분류 — 판판대로 선정기업 76,794개사 업종 분포 + 중진공 바우처 상위 업종 기준 */
+/* 품목 분류 — 판판대로 선정이력 76,794건(30,119개사) 업종 분포 + 중진공 바우처 상위 업종 기준 */
 const MTIS={elec:'전자전기제품 (12,746건)',chem:'화학공업제품 (10,922건)',mach:'기계류 (10,616건)',
   life:'생활용품 (4,931건)',agri:'농림수산물 (4,786건)',tex:'섬유류 (2,315건)',
   plas:'플라스틱·고무·가죽 (1,795건)',steel:'철강금속제품 (1,763건)',etc:'기타 품목'};
@@ -658,7 +929,7 @@ function guessMti(...texts){
   if(isEcom || /소매|도매|판매|유통/.test(t)) return 'life';
   return 'etc';
 }
-const BIZTYPES={micro:'소상공인 (51,979개사·67.7%)',small:'소기업 (5,287개사·6.9%)',mid:'중기업 (1,861개사·2.4%)'};
+const BIZTYPES={micro:'소상공인 (51,979개사·67.7%)',small:'소기업 (5,287개사·6.9%)',mid:'중기업 (1,861개사·2.4%)',etc:'기타·미분류 (17,641개사·23.0%)'};
 /* 목표국가 — 중진공 이용실적 52,953건 실집계 (건수 기준) */
 const MKTS={us:'미국 (26,288건·51.3%)',jp:'일본 (4,307건·8.4%)',cn:'중국 (4,204건·8.2%)',vn:'베트남 (2,725건·5.3%)',de:'독일 (1,788건·3.5%)',uk:'영국 (1,402건·2.7%)'};
 /* 수출단계 — 이용실적 실분포 (건수·비중) */
@@ -719,7 +990,7 @@ const PRG_CATN={"유통망진출지원":110,"온라인채널 진출지원":54,"�
 
 const KB=[ // AI 검색 지식베이스 (요약 노트)
  {t:'화장품 첫 수출 준비 절차',src:'무역 절차 지식노트',kw:['화장품','처음','수출','뭐부터','절차','시작'],a:'화장품 첫 수출은 보통 이 순서로 진행합니다.\n\n1) 목표 시장 규정 확인 — 일본은 후생성 표시 규정, 유럽은 CPNP 등록이 선행돼야 합니다.\n2) 해외 인증 취득 — 같은 품목 기업들이 가장 먼저 진행한 항목입니다.\n3) 수출바우처 신청 — 인증·번역·입점 비용을 바우처로 지원받을 수 있습니다.\n4) 온라인 입점 또는 바이어 발굴 — 일본·미국 목표 기업의 87%가 온라인 입점을 첫 판로로 선택했습니다.\n\n지금 단계라면 ①번 시장 규정 확인부터 시작하시고, 매칭 결과의 인증 서비스를 함께 확인해 보세요.'},
- {t:'수출바우처 지원 한도·자부담',src:'수출바우처 안내 요약',kw:['수출바우처','얼마','지원','한도','자부담','비용'],a:'수출바우처는 기업 규모·트랙에 따라 지원 한도가 다릅니다.\n\n· 지원 한도: 트랙에 따라 수천만 원~최대 1억 원 수준\n· 자부담: 통상 30~50% (기업 규모별 상이)\n· 사용처: 인증, 번역, 마케팅, 입점 대행 등 등록된 수행기관 서비스\n\n정확한 한도와 모집 일정은 수출바우처 공식 포털에서 확인하는 것이 가장 정확합니다. 매칭 결과 카드의 "수출바우처 메뉴판에서 신청" 버튼으로 이동할 수 있어요.'},
+ {t:'수출바우처 지원 한도·자부담',src:'수출바우처 안내 요약',kw:['수출바우처','얼마','지원','한도','자부담','비용'],a:'실제 집행 데이터(2021~2024년 51,212건) 기준으로 정리하면 이렇습니다.\n\n· 1건당 이용금액 중앙값: 500만 원\n· 국고보조금 중앙값: 339만 5천 원\n· 자부담률: 대부분 30%, 해외규격인증·서류대행·무역보험은 40%\n· 금액이 큰 서비스: 브랜드개발 1,900만 원 · 홍보동영상 1,643만 원 · 조사컨설팅 1,390만 원\n· 금액이 작은 서비스: 서류대행 51만 원 · 역량강화 교육 59만 원 · 통번역 68만 원\n\n연간 지원 한도와 모집 일정은 해마다 달라지므로 수출바우처 공식 포털에서 확인하시는 것이 정확합니다.'},
  {t:'지원사업 신청 자격 확인 방법',src:'지원사업 자격 지식노트',kw:['대상','자격','우리','회사','되나요','신청'],a:'지원사업 자격은 보통 4가지 축으로 판정됩니다.\n\n① 기업 유형 — 소상공인/중소기업 여부\n② 업종 — 공고별 지원 업종 제한\n③ 지역 — 지자체 사업은 소재지 요건\n④ 업력·매출 — 창업기업/성장기업 구분\n\n이 서비스의 온보딩(사업자번호 입력)을 거치면 4가지 축을 공공데이터로 자동 판정해, 신청 가능한 사업만 걸러서 보여드립니다. 데모 번호로도 흐름을 체험할 수 있어요.'},
  {t:'일본 화장품 표시 규정 핵심',src:'시장 규정 지식노트',kw:['일본','표시','규정','라벨','성분'],a:'일본 화장품 판매에는 일본어 전성분 표시가 필수입니다.\n\n· 약기법(의약품의료기기법)에 따른 표기 규정 적용\n· 전성분은 일본 화장품공업연합회 표시명칭 기준\n· 책임판매업자(현지 수입사) 표기가 필요\n\n번역·표시 검토 서비스는 수출바우처 사용 가능 항목입니다. 매칭 결과의 통·번역 서비스를 참고하세요.'},
  {t:'수행기관 고르는 기준',src:'수행기관 실적 분석 노트',kw:['수행기관','고르','기준','추천','실적'],a:'수행기관 선택은 "같은 품목·같은 목표 시장" 실적을 보는 것이 핵심입니다.\n\n이 서비스의 적합도는 실제 실적 데이터(52,953건 학습)에서\n① 같은 품목 기업의 선택 빈도 ② 최근 실적 ③ 성장 단계 정합을 반영해 계산합니다.\n\n적합도가 높다고 무조건 좋은 것은 아니므로, 카드의 "왜 추천했나요?" 근거와 소요 기간·자부담을 함께 비교하세요.'}
@@ -747,56 +1018,671 @@ function renderMatchPage(){
     : '자동 분석 결과예요 — 실제와 다르면 직접 수정할 수 있습니다. 바꾸면 결과가 즉시 다시 계산됩니다.';
   recalc();
 }
-function setTrack(t){track=t;document.getElementById('tabA').classList.toggle('on',t==='A');document.getElementById('tabB').classList.toggle('on',t==='B');recalc();}
+const PCATS=[{"m":"기타 > 기타","mti":"etc","n":3148},{"m":"디지털/가전 > 생활/소형가전","mti":"elec","n":1537},{"m":"디지털/가전 > 주방가전","mti":"elec","n":281},{"m":"디지털/가전 > 카메라/용품","mti":"elec","n":59},{"m":"레저/취미/게임/악기 > 게임/악기","mti":"life","n":179},{"m":"레저/취미/게임/악기 > 레저/취미","mti":"life","n":1830},{"m":"뷰티 > 바디/헤어","mti":"chem","n":2673},{"m":"뷰티 > 화장품/향수","mti":"chem","n":6511},{"m":"생활/주방/욕실 > 건강/실버용품","mti":"life","n":1247},{"m":"생활/주방/욕실 > 문구/사무용품","mti":"life","n":513},{"m":"생활/주방/욕실 > 반려동물용품","mti":"life","n":1748},{"m":"생활/주방/욕실 > 생활용품","mti":"life","n":3264},{"m":"생활/주방/욕실 > 욕실용품","mti":"life","n":1233},{"m":"생활/주방/욕실 > 주방용품","mti":"life","n":2094},{"m":"식품 > 가공식품","mti":"agri","n":17635},{"m":"식품 > 건강/다이어트식품","mti":"agri","n":4120},{"m":"식품 > 농수산/정육","mti":"agri","n":8723},{"m":"식품 > 커피/음료","mti":"agri","n":2003},{"m":"유아동/출산 > 기저귀/분유/이유식","mti":"life","n":129},{"m":"유아동/출산 > 유아동패션","mti":"life","n":301},{"m":"유아동/출산 > 장난감/완구/교구","mti":"life","n":596},{"m":"유아동/출산 > 출산/임산부/유아용품","mti":"life","n":633},{"m":"의류 > 남성의류","mti":"tex","n":568},{"m":"의류 > 스포츠패션","mti":"tex","n":330},{"m":"의류 > 언더웨어/잠옷","mti":"tex","n":430},{"m":"의류 > 여성의류","mti":"tex","n":2099},{"m":"자동차/공구 > 공구","mti":"mach","n":165},{"m":"자동차/공구 > 자동차","mti":"mach","n":482},{"m":"컴퓨터/주변기기 > 컴퓨터/노트북/태블릿","mti":"elec","n":127},{"m":"컴퓨터/주변기기 > 휴대폰/MP3/악세서리","mti":"elec","n":355},{"m":"패션잡화 > 가방","mti":"plas","n":1011},{"m":"패션잡화 > 신발","mti":"tex","n":664},{"m":"패션잡화 > 쥬얼리/시계","mti":"life","n":1042},{"m":"패션잡화 > 패션소품/잡화","mti":"life","n":1847},{"m":"홈인테리어/홈데코 > 거실가구","mti":"life","n":158},{"m":"홈인테리어/홈데코 > 사무가구","mti":"life","n":156},{"m":"홈인테리어/홈데코 > 수납가구","mti":"life","n":131},{"m":"홈인테리어/홈데코 > 침구류","mti":"life","n":724},{"m":"홈인테리어/홈데코 > 침실가구","mti":"life","n":230},{"m":"홈인테리어/홈데코 > 홈데코","mti":"life","n":1521}];
+const PKW={"선물세트":[14,1048],"크림":[7,763],"수제":[14,609],"앰플":[7,598],"유기농":[14,590],"샴푸":[6,498],"세럼":[7,464],"밀키트":[14,451],"강아지":[10,437],"오리지널":[14,386],"인분":[14,385],"마스크":[7,385],"제주":[16,383],"한우":[16,358],"만든":[14,341],"콜라겐":[7,341],"에센스":[7,289],"가정용":[16,286],"참기름":[14,264],"목걸이":[32,264],"color":[25,261],"티셔츠":[25,258],"산지직송":[16,250],"디퓨저":[11,243],"등급":[16,235],"고양이":[10,230],"원피스":[25,225],"비타민":[7,223],"커피":[17,216],"실버":[32,206],"클렌저":[7,203],"한돈":[16,197],"니트":[25,196],"전통":[14,193],"마스크팩":[7,192],"차량용":[27,192],"간장게장":[14,191],"귀걸이":[32,187],"들기름":[14,183],"오일":[7,182],"떡볶이":[14,181],"사과":[16,180],"여름":[25,179],"단백질":[15,178],"양념":[16,176],"클렌징":[7,171],"키링":[33,171],"팬츠":[25,165],"등심":[16,163],"손질":[16,162],"와이드":[25,161],"미스트":[7,160],"포기김치":[14,159],"가방":[30,158],"반팔":[25,158],"실리콘":[13,155],"글루타치온":[15,154],"스프레이":[11,154],"토너":[7,153],"인테리어":[39,151],"자켓":[25,151],"선크림":[7,148],"트리트먼트":[6,147],"스테비아":[16,146],"삼겹살":[16,146],"전복":[16,146],"패드":[7,145],"명품":[16,141],"무농약":[16,141],"마리":[16,140],"리프팅":[7,140],"드립백":[17,139],"고당도":[16,139],"반려동물":[10,137],"구운":[14,137],"리페어":[7,137],"김부각":[14,136],"케어":[7,136],"빅사이즈":[25,135],"방향제":[11,132],"다이어트":[15,132],"년근":[15,132],"탈취제":[11,131],"영양제":[10,130],"양말":[33,128],"순살":[16,127],"유산균":[15,127],"소스":[14,127],"셔츠":[25,127],"완도":[16,125],"무항생제":[16,124],"식물성":[15,124],"인증":[16,123],"무설탕":[14,123],"연평도":[14,122],"매입":[7,121],"비누":[7,120],"블라우스":[25,119],"티백":[17,118],"헤어":[6,118],"냉장":[16,117],"담은":[14,116],"시카":[7,115],"로션":[7,114],"오버핏":[22,114],"텀블러":[13,114],"칫솔":[12,112],"해남":[16,112],"콜드브루":[17,111],"냉동":[16,110],"마사지기":[8,109],"필터":[12,108],"매트리스":[38,108],"오징어":[16,108],"주스":[15,108],"스칼프":[6,107],"크롭":[25,107],"닭갈비":[14,106],"땅콩버터":[14,105],"원두":[17,105],"프로틴":[15,104],"반건조":[16,104],"스킨":[7,104],"샤인머스켓":[16,104],"베개":[37,104],"퓨어":[7,103],"바디":[6,103],"데님":[25,102],"김치":[14,102],"고춧가루":[14,101],"답례품":[14,100],"내외":[16,100],"바디워시":[6,99],"샤워기":[12,98],"전라도":[14,96],"선물용":[16,96],"카밍":[7,96],"캐리어":[30,95],"무드등":[39,94],"동결건조":[14,94],"진정":[7,94],"닭가슴살":[14,93],"톤업":[7,93],"파티룸":[0,93],"어성초":[7,92],"알배기":[16,92],"제철":[16,92],"팬티":[24,92],"치약":[12,92],"쉐이크":[15,92],"멀티탭":[11,91],"매운":[14,91],"프로바이오틱스":[15,91],"떡갈비":[14,91],"저온압착":[14,90],"민물장어":[16,90],"진주":[32,90],"매운맛":[14,90],"브라이트닝":[7,90],"고등어":[16,89],"샴푸바":[6,89],"세탁세제":[11,89],"나시":[25,89],"밴딩":[25,89],"자연산":[16,89],"찹쌀":[14,88],"스테이크":[16,88],"팔찌":[32,88],"가디건":[25,88],"고구마":[16,88],"글로우":[7,87],"향수":[7,86],"돼지갈비":[14,86],"햅쌀":[16,86],"저당":[14,85],"반지":[32,85],"수분":[7,85],"블루베리":[14,83],"온열":[8,83],"토마토":[16,83],"퍼펙트":[7,83],"GAP":[16,83],"약산성":[6,82],"원액":[17,82],"화이트닝":[7,82],"복숭아":[16,82],"라인":[25,81],"인텐시브":[7,81],"비타":[7,81],"패치":[7,81],"소고기":[16,81],"꿀고구마":[16,81],"암꽃게":[16,80],"ABC":[14,80],"미백":[7,79],"긴팔":[25,79],"부산":[14,79],"특대":[16,78],"스니커즈":[31,78],"년산":[16,78],"도마":[13,78],"노르웨이":[16,77],"SPF":[7,77],"함유":[15,77],"백미":[16,77],"부스터":[7,77],"나주배":[16,77],"서비스":[0,77],"진액":[15,77],"목살":[16,76],"효소":[15,76],"그래놀라":[14,76],"후드":[25,76],"구이용":[16,75],"생들기름":[14,75],"플레인":[14,75],"감귤":[16,75],"벌꿀":[16,75],"못난이":[16,74],"트레이":[13,74],"고소한":[14,74],"혼합":[16,74],"골프":[5,74],"워시":[6,73],"여자":[25,73],"누룽지":[14,73],"백팩":[30,73],"달콤한":[16,72],"괄사":[6,72],"스트라이프":[25,72],"오란다":[14,71],"샐러드":[16,71],"우리밀":[14,71],"원적외선":[8,71],"보호대":[8,71],"워터":[7,71],"불고기":[16,71],"반팔티":[25,71],"개월분":[15,71],"리포좀":[15,70],"맥세이프":[29,70],"갈비탕":[14,70],"고추장":[14,70],"액자":[39,70],"신생아":[21,69],"페이스":[7,69],"카드지갑":[33,69],"요거트":[14,69],"찹쌀떡":[14,68],"주방":[13,68],"제작":[0,68],"배추김치":[14,67],"건강한":[14,67],"품은":[14,67],"인절미":[14,67],"진한":[14,67],"사과즙":[15,67],"공간대여":[0,67],"활전복":[16,66],"더마":[7,66],"춘천닭갈비":[14,66],"경북":[16,66],"쭈꾸미":[14,66],"미숫가루":[14,66],"순한맛":[14,66],"욕실":[12,66],"슬리퍼":[31,66],"춘천":[14,66],"이불":[37,65],"신발":[31,65],"물티슈":[11,64],"도라지":[14,64],"HACCP":[14,64],"안심":[16,64],"쿠키":[14,64],"스킨케어":[7,64],"반려견":[10,64],"딸기":[14,64],"갈비":[16,64],"인덕션":[13,64],"도자기":[13,63],"특등급":[16,63],"대추방울토마토":[16,63],"레이어드":[25,63],"코튼":[25,63],"맨투맨":[25,63],"구이":[16,62],"에코백":[30,62],"중형":[11,62],"케이크":[14,62],"생리대":[11,62],"모이스처":[7,61],"오리지날":[14,61],"퍼프":[25,61],"자동차":[27,61],"버블":[7,61],"도라지정과":[14,61],"링클":[7,61],"아카시아꿀":[16,60],"야채":[16,60],"오브제":[11,59],"타올":[12,59],"큐빅":[32,59],"체크":[25,59],"간장":[14,59],"포항":[16,59],"소불고기":[14,59],"콘드로이친":[15,58],"입욕제":[6,58],"스페셜티":[17,58],"볶음":[14,58],"도라지배즙":[15,57],"청국장":[14,57],"냉감":[37,57],"신안":[16,57],"블루투스":[29,57],"The":[14,57],"갤럭시":[29,57],"루즈핏":[25,57],"핸드크림":[6,57],"간편식":[14,57],"생강청":[14,56],"솔루션":[7,56],"mlx":[14,56],"닥터":[7,56],"그대로":[14,56],"원두커피":[17,56],"아쿠아":[7,56],"크로스백":[30,56],"골지":[25,56],"브이넥":[25,56],"간편":[14,56],"휘낭시에":[14,56],"캔디":[14,56],"감자탕":[14,55],"짜먹는":[14,55],"곱창김":[16,55],"저염":[14,55],"페이셜":[7,55],"돼지":[16,55],"슬랙스":[25,55],"켤레":[33,54],"호두정과":[14,54],"주름":[7,54],"법성포":[16,54],"분말":[14,54],"치즈":[14,54],"숄더백":[30,54],"깔창":[31,54],"허니":[14,54],"실내":[11,53],"세척사과":[16,53],"장난감":[20,53],"가지맛":[14,53],"스커트":[25,53],"진짜":[14,52],"의자":[35,52],"단백질쉐이크":[15,52],"바디로션":[6,52],"트위드":[25,52],"PDRN":[7,52],"잠옷":[24,52],"영양":[14,52],"모공":[7,52],"현미":[14,52],"도시락":[14,52],"된장":[14,52],"만능":[14,51],"스카프":[33,51],"꽃등심":[16,51],"무가당":[14,51],"여수":[14,51],"참외":[16,51],"부사":[16,51],"사료":[10,51],"마일드":[7,51],"주방세제":[13,50],"표고버섯":[16,50],"숙성":[16,50],"마카롱":[14,50],"포어":[7,50],"흑염소진액":[15,50],"한입":[14,50],"심리스":[24,50],"단호박":[16,50],"바지":[25,50],"오메가":[15,50],"오드퍼퓸":[7,50],"초콜릿":[14,50],"스판":[25,50],"통영":[16,50],"모자":[33,50],"가습기":[1,50],"히알루론산":[7,50],"살균기":[1,50],"골라담기":[14,49],"슬라이스":[14,49],"러그":[39,49],"산양유":[15,49],"그릭요거트":[14,49],"조명":[39,49],"카라":[25,49],"슬라이드":[5,49],"고려홍삼정":[15,49],"에센셜":[7,49],"쿨매트":[37,49],"생강":[14,49],"캔들":[39,48],"오븐에":[14,48],"하우스":[16,48],"점퍼":[25,48],"체인":[32,48],"멸치":[16,48],"피그먼트":[37,48],"곤드레":[14,48],"육수":[14,48],"자수":[25,48],"복부":[8,47],"딸기잼":[14,47],"당일도정":[16,47],"드립백커피":[17,47],"화장품":[7,47],"매콤":[14,47],"암소":[16,47],"영암":[16,47],"모달":[24,47],"공기청정기":[1,46],"멜라토닌":[15,46],"로즈":[7,46],"아르기닌":[15,46],"새우":[16,46],"특수부위":[16,46],"EGF":[7,46],"다목적":[11,46],"콘센트":[11,45],"발편한":[31,45],"벨트":[33,45],"애견":[10,45],"하네스":[10,45],"수세미":[13,45],"주얼리":[32,45],"무안":[16,45],"부대찌개":[14,45],"들어간":[14,45],"채소":[16,45],"스텐":[13,45],"꽃다발":[39,45],"앞치마":[13,45],"선스크린":[7,45],"고단백":[14,45],"좋은":[14,45],"오미자청":[14,45],"아카시아":[16,45],"상등급":[16,45],"맛집":[14,44],"채끝":[16,44],"허리":[8,44],"무첨가":[14,44],"주니어":[19,44],"국물떡볶이":[14,44],"블렌드":[17,44],"시래기":[14,44],"보습":[7,44],"검은콩":[15,44],"탈모샴푸":[6,43],"화장지":[11,43],"수제청":[17,43],"특상":[16,43],"공기살균기":[1,43],"여드름":[7,43],"운동화":[31,43],"부드러운":[14,43],"올스텐":[13,43],"성주":[16,43],"슬링백":[30,43],"최상급":[16,43],"초코":[14,43],"모듬":[16,43],"구수한":[14,43],"리커버리":[7,43],"관절":[10,43],"아몬드":[14,43],"카페":[17,43],"통밀빵":[14,43],"디저트":[14,43],"티트리":[7,43],"클래스":[0,43],"흑돼지":[16,43],"추어탕":[14,43],"이너":[25,43],"캔버스":[30,42],"무뼈닭발":[14,42],"영광":[16,42],"나물":[14,42],"프라이팬":[13,42],"아이폰":[29,42],"통째로":[15,42],"테라피":[6,42],"블렌딩":[17,42],"파스타":[14,42],"청도":[16,42],"클리너":[11,42],"정장":[25,41],"유자":[14,41],"싱크대":[13,41],"드롭":[32,41],"마시는":[15,41],"트레이닝":[25,41],"가을":[25,41],"양념게장":[14,41],"진도":[16,41],"두피":[6,41],"레인보우":[14,41],"개월":[15,41],"쉬폰":[25,41],"Cream":[7,41],"빈크런치":[14,41],"약과":[14,41],"무뼈":[14,41],"고용량":[11,40],"구운계란":[14,40],"더치커피":[17,40],"초음파":[1,40],"차렵이불":[37,40],"식사대용":[15,40],"셔링":[25,40],"수딩":[7,40],"정리함":[11,40],"특대형":[11,40],"포기":[14,40],"선글라스":[33,40],"새부리형":[8,40],"방울토마토":[16,40],"중목":[33,39],"호텔수건":[12,39],"홍삼":[15,39],"수건":[12,39],"인삼":[16,39],"탈모":[6,39],"청소기":[1,39],"올데이":[7,39],"천연벌꿀":[16,39],"시스루":[25,39],"자외선차단":[5,39],"섬유향수":[7,39],"암꽃게장":[14,39],"자체제작":[25,39],"베리어":[7,39],"돼지국밥":[14,39],"배추":[14,39],"엑소좀":[7,39],"수분크림":[7,39],"여성청결제":[6,39],"관리기":[1,39],"흑산도홍어":[16,39],"고함량":[15,38],"연어":[10,38],"경기미":[16,38],"세척":[16,38],"부모님":[14,38],"펩타이드":[7,38],"포스트바이오틱스":[15,38],"생물":[16,38],"자숙":[16,38],"홍삼스틱":[15,38],"육수팩":[14,38],"묵은지":[14,38],"미라클":[7,38],"드레스":[25,38],"생분해":[13,38],"성주참외":[16,38],"부스팅":[7,38],"샤워필터":[12,38],"독서대":[9,38],"한라봉":[16,38],"피톤치드":[11,37],"스마트톡":[29,37],"레몬즙":[15,37],"밀폐용기":[13,37],"나이아신아마이드":[7,37],"양념돼지갈비":[16,37],"가마솥":[14,37],"토트백":[30,37],"보통맛":[14,37],"추억의":[14,37],"코마사":[12,37],"무화과":[16,37],"꽃차":[17,37],"쭈꾸미볶음":[14,37],"핀턱":[25,37],"박스테이프":[9,36],"덴탈껌":[10,36],"닭발":[14,36],"소파":[34,36],"웨어":[8,36],"꿀스틱":[16,36],"로얄과":[16,36],"하객룩":[25,36],"개별포장":[14,36],"원석":[32,36],"기저귀":[18,36],"가득":[14,36],"파자마":[24,36],"드로즈":[24,36],"고농축":[11,36],"하이드로겔":[7,36],"커피믹스":[17,36],"곱창":[14,36],"헬스":[5,36],"당일":[16,36],"카카오":[14,36],"캡슐세제":[11,36],"소과":[16,36],"칼국수":[14,36],"스트링":[25,36],"수비드":[16,36],"스튜디오":[0,36],"락토페린":[15,36],"다이어리":[0,35],"노트북":[28,35],"쏨달펫":[10,35],"반건시":[16,35],"닭고기":[10,35],"자포니카":[16,35],"숯불":[5,35],"고체향수":[7,35],"피부":[1,35],"클리어":[7,35],"브라":[24,35],"석류":[15,35],"슬림핏":[25,35],"EMS":[8,35],"먹는":[16,35],"알룰로스":[14,35],"교구":[20,35],"반건조오징어":[16,35],"동해안":[16,35],"내츄럴":[13,35],"신일":[9,34],"오트밀":[14,34],"완도활전복":[16,34],"bag":[30,34],"스피커":[1,34],"벽시계":[39,34],"플리츠":[25,34],"교육":[0,34],"셋업":[25,34],"호텔":[12,34],"싱싱한":[16,34],"배색":[25,34],"보드게임":[4,34],"슈퍼":[7,34],"플립":[29,34],"거실":[39,34],"서리태":[14,34],"당일제조":[14,34],"쇼핑백":[15,34],"밥도둑":[14,34],"감자":[16,34],"아이크림":[7,34],"방석":[10,34],"대추":[14,34],"계란":[16,34],"맥반석":[14,34],"투웨이":[25,33],"뼈없는":[14,33],"발매트":[39,33],"직화":[14,33],"굳지않는":[14,33],"도시락김":[14,33],"키보드":[28,33],"메이크업":[7,33],"토닉":[6,33],"마이크로":[7,33],"볼캡":[33,33],"담근":[14,33],"호주산":[16,33],"세제":[11,33],"고기":[16,33],"상황버섯":[14,33],"유러피안":[16,33],"순대":[14,33],"밸런싱":[7,33],"얼그레이":[17,33],"하루":[14,33],"신선한":[16,33],"행주":[13,33],"아토":[7,33],"포레스트":[7,33],"모음전":[16,33],"핸드워시":[6,33],"Air":[1,33],"오미자":[14,33],"소품":[39,33],"누빔":[37,33],"릴렉스":[6,32],"강원도":[16,32],"특품":[16,32],"갓김치":[14,32],"코어":[7,32],"바람막이":[25,32],"진공":[16,32],"문경":[14,32],"골프공":[5,32],"인솔":[31,32],"필라테스":[5,32],"이너홈":[13,32],"삼계탕":[14,32],"오겹살":[16,32],"세정제":[11,32],"클렌징폼":[7,32],"아이":[7,32],"액티브":[7,32],"인센스":[11,32],"수제비누":[7,32],"올바른":[15,32],"패밀리":[15,32],"해물":[16,32],"스트레칭":[5,32],"룸스프레이":[11,31],"찹찹":[10,31],"강아지껌":[10,31],"NFC":[15,31],"전복죽":[14,31],"찜질기":[8,31],"조끼":[25,31],"키높이":[31,31],"비오틴":[15,31],"순살게장":[14,31],"포스터":[39,31],"카스테라":[14,31],"집게핀":[33,31],"주름개선":[7,31],"강정":[14,31],"돈까스":[14,31],"바이탈":[7,31],"헬멧":[5,31],"끌리숑":[11,31],"세미":[25,31],"안경":[33,31],"구룡포":[16,31],"수제쿠키":[14,31],"더바른":[14,31],"스팟":[7,31],"새우젓":[14,31],"구성":[16,31],"아토피":[7,31],"삶은":[16,31],"허리보호대":[8,30],"국산콩":[14,30],"보조배터리":[29,30],"블루밍":[7,30],"명절":[14,30],"화분":[39,30],"스파클링":[14,30],"무소음":[39,30],"수저세트":[13,30],"럭셔리":[7,30],"여아":[19,30],"황태":[10,30],"파김치":[14,30],"릴리프":[7,30],"온라인":[0,30],"고창":[16,30],"엔드그레인":[13,30],"블랭킷":[37,30],"필링":[7,30],"갈비살":[16,30],"추출물":[15,30],"갈바닉":[1,30],"전골":[14,30],"두피케어":[6,30],"백년가게":[14,30],"의료기기":[8,30],"발아현미":[16,30],"자동소화":[11,29],"머그컵":[13,29],"헤어팩":[6,29],"히트":[8,29],"간편한":[14,29],"네일":[6,29],"야생화":[16,29],"청바지":[25,29],"선풍기":[1,29],"야생화꿀":[16,29],"장아찌":[14,29],"등드름":[7,29],"아연":[15,29],"바쿠치올":[7,29],"브로멜라인":[15,29],"글루텐프리":[14,29],"샌들":[31,29],"옛날":[14,29],"에너지":[7,29],"청소":[11,29],"완도전복":[16,29],"에스프레소":[17,29],"알로에":[7,29],"시리얼":[21,29],"사프란":[14,29],"마들렌":[14,29],"청소포":[11,29],"플레어":[25,29],"호박":[14,29],"새싹앤":[15,29],"휴지통":[11,28],"책상":[35,28],"스크럽":[6,28],"이동형":[1,28],"견과류":[16,28],"멸치액젓":[14,28],"탄력":[7,28],"투피스":[25,28],"네이처":[6,28],"사진":[39,28],"새콤달콤":[16,28],"맛간장":[14,28],"막창":[14,28],"침대패드":[37,28],"블랜드":[17,28],"부츠컷":[25,28],"의료용":[8,28],"패딩":[25,28],"아메리카노":[17,28],"양배추즙":[15,28],"세안":[6,28],"미백치약":[12,28],"베니하루카":[16,28],"선물포장":[16,28],"속눈썹":[7,28],"아르간":[6,28],"보드":[5,28],"편백수":[11,28],"홍삼액":[15,28],"꽃게":[16,28],"링키":[13,28],"저당밥":[13,28],"에브리데이":[15,28],"원산지":[16,28],"검정":[11,28],"곡물":[15,28],"국산참기름":[14,28],"칼집":[16,28],"착한나물":[14,28],"윤영근의":[14,28],"썸머":[25,28],"젓가락":[13,28],"유브이":[7,28],"영덕":[16,28],"무봉제":[24,27],"티슈":[11,27],"착즙":[15,27],"배도라지즙":[15,27],"마우스":[1,27],"포터블":[39,27],"홍게":[16,27],"꽈배기":[25,27],"삼광":[16,27],"속초":[16,27],"조거":[25,27],"가루":[14,27],"두부":[14,27],"오리":[10,27],"수납장":[36,27],"젤리스틱":[14,27],"인견":[24,27],"우산":[33,27],"데이즈":[15,27],"가자미":[16,27],"쫀드기":[14,27],"찜질팩":[8,27],"모이스쳐":[7,27],"가려움증":[7,27],"저칼로리":[14,27],"당일수확":[16,27],"간절기":[25,27],"에어프라이어":[2,27],"클리닉":[6,27],"캠핑음식":[14,27],"수제간식":[10,27],"토너패드":[7,27],"베이글":[14,27],"홍어":[16,27],"센텔라":[7,27],"실속":[14,27],"아이라이너":[7,27],"물없이":[14,27],"MAX":[1,27],"옷걸이":[11,27],"호세트":[14,27],"강릉":[14,27],"회분":[14,27],"버튼":[25,27],"벤토나이트":[10,27],"오션":[7,27],"스마트핏":[8,26],"엑기스":[14,26],"도가니탕":[14,26],"시그니쳐":[14,26],"나전칠기":[39,26],"재래김":[16,26],"양파":[16,26],"거품":[14,26],"소곱창":[16,26],"레깅스":[23,26],"초당옥수수":[16,26],"낙곱새":[14,26],"스낵":[14,26],"네스프레소":[17,26],"캡슐커피":[17,26],"에티오피아":[17,26],"풀커버":[29,26],"배변패드":[10,26],"헤어핀":[33,26],"대저":[16,26],"수공예":[32,26],"기미":[7,26],"이너뷰티":[15,26],"약콩두유":[14,26],"유정란":[16,26],"초간편":[2,26],"자외선":[33,26],"구강유산균":[15,26],"로제":[14,26],"펜던트":[32,26],"미니멀":[5,26],"치아바타":[14,26],"음료":[14,26],"선물셋트":[14,26],"담양":[14,26],"라지":[13,26],"촬영":[0,26],"당도선별":[16,26],"쑥라떼맛":[15,26],"쉴드":[7,26],"하이웨스트":[25,26],"옻칠":[13,26],"세이브에스":[11,25],"히비스커스":[17,25],"취나물":[14,25],"마카다미아":[14,25],"미니단호박":[16,25],"보우짱":[16,25],"NMN":[7,25],"음식물처리기":[2,25],"식혜":[14,25],"코골이":[8,25],"틴트":[7,25],"써지컬":[32,25],"전자레인지":[13,25],"임금님표":[16,25],"우리쌀":[14,25],"한식":[14,25],"나이트":[7,25],"피스":[20,25],"참송이버섯":[16,25],"액막이":[39,25],"경추베개":[37,25],"제습제":[11,25],"부사사과":[16,25],"숄더":[30,25],"라운드넥":[25,25],"집들이":[39,25],"물걸레":[11,25],"초벌":[16,25],"트래블":[7,25],"Serum":[7,25],"모이스처라이징":[7,25],"율무":[7,25],"선식":[15,25],"안티링클":[7,25],"리아진":[7,25],"CREAM":[7,25],"레티놀":[7,25],"근적외선":[8,25],"과자":[14,25],"소나무":[7,25],"루이보스":[17,25],"갈아만든":[14,25],"착한":[16,25],"섬유유연제":[11,25],"프리저브드":[39,25],"무릎":[8,25],"안동":[14,25],"돼지고기":[16,25],"보석함":[39,25],"키마카레":[14,25],"쌀과자":[14,25],"시럽":[14,25],"충전물":[14,25],"장발장":[14,25],"투뿔한우":[16,25],"순살족발":[16,25],"싱싱":[16,25],"홍어애":[16,25],"트릿":[10,25],"바나나":[14,25],"칫솔살균기":[1,25],"보리":[14,25],"버킷햇":[33,25],"좁쌀여드름":[7,25],"로아블랑":[6,25],"씹히는":[14,25],"엑스트라버진":[14,24],"애플":[14,24],"토퍼":[38,24],"듀라론":[37,24],"냉감패드":[37,24],"흑임자":[14,24],"트러블":[7,24],"손수건":[33,24],"라면":[14,24],"코르크":[33,24],"흑도라지청":[15,24],"배쓰밤":[6,24],"프린팅":[25,24],"silver":[32,24],"한방":[14,24],"알파":[15,24],"초임계":[15,24],"꽃게장":[14,24],"그릴":[13,24],"코인육수":[14,24],"카메라":[3,24],"태양초":[14,24],"기구":[5,24],"하이드레이팅":[7,24],"그린티":[14,24],"봉지":[14,24],"새청무":[16,24],"초벌구이":[16,24],"잡티":[7,24],"배리어":[7,24],"블랜딩":[17,24],"정읍쌍화차":[14,24],"지압":[8,24],"국물":[14,24],"횡성한우":[16,24],"파인애플":[15,24],"백단향":[11,24],"자전거":[5,24],"타임":[7,24],"구운란":[14,24],"고추가루":[14,24],"수제화":[31,24],"스토리":[11,24],"슈니발렌":[14,24],"도라지청":[15,24],"MADE":[25,24],"워킹":[8,24],"뒷고기":[16,24],"양파로":[14,24],"저수분":[14,24],"화이트초코":[14,24],"수제소시지":[14,24],"운동빵":[14,24],"식사대용빵":[14,24],"플레인빵":[14,24],"건강다이어트빵":[14,24],"새청무쌀":[16,24],"카라멜":[14,24],"굴비":[16,24],"온미랑":[16,24],"후라이팬":[13,24],"실중량":[16,24],"뷔스티에":[25,24],"무좀":[7,24],"앙꼬절편":[14,24],"배로잼있다":[14,24],"멀티콘센트":[11,23],"의령망개떡":[14,23],"즉석":[14,23],"로퍼":[31,23],"일품":[16,23],"카페트":[39,23],"부채살":[16,23],"제육볶음":[14,23],"프리":[14,23],"탄생석":[32,23],"타이":[25,23],"바다장어":[16,23],"얼큰":[14,23],"단일품종":[16,23],"영양간식":[14,23],"경량":[5,23],"자일리톨":[14,23],"공간":[0,23],"구두":[31,23],"타월":[12,23],"필로우":[11,23],"하이드로":[7,23],"기내용":[30,23],"뷰티어바이드":[7,23],"판테놀":[7,23],"Bag":[30,23],"서산":[16,23],"완화":[6,23],"JAMMINT":[14,23],"니치":[7,23],"플래티넘":[13,23],"크리스마스":[39,23],"짜장":[14,23],"컨디셔너":[6,23],"배수구":[12,23],"고추부각":[14,23],"펀치볼":[16,23],"그릭":[14,23],"블랙마카":[15,23],"누룽지샌드":[14,23],"대여":[0,23],"안티":[7,23],"전통맛":[14,23],"찰떡":[14,23],"바로먹는":[14,23],"소파우치":[15,23],"저분자":[7,23],"콩국수":[14,23],"어린":[7,23],"생과일잼":[14,23],"나주배가":[14,23],"셀레네":[7,23],"침구":[37,22],"씨위드":[7,22],"카네이션":[39,22],"청송":[14,22],"애플워치":[1,22],"샤워":[12,22],"원조":[14,22],"락토":[6,22],"릴렉싱":[6,22],"오리불고기":[16,22],"보틀":[5,22],"발사믹":[14,22],"비즈":[32,22],"상주곶감":[16,22],"스와로브스키":[32,22],"고속":[29,22],"한우선물세트":[16,22],"당일출고":[25,22],"볼레로":[25,22],"블렌딩티":[17,22],"투뿔":[16,22],"액정보호필름":[29,22],"매트리스커버":[37,22],"코트":[25,22],"가평":[0,22],"Necklace":[32,22],"헤어밴드":[33,22],"트리플":[15,22],"스프레드":[14,22],"왕특대":[16,22],"김장김치":[14,22],"노리개":[33,22],"멀티퍼퓸":[11,22],"래쉬가드":[19,22],"제로슈가":[14,22],"멀티비타민":[15,22],"소화기":[11,22],"멜라":[7,22],"세라마이드":[7,22],"뿌리":[16,22],"리프레셔":[6,22],"밤꿀":[16,22],"쑥떡":[14,22],"밀떡":[14,22],"이너퍼퓸":[6,22],"베이스":[17,22],"페이크삭스":[33,22],"접착식":[27,22],"배터리":[26,22],"착즙주스":[14,22],"볶음밥":[14,22],"민소매":[25,22],"폼클렌징":[7,22],"귀리":[16,22],"에이지리스":[7,22],"곶감":[16,22],"모듬구이":[16,22],"소이담":[7,22],"출산선물":[21,22],"무염":[0,22],"슈퍼싱글":[37,22],"삼합":[16,22],"구워먹는":[14,22],"클린":[7,22],"대궐":[14,22],"스푼":[13,22],"과부하차단":[11,21],"도넛":[14,21],"워터프루프":[7,21],"단품":[14,21],"버클":[10,21],"교재":[0,21],"캣타워":[10,21],"감자빵":[14,21],"과일칩":[14,21],"손목":[8,21],"쪽갈비":[16,21],"훈제":[14,21],"애플사이다비니거":[15,21],"전장김":[16,21],"멀티밤":[7,21],"램프":[39,21],"토닝":[7,21],"밤호박":[16,21],"건조기":[11,21],"조이매스":[0,21],"냉압착":[14,21],"후드집업":[25,21],"피어싱":[32,21],"잡곡":[16,21],"먹태":[14,21],"정선":[14,21],"곱창전골":[14,21],"지퍼백":[16,21],"플레이트":[13,21],"드라이기":[1,21],"매실":[14,21],"우리아이":[14,21],"선인장":[7,21],"광채":[7,21],"베개커버":[37,21],"면역":[15,21],"어드밴스드":[7,21],"발효식초":[14,21],"사골":[14,21],"알러지케어":[37,21],"월넛":[13,21],"폴딩":[11,21],"OKO":[6,21],"안마기":[1,21],"알찬":[14,21],"리사이클":[30,21],"유정랩":[13,21],"쓰레기통":[11,21],"JACKET":[22,21],"비홉":[7,21],"히알루론":[7,21],"페어셀":[7,21],"도트":[25,21],"생강차":[14,21],"Box":[11,21],"킹정떡볶이":[14,21],"한산소곡주":[17,21],"간장맛":[14,21],"두브로":[14,21],"황토볼":[8,21],"마스카라":[7,21],"Jacket":[22,21],"시크릿":[7,21],"노지감귤":[16,21],"새우장":[14,21],"남도식":[14,21],"묵은지찜":[14,21],"칸막이":[35,21],"국거리":[16,21],"수납함":[11,21],"요가매트":[5,21],"캠핑밀키트":[14,21],"정리":[11,21],"어포튀각":[14,21],"산해랑":[14,21],"각질":[8,21],"우대갈비":[16,21],"사무용의자":[35,20],"WAY":[30,20],"아토몽드":[7,20],"감태":[14,20],"황토":[16,20],"안티에이징":[7,20],"국밥":[16,20],"의류":[25,20],"육젓":[14,20],"전통주":[17,20],"별미":[16,20],"오봉산꽃부각":[14,20],"페미닌":[6,20],"픽셀":[33,20],"알티지":[15,20],"삼각":[38,20],"선스틱":[7,20],"칼슘":[15,20],"퀘르세틴":[15,20],"김치찜":[14,20],"지성":[6,20],"미역국":[14,20],"폰케이스":[29,20],"반팔티셔츠":[25,20],"기초":[7,20],"바이옴":[7,20],"자연":[14,20],"배즙":[15,20],"중과":[16,20],"생연어":[16,20],"식기건조대":[13,20],"다시팩":[14,20],"혼술":[14,20],"공주":[16,20],"워터풀":[7,20],"찰보리빵":[14,20],"육개장":[14,20],"절편":[16,20],"부채":[33,20],"mAh":[29,20],"에코닛시":[12,20],"아크네":[7,20],"밀크티":[14,20],"저온숙성":[7,20],"신동진":[16,20],"모슈아":[21,20],"농축액":[14,20],"커트러리":[13,20],"모델링팩":[7,20],"아쌈":[17,20],"콩고물":[14,20],"시어서커":[37,20],"닥터아이":[8,20],"헤이즐넛":[14,20],"접시":[13,20],"퍼밍":[7,20],"폴리페놀":[16,20],"led":[1,20],"쓰레기":[11,20],"홀리셔스":[14,20],"이유미":[7,20],"클렌빙":[6,20],"다가든":[6,20],"만들어":[15,20],"젖병":[21,20],"흰다리새우":[16,20],"리쥬버네이션":[7,20],"지금":[14,20],"와이유엠":[17,20],"black":[30,20],"DMZ":[14,20],"왕새우":[16,20],"낙지":[16,20],"달팽이":[7,20],"꿀참외":[16,20],"장조림":[14,20],"사포닌":[16,20],"볼드":[32,20],"프로테오글리칸":[15,20],"닥터윤":[7,20],"퓨레":[15,20],"수저":[13,20],"주아빛":[7,20],"전선길이":[11,19],"화재걱정":[11,19],"라이스":[7,19],"굿모닝":[14,19],"키즈샴푸":[7,19],"산소포장":[16,19],"병풀":[7,19],"규조토":[11,19],"담요":[37,19],"민하네식탁":[14,19],"된장국":[14,19],"이어폰":[29,19],"방충망":[11,19],"에그타르트":[14,19],"서귀포":[16,19],"음식물":[2,19],"아베르데":[7,19],"밀폐":[13,19],"소시지":[14,19],"돌산":[14,19],"버섯":[14,19],"스테이":[7,19],"유럽":[16,19],"BAG":[30,19],"암막":[33,19],"아이패드":[28,19],"겉절이":[14,19],"남여공용":[33,19],"노지":[16,19],"가수분해":[10,19],"화병":[39,19],"리바이탈라이징":[7,19],"고무장갑":[13,19],"클렌져":[7,19],"호두과자":[14,19],"안주":[14,19],"여신":[7,19],"삭스":[33,19],"달광상회":[14,19],"직장인":[13,19],"전병과자세트":[14,19],"크리미":[7,19],"헤어데오":[6,19],"수제요거트":[14,19],"찜질방":[1,19],"흑염소":[15,19],"광천":[16,19],"담수진주":[32,19],"무색소":[14,19],"양념갈비":[14,19],"한우곱창":[16,19],"패턴":[25,19],"변기":[12,19],"포도":[16,19],"아이스크림":[14,19],"이브이영":[7,19],"알라미아":[13,19],"보온물주머니":[8,19],"사탕수수":[14,19],"그리들":[5,19],"하이라이트":[13,19],"마장동":[16,19],"순대국":[14,19],"초커":[32,19],"라비엘":[7,19],"지퍼":[33,19],"광택코팅제":[13,19],"캐시미어":[33,19],"머플러":[33,19],"냄비":[13,19],"신비복숭아":[16,19],"mlX":[17,19],"살로만":[14,19],"보양식":[14,19],"모이스처라이저":[7,19],"미용실":[6,19],"미세모":[12,19],"방짜유기":[13,19],"허니스틱":[16,19],"영양크림":[7,19],"차박":[0,19],"수향미":[16,19],"인식표":[10,19],"고양이모래":[10,19],"자연이":[15,18],"불닭발":[14,18],"트리플에스":[6,18],"호정가":[14,18],"필렛":[16,18],"워터웰":[12,18],"찌개":[14,18],"남여":[31,18],"아기물티슈":[21,18],"버블클렌저":[6,18],"감칠맛":[14,18],"남원추어탕":[14,18],"세척기":[13,18],"IoT":[1,18],"로봇청소기":[1,18],"핸드폰케이스":[33,18],"필수템":[11,18],"발효효소":[15,18],"DENIM":[22,18],"빨대":[13,18],"직화구이":[16,18],"통굽":[31,18],"언양식":[14,18],"채끝등심":[16,18],"피디알엔":[7,18],"엘라스틴":[15,18],"One":[1,18],"유황비누":[7,18],"안전한":[20,18],"바질페스토":[14,18],"스무디":[15,18],"서랍장":[36,18],"전남":[16,18],"소연골":[15,18],"주문":[14,18],"작두콩차":[14,18],"위생장갑":[13,18],"해바라기":[39,18],"슈즈":[31,18],"철원오대쌀":[16,18],"두꺼운":[33,18],"노즈워크":[10,18],"맞춤제작":[37,18],"어깨":[8,18],"바른":[5,18],"리프트":[7,18],"스퀘어넥":[25,18],"양배추":[15,18],"원물":[10,18],"송도순":[14,18],"깐깐":[14,18],"홍대":[14,18],"족발":[14,18],"코인":[14,18],"핸드드립":[17,18],"미니백":[30,18],"맥스":[15,18],"달항아리":[39,18],"캠핑테이블":[5,18],"올케어":[15,18],"흑마늘":[15,18],"해풍쑥":[14,18],"콩쑥개떡":[14,18],"래디언스":[7,18],"diy":[5,18],"아큐데오":[7,18],"목베개":[11,18],"제주은희네해장국":[14,18],"카이로스":[8,18]};
+
+
+/* ═══ 첫수출 전환 실측 — 중진공 이용실적 분석대상 51,212건 (2021~2024) ═══
+   내수기업 13,980건의 서비스별 첫수출 전환율·윌슨 95% 신뢰구간·기준선 대비 배수.
+   상관 관계이며 인과가 아니다. 화면 문구는 반드시 '이 서비스를 산 기업들이 …했습니다' 형태로 쓴다. */
+const FXD={"domN":13980,"domShare":27.3,"domBase":29.7,"fx":{"01":{"n":4370,"r":25.0,"lo":23.7,"hi":26.3,"x":0.84},"02":{"n":1552,"r":39.3,"lo":36.9,"hi":41.8,"x":1.32},"03":{"n":1304,"r":38.0,"lo":35.4,"hi":40.7,"x":1.28},"04":{"n":863,"r":26.3,"lo":23.5,"hi":29.3,"x":0.88},"05":{"n":914,"r":28.3,"lo":25.5,"hi":31.3,"x":0.95},"06":{"n":2468,"r":26.3,"lo":24.6,"hi":28.1,"x":0.89},"07":{"n":1012,"r":26.9,"lo":24.2,"hi":29.7,"x":0.9},"08":{"n":278,"r":70.5,"lo":64.9,"hi":75.6,"x":2.37},"09":{"n":251,"r":27.1,"lo":22.0,"hi":32.9,"x":0.91},"10":{"n":628,"r":30.4,"lo":26.9,"hi":34.1,"x":1.02},"11":{"n":72,"r":36.1,"lo":26.0,"hi":47.6,"x":1.21},"12":{"n":234,"r":23.5,"lo":18.5,"hi":29.3,"x":0.79},"13":{"n":34,"r":41.2,"lo":26.4,"hi":57.8,"x":1.38}},"q":[{"q":1,"n":10243,"r":46.8,"lo":45.8,"hi":47.8,"med":500000},{"q":2,"n":10543,"r":48.2,"lo":47.2,"hi":49.1,"med":2000000},{"q":3,"n":9941,"r":43.4,"lo":42.5,"hi":44.4,"med":5000000},{"q":4,"n":10350,"r":44.3,"lo":43.4,"hi":45.3,"med":9455836},{"q":5,"n":10135,"r":42.2,"lo":41.2,"hi":43.1,"med":20000000}],"mfg":{"제조업":{"ex":{"n":907,"r":43.9},"ds":{"n":3259,"r":25.6}},"비제조업":{"ex":{"n":645,"r":32.9},"ds":{"n":1111,"r":23.2}}},"layers":[{"m":"기계류","ex":47.7,"exn":264,"ds":20.7,"dsn":902},{"m":"농림수산물","ex":44.2,"exn":129,"ds":34.7,"dsn":709},{"m":"생활용품","ex":44.8,"exn":154,"ds":25.8,"dsn":414},{"m":"섬유류","ex":40.8,"exn":49,"ds":21.2,"dsn":160},{"m":"잡제품","ex":45.2,"exn":42,"ds":25.3,"dsn":79},{"m":"전자전기제품","ex":29.2,"exn":590,"ds":17.6,"dsn":1217},{"m":"철강금속제품","ex":41.5,"exn":41,"ds":26.0,"dsn":127},{"m":"플라스틱고무및가죽제품","ex":34.5,"exn":58,"ds":29.8,"dsn":114},{"m":"화학공업제품","ex":50.5,"exn":216,"ds":37.4,"dsn":583}],"stage":{"01":{"n":13980,"r":29.7},"02":{"n":11958,"r":2.0},"03":{"n":12366,"r":1.3},"04":{"n":6269,"r":0.6},"05":{"n":6639,"r":0.7}},"totalO":51212};
+const ENGINE_VER='v1.0.0';           // 추천 엔진 버전 (결정론적 통계만 사용)
+const DATA_ASOF='2021~2024 이용실적 / 2023~2025 공고';
+/* 입력이 같으면 결과가 같다는 것을 확인할 수 있도록 입력 해시를 남긴다 */
+function inputHash(o){
+  const src=JSON.stringify(o); let h=2166136261>>>0;
+  for(let i=0;i<src.length;i++){ h^=src.charCodeAt(i); h=Math.imul(h,16777619)>>>0; }
+  return h.toString(16).padStart(8,'0');
+}
+const FX_EXCLUDE=['08'];             // 국제운송 — 결과의 표식이라 처방에서 분리
+function fxOf(k){ return FXD.fx[k]||null; }
+
+/* 내수기업 전용 안내 — 이 서비스의 존재 이유 */
+function renderDomesticInsight(){
+  const box=document.getElementById('domBox'); if(!box) return;
+  if(profile.stage!=='domestic'){ box.style.display='none'; return; }
+  box.style.display='block';
+  const f=FXD.fx, top=['02','03'], low=['01','06'];
+  const nm={'01':'디자인 개발','02':'전시회·해외영업지원','03':'홍보·광고','06':'특허·지재권'};
+  const li=k=>`<div class="fxrow"><div class="fxn">${nm[k]}</div>
+      <div class="fxb"><i style="width:${Math.min(100,f[k].r*2)}%;background:${f[k].x>=1?'var(--blue)':'var(--ink3)'}"></i></div>
+      <div class="fxv"><b>${f[k].r}%</b><small>${f[k].n.toLocaleString()}건 · 하한 ${f[k].lo}%</small></div></div>`;
+  box.innerHTML=`
+    <div class="card" style="padding:28px">
+      <div class="kicker k-b">내수기업이라면 먼저 보셔야 할 것</div>
+      <h3 style="font-size:21px;margin:6px 0 12px">같은 처지의 기업 ${FXD.domN.toLocaleString()}곳 중 ${FXD.domBase}%가 첫 수출에 성공했습니다</h3>
+      <p style="color:var(--ink2);font-size:15px;margin-bottom:20px">
+        이들이 가장 많이 산 것은 <b>디자인 개발(${f['01'].n.toLocaleString()}건)</b>이지만 첫 수출로 이어진 비율은 <b>${f['01'].r}%</b>로 평균 아래였습니다.
+        반대로 <b>전시회·해외영업지원 ${f['02'].r}%</b>, <b>홍보·광고 ${f['03'].r}%</b>로 평균의 1.3배였습니다.</p>
+      <div class="fxlist">${[...top,...low].map(li).join('')}</div>
+      <div class="fxnote">
+        품목을 나눠 봐도 방향이 같습니다 — MTI 대분류 ${FXD.layers.length}개 층 <b>전부</b>에서 전시회가 디자인 개발보다 높았습니다.
+        업종으로 나눠도 제조업 ${FXD.mfg['제조업'].ex.r}% 대 ${FXD.mfg['제조업'].ds.r}%, 비제조업 ${FXD.mfg['비제조업'].ex.r}% 대 ${FXD.mfg['비제조업'].ds.r}%입니다.
+      </div>
+      <div class="fxwarn">이 숫자는 <b>서비스를 산 기업들에게서 관찰된 비율</b>이며, 그 서비스가 수출을 만들었다는 뜻이 아닙니다.
+        제품을 다듬는 데 예산을 쓰기 전에, 먼저 만나야 할 사람이 있는지 확인해 보시라는 참고 자료입니다.</div>
+    </div>`;
+}
+
+
+/* 서비스 카드용 첫수출 전환 배지 — 내수기업에만, 국제운송은 제외 */
+function fxBadge(k){
+  if(profile.stage!=='domestic') return '';
+  if(FX_EXCLUDE.includes(k)){
+    const f=fxOf(k); if(!f) return '';
+    return `<div class="fxwarn" style="margin:0">이 서비스를 산 내수기업의 첫 수출 비율은 ${f.r}%로 가장 높지만,
+      <b>국제운송은 이미 선적이 있다는 표시</b>에 가깝습니다. 수출을 시작하게 만드는 수단으로 보기 어려워 순위 해석에서 분리합니다.
+      <span class="muted">(${f.n.toLocaleString()}건)</span></div>`;
+  }
+  const f=fxOf(k); if(!f) return '';
+  const good=f.x>=1;
+  return `<div class="fxnote" style="margin:0;font-size:13px">
+    이 서비스를 산 내수기업 ${f.n.toLocaleString()}곳 중 <b>${f.r}%</b>가 이후 첫 수출을 했습니다
+    <span class="muted">(내수 평균 ${FXD.domBase}%의 ${f.x}배 · 95% 신뢰구간 ${f.lo}~${f.hi}%)</span>
+    ${good?'':' — 많이 사는 항목이지만 평균을 밑돕니다.'}</div>`;
+}
+/* 재현성 서명 */
+function stampSig(){
+  const el=document.getElementById('runSig'); if(!el) return;
+  const key={mti:profile.mti,mkt:profile.mkt,stage:profile.stage,biz:profile.biz,region:profile.region||null,sortA,sortB};
+  el.textContent=`엔진 ${ENGINE_VER} · 데이터 ${DATA_ASOF} · 입력 서명 ${inputHash(key)}`;
+}
+
+/* 예산은 성과와 비례하지 않는다 — 실측 */
+function renderBudgetNote(){
+  const el=document.getElementById('budgetNote'); if(!el) return;
+  const q=FXD.q, lo=q[0], hi=q[q.length-1];
+  el.innerHTML=`<b>많이 쓴다고 성과가 좋아지지는 않았습니다.</b>
+    이용금액을 5등분해 수출액이 늘어난 비율을 보면 가장 적게 쓴 구간(중앙값 ${(lo.med/1e4).toLocaleString()}만원)이 <b>${lo.r}%</b>,
+    가장 많이 쓴 구간(중앙값 ${(hi.med/1e4).toLocaleString()}만원)이 <b>${hi.r}%</b>였습니다.
+    금액이 클수록 좋아지는 경향은 나타나지 않았습니다. 얼마를 쓰느냐보다 <b>무엇을 사느냐</b>를 보시면 됩니다.
+    <span class="muted">(${FXD.totalO.toLocaleString()}건 · 5분위 각 1만건 내외)</span>`;
+}
+
+/* ═══ HS 6단위 ↔ MTI 3단위 대응 1,641쌍 (중진공 지원기업 10,020건 원본, 결측 0%) ═══
+   HS6 : 'HS6자리' → 'MTI3자리'
+   MTI3: 'MTI3자리' → [품목명, 앱 품목키, 해당 기업 수, MTI 대분류명]                       */
+const HS6={"010511":"021","010611":"021","010619":"021","010690":"021","020311":"022","020312":"022","020741":"022","030111":"041","030291":"046","030491":"045","030612":"042","030695":"042","030749":"046","030751":"043","030771":"043","030799":"046","030990":"049","040110":"024","040320":"016","040390":"024","040610":"024","040900":"024","041010":"022","050790":"023","060110":"012","060220":"012","060290":"012","060420":"033","070410":"012","070490":"012","070610":"012","070959":"012","070999":"012","071080":"012","071331":"011","071420":"011","080211":"012","080291":"012","080299":"012","080450":"011","080719":"011","080810":"011","080830":"011","081010":"011","081090":"011","090190":"015","090210":"015","091011":"012","100119":"011","100199":"013","100390":"011","100630":"011","100821":"011","100850":"011","100890":"011","110100":"011","110290":"011","110319":"011","110419":"011","110620":"033","110812":"011","110900":"014","120230":"011","120510":"011","120910":"017","120991":"017","121120":"015","121190":"015","121221":"044","121229":"044","121299":"011","130211":"013","130212":"226","130214":"013","130219":"226","130231":"044","130239":"013","140490":"014","150710":"013","151550":"013","151590":"013","160100":"024","160220":"024","160232":"022","160250":"022","160300":"024","160416":"046","160419":"046","160420":"046","160432":"046","160510":"046","160521":"046","160529":"046","160554":"046","160555":"046","160559":"046","160569":"046","170290":"024","170310":"015","170490":"016","180400":"015","180620":"015","180631":"015","180632":"015","180690":"015","190120":"014","190190":"016","190211":"016","190219":"016","190220":"016","190230":"016","190410":"016","190420":"016","190490":"016","190510":"016","190531":"016","190590":"016","200110":"012","200190":"016","200290":"012","200390":"012","200580":"012","200599":"016","200600":"012","200710":"016","200791":"016","200799":"016","200819":"012","200830":"016","200870":"016","200891":"016","200897":"016","200899":"016","200911":"015","200912":"015","200919":"015","200921":"015","200931":"015","200939":"015","200950":"015","200971":"015","200979":"015","200989":"015","200990":"015","210111":"015","210112":"015","210120":"016","210130":"016","210210":"014","210220":"226","210230":"014","210310":"014","210320":"014","210330":"014","210390":"014","210410":"024","210500":"016","210610":"016","210690":"015","220110":"015","220190":"015","220210":"015","220291":"015","220299":"015","220300":"015","220410":"015","220590":"015","220600":"015","220830":"015","220840":"015","220870":"015","220890":"015","220900":"016","230120":"046","230330":"013","230910":"013","230990":"013","240311":"015","240399":"015","240412":"290","240492":"290","250100":"122","250300":"129","250590":"129","250830":"129","251010":"129","251200":"129","251820":"124","251990":"249","252921":"129","262190":"119","270119":"132","270750":"211","270799":"219","270900":"131","271012":"133","271019":"133","271111":"134","271490":"133","271500":"133","280300":"228","280461":"228","280519":"228","280700":"228","281000":"228","281111":"228","281121":"226","281122":"228","281820":"228","282300":"228","282550":"228","282590":"228","282720":"226","283324":"228","283429":"228","283911":"228","283990":"228","284990":"228","290110":"211","290242":"212","290314":"290","290329":"228","290346":"290","290381":"228","290539":"228","291620":"226","291711":"226","291713":"226","291736":"213","291816":"226","292119":"219","292219":"228","292229":"228","292249":"226","292250":"226","292421":"226","292700":"228","292990":"228","293190":"228","293399":"226","293621":"226","293627":"226","293790":"226","293890":"290","300120":"226","300190":"226","300212":"226","300213":"226","300214":"226","300215":"226","300241":"226","300242":"226","300251":"226","300259":"226","300290":"226","300341":"226","300360":"226","300390":"226","300420":"226","300432":"226","300450":"226","300490":"226","300510":"950","300590":"950","300610":"950","300630":"226","300640":"950","300660":"226","300670":"950","300691":"950","300692":"950","300693":"226","310100":"239","310229":"239","310520":"234","310590":"234","320190":"229","320415":"221","320417":"221","320611":"221","320619":"221","320649":"221","320710":"221","320730":"221","320740":"221","320810":"222","320820":"222","320890":"222","320910":"222","320990":"222","321000":"222","321210":"221","321290":"221","321310":"515","321490":"229","321511":"515","321519":"515","321590":"515","330119":"227","330129":"227","330190":"227","330210":"229","330290":"229","330300":"227","330410":"227","330420":"227","330430":"227","330491":"227","330499":"227","330510":"227","330520":"227","330590":"227","330610":"511","330620":"511","330690":"511","330710":"227","330720":"227","330730":"227","330741":"227","330749":"227","330790":"227","340111":"227","340119":"227","340120":"227","340130":"227","340231":"511","340239":"511","340242":"511","340250":"511","340290":"511","340311":"224","340319":"224","340399":"224","340490":"511","340510":"511","340530":"511","340600":"290","340700":"290","350110":"024","350190":"024","350300":"226","350400":"024","350510":"226","350520":"223","350610":"515","350691":"223","350790":"226","370130":"225","370253":"225","370310":"225","370500":"225","370790":"225","380110":"290","380852":"226","380859":"226","380891":"226","380892":"226","380894":"226","380899":"229","380991":"229","380992":"229","381010":"290","381129":"229","381300":"290","381519":"229","381590":"229","381800":"831","382100":"290","382211":"226","382219":"226","382290":"229","382440":"290","382491":"290","382499":"290","382550":"290","382768":"290","390110":"214","390120":"214","390210":"214","390290":"214","390311":"214","390319":"214","390330":"214","390410":"214","390469":"214","390529":"214","390599":"214","390610":"214","390690":"214","390729":"214","390730":"214","390740":"214","390799":"214","390810":"214","390890":"214","390920":"214","390940":"214","390950":"214","391000":"214","391211":"310","391239":"310","391390":"310","391510":"310","391590":"310","391690":"310","391721":"310","391723":"310","391731":"310","391732":"310","391733":"310","391739":"310","391740":"310","391810":"310","391890":"310","391910":"310","391990":"310","392010":"310","392020":"310","392030":"310","392043":"310","392049":"310","392051":"310","392062":"310","392069":"310","392092":"310","392099":"310","392111":"310","392113":"310","392119":"310","392190":"310","392290":"310","392310":"310","392321":"310","392329":"310","392330":"310","392340":"310","392350":"310","392390":"310","392410":"516","392490":"310","392510":"310","392520":"310","392530":"310","392590":"310","392610":"515","392620":"310","392630":"310","392690":"515","400211":"215","400219":"215","400231":"215","400259":"215","400400":"320","400599":"320","400690":"320","400811":"320","400821":"320","400911":"320","400912":"320","401110":"320","401211":"320","401212":"320","401290":"320","401310":"320","401390":"320","401410":"320","401512":"950","401519":"441","401691":"320","401692":"515","401693":"320","401694":"320","401695":"320","401699":"320","410799":"331","411200":"331","420100":"524","420211":"511","420212":"511","420219":"511","420221":"511","420222":"511","420229":"511","420231":"511","420232":"511","420291":"511","420292":"511","420299":"511","420310":"441","420329":"449","420330":"521","420500":"332","430110":"333","430160":"333","430310":"441","440121":"031","440122":"031","440131":"031","440711":"031","440810":"031","440910":"031","441112":"031","441299":"031","441520":"031","441811":"031","441840":"031","441875":"031","441881":"031","441889":"031","441912":"031","441920":"031","441990":"031","442011":"031","442090":"031","442199":"031","460194":"525","470710":"251","470720":"251","470730":"251","480210":"252","480255":"252","480300":"252","480431":"252","480593":"252","480700":"252","480840":"252","481022":"252","481032":"252","481141":"252","481159":"252","481730":"515","481810":"511","481820":"511","481850":"252","481890":"511","481920":"252","481950":"252","482010":"515","482040":"515","482110":"252","482369":"252","490110":"911","490191":"911","490199":"911","490210":"912","490290":"912","490300":"911","490400":"919","490520":"515","490590":"515","490600":"919","491110":"919","491191":"919","491199":"919","510400":"019","510610":"421","511000":"421","511211":"432","511300":"432","520100":"019","520299":"019","520300":"019","520420":"421","520811":"433","521011":"433","521032":"433","521039":"433","530210":"019","530610":"421","530919":"439","531010":"439","540233":"422","540234":"422","540247":"422","540252":"422","540419":"422","540500":"422","540710":"434","540720":"434","540742":"434","540751":"434","540752":"434","540753":"434","540761":"434","540769":"434","550140":"411","550952":"423","551011":"423","551219":"435","551291":"435","551430":"435","551511":"435","551612":"435","560121":"449","560129":"449","560311":"439","560312":"439","560313":"439","560314":"439","560391":"439","560392":"439","560394":"439","560500":"421","560600":"421","560721":"449","560749":"449","560811":"449","560900":"449","570250":"449","570321":"449","570331":"449","570500":"449","580210":"439","580230":"439","580421":"439","580429":"439","580632":"439","580810":"449","581010":"439","590310":"439","590320":"439","590390":"439","590700":"439","590900":"449","591110":"449","591132":"449","600110":"436","600192":"436","600199":"436","600410":"436","600535":"436","600537":"436","600542":"436","610120":"441","610130":"441","610210":"441","610220":"441","610343":"441","610413":"441","610419":"441","610443":"441","610444":"441","610462":"441","610463":"441","610610":"441","610690":"441","610712":"441","610721":"441","610791":"441","610822":"441","610831":"441","610910":"441","610990":"441","611030":"441","611090":"441","611120":"441","611211":"441","611212":"441","611300":"441","611430":"441","611510":"441","611521":"441","611522":"441","611595":"441","611596":"441","611610":"441","611710":"441","620120":"441","620140":"441","620190":"441","620220":"441","620240":"441","620312":"441","620322":"441","620333":"441","620341":"441","620411":"441","620419":"441","620439":"441","620441":"441","620443":"441","620469":"441","620520":"441","620640":"441","620721":"441","620811":"441","620891":"441","620920":"441","620930":"441","621020":"441","621120":"441","621133":"441","621143":"441","621149":"441","621210":"441","621410":"441","621510":"441","621600":"441","621710":"441","630110":"449","630140":"449","630240":"449","630260":"449","630291":"449","630293":"449","630299":"449","630312":"512","630319":"512","630392":"512","630493":"449","630510":"449","630532":"449","630539":"449","630630":"449","630710":"449","630790":"449","630800":"449","640110":"521","640192":"521","640199":"521","640219":"521","640220":"521","640299":"521","640320":"521","640359":"521","640399":"521","640411":"521","640419":"521","640420":"521","640510":"521","640520":"521","640590":"521","640610":"521","640690":"521","650500":"441","650610":"441","660191":"521","660199":"521","670411":"518","670419":"518","680293":"129","680421":"752","680422":"272","680610":"249","680790":"249","680800":"249","680919":"249","681019":"242","681091":"249","681099":"249","681381":"271","681410":"262","681599":"129","690100":"249","690220":"249","691010":"242","691110":"516","691200":"516","691310":"242","691390":"242","691410":"242","691490":"242","700100":"243","700312":"243","700320":"243","700529":"243","700600":"243","700721":"243","700910":"243","700991":"243","700992":"243","701010":"243","701090":"243","701400":"243","701911":"422","701961":"439","701963":"439","701980":"439","702000":"243","710121":"961","710122":"961","710310":"961","710421":"961","710510":"272","710691":"111","710692":"111","710700":"111","710900":"111","711230":"119","711291":"119","711311":"518","711319":"518","711320":"518","711419":"518","711510":"963","711590":"963","711610":"518","711711":"518","711719":"518","711790":"518","711890":"641","720110":"618","720211":"618","720241":"618","720299":"618","720521":"619","720711":"619","720712":"619","721012":"613","721030":"613","721049":"613","721070":"613","721113":"613","721123":"613","721190":"613","721250":"613","721650":"611","721669":"611","721710":"614","721911":"613","721923":"613","722870":"611","722990":"614","730210":"615","730240":"615","730290":"615","730300":"617","730411":"614","730419":"614","730441":"614","730449":"614","730490":"614","730511":"614","730531":"614","730630":"614","730640":"614","730690":"614","730719":"617","730721":"617","730722":"617","730723":"617","730791":"617","730793":"617","730799":"617","730810":"615","730830":"615","730840":"615","730890":"615","730900":"616","731021":"616","731100":"616","731210":"614","731520":"616","731589":"616","731600":"746","731700":"642","731811":"751","731815":"751","731816":"751","731819":"751","731821":"751","731822":"751","732010":"742","732020":"742","732090":"751","732111":"713","732189":"713","732219":"713","732393":"516","732394":"516","732399":"516","732410":"619","732599":"617","732611":"617","732620":"617","732690":"721","740200":"622","740811":"622","740911":"622","741220":"622","741533":"622","741810":"516","741920":"622","741980":"622","750110":"623","750522":"623","750890":"623","760120":"621","760421":"621","760429":"621","760611":"621","760612":"621","760720":"621","760810":"621","760820":"621","760900":"621","761010":"621","761090":"621","761100":"621","761300":"621","761490":"621","761510":"516","761699":"621","780419":"625","780600":"625","790700":"626","800110":"627","800700":"627","810110":"628","810194":"628","810299":"628","810411":"624","810430":"624","810490":"624","810520":"629","810820":"629","810830":"629","810921":"629","820110":"752","820190":"752","820210":"752","820239":"752","820310":"752","820320":"752","820340":"752","820411":"752","820412":"752","820551":"752","820559":"752","820560":"752","820570":"752","820600":"752","820713":"752","820719":"752","820730":"753","820750":"752","820770":"752","820780":"752","820840":"752","820890":"752","820900":"752","821000":"724","821193":"630","821210":"511","821300":"752","821420":"521","821490":"630","821599":"516","830110":"690","830130":"690","830140":"690","830150":"690","830220":"690","830230":"690","830241":"690","830260":"790","830300":"690","830510":"515","830610":"529","830630":"525","830710":"690","830790":"690","830890":"690","831120":"690","840110":"841","840211":"713","840219":"713","840220":"713","840290":"713","840310":"713","840390":"713","840510":"726","840610":"746","840690":"746","840729":"711","840820":"742","840890":"744","840910":"747","840991":"742","840999":"711","841012":"711","841111":"747","841221":"711","841229":"711","841290":"711","841311":"711","841319":"711","841320":"711","841330":"747","841350":"711","841360":"711","841370":"711","841381":"711","841391":"711","841410":"747","841451":"747","841459":"747","841460":"747","841480":"711","841490":"711","841510":"713","841520":"713","841581":"713","841582":"713","841583":"713","841590":"713","841710":"790","841810":"823","841869":"814","841899":"823","841912":"721","841920":"814","841933":"721","841934":"721","841939":"721","841950":"747","841981":"721","841989":"721","841990":"721","842010":"727","842099":"727","842119":"729","842121":"729","842123":"742","842129":"729","842131":"742","842139":"729","842199":"729","842219":"724","842220":"724","842230":"724","842240":"724","842290":"824","842310":"815","842320":"815","842330":"815","842410":"729","842420":"752","842430":"729","842441":"728","842489":"732","842490":"729","842511":"712","842519":"712","842531":"712","842542":"712","842611":"712","842630":"712","842649":"712","842691":"712","842710":"725","842790":"741","842810":"712","842820":"745","842833":"745","842839":"712","842840":"745","842870":"712","842890":"712","842919":"725","842952":"725","843041":"725","843049":"725","843131":"712","843139":"712","843141":"725","843143":"725","843149":"725","843231":"728","843239":"728","843241":"728","843242":"728","843280":"728","843290":"728","843311":"728","843330":"728","843340":"728","843353":"728","843360":"728","843390":"728","843420":"728","843510":"724","843621":"728","843680":"728","843710":"728","843780":"728","843790":"728","843810":"724","843850":"724","843880":"724","843930":"727","844130":"727","844180":"727","844230":"727","844311":"727","844331":"813","844332":"813","844339":"732","844399":"727","844400":"721","844530":"721","844621":"721","844851":"721","845011":"824","845020":"824","845090":"824","845121":"824","845140":"721","845150":"721","845290":"721","845410":"726","845430":"726","845490":"726","845530":"726","845611":"723","845710":"723","845811":"723","845899":"723","845969":"723","846023":"723","846024":"723","846090":"723","846140":"723","846150":"723","846223":"723","846225":"723","846226":"723","846239":"723","846242":"723","846290":"723","846330":"723","846410":"722","846420":"722","846490":"722","846594":"722","846596":"722","846599":"722","846610":"723","846620":"722","846691":"722","846693":"723","846719":"752","846721":"752","846729":"752","846799":"752","846820":"726","847050":"814","847090":"814","847130":"813","847141":"813","847149":"813","847150":"813","847160":"813","847170":"813","847180":"813","847190":"813","847290":"814","847329":"814","847330":"813","847410":"725","847420":"725","847439":"725","847480":"726","847490":"725","847590":"722","847629":"814","847689":"814","847710":"721","847720":"721","847740":"721","847759":"721","847780":"721","847790":"721","847910":"790","847940":"790","847950":"790","847981":"790","847982":"790","847983":"790","847989":"829","847990":"713","848020":"753","848030":"753","848060":"753","848071":"753","848079":"753","848110":"751","848120":"751","848130":"751","848140":"751","848180":"751","848190":"751","848210":"751","848280":"751","848310":"747","848320":"747","848330":"747","848340":"747","848350":"747","848360":"747","848390":"747","848410":"742","848490":"790","848520":"790","848590":"790","848610":"732","848620":"732","848630":"736","848640":"732","848690":"732","848710":"746","848790":"742","850110":"842","850120":"842","850131":"842","850132":"842","850140":"842","850151":"842","850152":"842","850162":"841","850171":"841","850180":"841","850231":"841","850300":"849","850421":"841","850422":"841","850431":"841","850440":"842","850450":"833","850490":"839","850511":"839","850590":"842","850650":"835","850710":"835","850730":"835","850760":"835","850790":"835","850811":"824","850819":"824","850860":"790","850870":"829","850980":"824","850990":"829","851030":"829","851110":"747","851150":"747","851210":"826","851220":"826","851240":"742","851310":"826","851411":"790","851439":"842","851490":"732","851519":"752","851521":"726","851531":"726","851580":"726","851590":"726","851610":"825","851621":"825","851629":"825","851631":"825","851632":"829","851660":"825","851671":"825","851679":"825","851680":"825","851690":"825","851713":"812","851714":"812","851718":"811","851761":"812","851762":"811","851769":"811","851771":"812","851779":"811","851810":"822","851821":"822","851829":"822","851830":"811","851840":"822","851850":"822","851890":"822","851930":"822","851981":"822","852110":"821","852190":"821","852329":"813","852349":"813","852351":"813","852352":"831","852359":"813","852380":"813","852412":"836","852419":"836","852550":"812","852560":"812","852581":"812","852582":"812","852583":"812","852589":"812","852610":"812","852691":"812","852692":"812","852719":"822","852721":"822","852842":"812","852852":"813","852859":"814","852862":"813","852869":"812","852871":"812","852872":"821","852910":"812","852990":"839","853010":"814","853080":"814","853090":"814","853110":"814","853120":"836","853180":"814","853223":"833","853224":"833","853225":"833","853229":"833","853290":"833","853321":"836","853340":"833","853400":"834","853510":"841","853521":"841","853530":"841","853590":"841","853620":"841","853630":"841","853641":"833","853650":"841","853669":"834","853670":"834","853690":"834","853710":"849","853720":"841","853810":"849","853890":"849","853910":"826","853921":"826","853922":"826","853929":"826","853932":"826","853949":"732","853951":"826","853990":"826","854020":"832","854040":"832","854079":"832","854089":"832","854091":"832","854110":"831","854121":"831","854129":"831","854141":"831","854142":"831","854143":"841","854149":"831","854151":"831","854160":"831","854190":"831","854231":"831","854232":"831","854233":"831","854239":"831","854320":"814","854330":"842","854370":"842","854390":"831","854420":"842","854430":"842","854442":"842","854449":"842","854460":"841","854470":"842","854511":"849","854519":"849","854590":"849","854610":"841","854790":"849","854800":"831","854911":"849","854912":"849","854914":"849","860110":"744","860310":"744","860800":"790","860900":"643","870191":"741","870210":"741","870240":"741","870310":"741","870332":"741","870380":"741","870510":"741","870530":"741","870590":"741","870821":"742","870829":"742","870830":"742","870840":"742","870850":"742","870880":"742","870893":"742","870894":"742","870899":"742","870911":"741","871000":"970","871110":"743","871160":"743","871200":"743","871410":"743","871491":"743","871493":"743","871500":"517","871610":"741","871631":"741","871680":"741","871690":"742","880100":"747","880211":"747","880220":"747","880260":"748","880400":"747","880529":"747","880610":"747","880692":"747","880730":"747","890110":"746","890120":"746","890312":"746","890322":"746","890393":"746","890399":"746","890400":"746","890520":"746","890590":"746","890690":"746","890790":"746","890800":"746","900110":"814","900120":"715","900130":"518","900190":"715","900211":"715","900219":"715","900290":"715","900311":"518","900319":"518","900410":"518","900490":"941","900580":"715","900630":"814","900640":"715","900653":"715","900661":"715","900691":"715","900699":"715","900850":"715","901010":"715","901060":"715","901090":"732","901110":"715","901180":"715","901210":"814","901290":"814","901310":"715","901320":"812","901380":"715","901410":"747","901510":"735","901530":"735","901580":"735","901720":"515","901780":"515","901811":"814","901812":"814","901813":"814","901819":"814","901820":"814","901831":"733","901832":"733","901839":"733","901841":"733","901849":"733","901850":"814","901890":"814","901910":"733","901920":"814","902000":"733","902110":"733","902121":"733","902129":"733","902131":"733","902139":"733","902190":"733","902212":"814","902213":"814","902214":"814","902219":"814","902290":"814","902300":"999","902410":"815","902480":"815","902490":"836","902511":"815","902519":"815","902580":"815","902590":"836","902610":"815","902620":"815","902680":"815","902690":"836","902710":"815","902720":"815","902730":"815","902750":"815","902781":"815","902789":"815","902790":"815","902820":"815","902830":"841","903010":"815","903033":"815","903039":"815","903040":"815","903082":"732","903089":"815","903090":"815","903110":"815","903141":"732","903149":"815","903180":"814","903190":"732","903210":"815","903281":"815","903289":"747","903300":"815","910111":"518","910119":"518","910199":"518","910211":"518","910212":"518","910400":"518","910511":"518","910521":"518","910529":"518","910599":"518","910690":"518","911220":"518","920210":"513","920290":"513","920590":"513","920790":"513","920930":"513","920991":"513","920994":"513","930110":"970","930400":"970","930599":"970","930700":"970","940110":"512","940120":"512","940131":"512","940139":"512","940169":"512","940180":"512","940191":"512","940199":"512","940210":"814","940290":"814","940310":"512","940320":"512","940330":"512","940360":"512","940370":"512","940391":"512","940410":"512","940421":"449","940440":"449","940490":"449","940511":"826","940521":"826","940529":"826","940541":"826","940542":"826","940549":"826","940561":"826","940569":"826","940592":"826","940599":"826","940620":"615","940690":"310","950300":"515","950420":"514","950430":"515","950440":"515","950450":"515","950490":"514","950629":"514","950631":"514","950632":"514","950639":"514","950659":"514","950691":"514","950699":"514","950710":"514","950790":"514","950822":"514","950824":"514","960190":"525","960321":"511","960329":"511","960330":"515","960390":"529","960400":"529","960610":"529","960719":"529","960810":"515","960820":"515","960840":"515","960899":"515","960910":"515","960990":"515","961310":"521","961400":"521","961511":"521","961590":"521","961610":"521","961700":"516","961900":"517","962000":"999","970121":"921","970531":"939","970610":"932"};
+const MTI3={"011":["곡실류","agri",76,"농림수산물"],"012":["산식물","agri",35,"농림수산물"],"013":["식물성물질","agri",104,"농림수산물"],"014":["식물성 재료","agri",62,"농림수산물"],"015":["기호식품","agri",368,"농림수산물"],"016":["농산가공품","agri",240,"농림수산물"],"017":["종자류","agri",10,"농림수산물"],"019":["기타농산물","agri",11,"농림수산물"],"021":["산동물","agri",26,"농림수산물"],"022":["육류","agri",12,"농림수산물"],"023":["축산부산물","agri",1,"농림수산물"],"024":["축산가공품","agri",39,"농림수산물"],"031":["목재류","agri",43,"농림수산물"],"033":["임산부산물","agri",2,"농림수산물"],"041":["어류","agri",1,"농림수산물"],"042":["갑각류","agri",2,"농림수산물"],"043":["연체동물","agri",3,"농림수산물"],"044":["해조류","agri",28,"농림수산물"],"045":["어육및어란","agri",2,"농림수산물"],"046":["수산가공품","agri",26,"농림수산물"],"049":["기타수산물","agri",2,"농림수산물"],"111":["금은및백금","etc",5,"광산물"],"119":["기타금속광물","etc",9,"광산물"],"122":["소금","etc",12,"광산물"],"124":["석회석","etc",1,"광산물"],"129":["기타비금속광물","etc",19,"광산물"],"131":["원유","etc",1,"광산물"],"132":["석탄","etc",1,"광산물"],"133":["석유제품","etc",33,"광산물"],"134":["천연가스","etc",1,"광산물"],"211":["기초유분","chem",2,"화학공업제품"],"212":["석유화학중간원료","chem",1,"화학공업제품"],"213":["석유화학합섬원료","chem",1,"화학공업제품"],"214":["합성수지","chem",71,"화학공업제품"],"215":["합성고무","chem",6,"화학공업제품"],"219":["기타석유화학제품","chem",3,"화학공업제품"],"221":["염료및안료","chem",26,"화학공업제품"],"222":["도료및잉크","chem",15,"화학공업제품"],"223":["접착제","chem",15,"화학공업제품"],"224":["표면활성제","chem",6,"화학공업제품"],"225":["사진영화용재료","chem",7,"화학공업제품"],"226":["농약및의약품","chem",170,"화학공업제품"],"227":["비누치약및화장품","chem",1323,"화학공업제품"],"228":["정밀화학원료","chem",40,"화학공업제품"],"229":["기타정밀화학제품","chem",20,"화학공업제품"],"234":["복합비료","chem",12,"화학공업제품"],"239":["기타비료","chem",15,"화학공업제품"],"242":["타일및도자기제품","chem",33,"화학공업제품"],"243":["유리제품","chem",36,"화학공업제품"],"249":["기타요업제품","chem",15,"화학공업제품"],"251":["제지원료","chem",7,"화학공업제품"],"252":["종이제품","chem",33,"화학공업제품"],"262":["운모제품","chem",1,"화학공업제품"],"271":["마찰제품","chem",1,"화학공업제품"],"272":["연마제품","chem",2,"화학공업제품"],"290":["기타화학공업제품","chem",88,"화학공업제품"],"310":["플라스틱 제품","plas",246,"플라스틱·고무·가죽제품"],"320":["고무제품","plas",66,"플라스틱·고무·가죽제품"],"331":["가죽","plas",2,"플라스틱·고무·가죽제품"],"332":["가죽제품","plas",3,"플라스틱·고무·가죽제품"],"333":["모피","plas",2,"플라스틱·고무·가죽제품"],"411":["인조섬유","tex",4,"섬유류"],"421":["천연섬유사","tex",10,"섬유류"],"422":["인조섬유장섬유사","tex",13,"섬유류"],"423":["인조섬유방적사","tex",2,"섬유류"],"432":["모직물","tex",3,"섬유류"],"433":["면직물","tex",7,"섬유류"],"434":["인조장섬유직물","tex",25,"섬유류"],"435":["인조단섬유직물","tex",8,"섬유류"],"436":["편직물","tex",16,"섬유류"],"439":["기타직물","tex",39,"섬유류"],"441":["의류","tex",230,"섬유류"],"449":["기타섬유제품","tex",180,"섬유류"],"511":["신변잡화","life",146,"생활용품"],"512":["가구","life",94,"생활용품"],"513":["악기","life",13,"생활용품"],"514":["운동 레저용품","life",83,"생활용품"],"515":["문구 및 완구","life",229,"생활용품"],"516":["주방용품","life",71,"생활용품"],"517":["유아용품","life",21,"생활용품"],"518":["패션잡화","life",130,"생활용품"],"521":["신변잡화","life",155,"생활용품"],"524":["운동 레저용품","life",12,"생활용품"],"525":["공예품","life",3,"생활용품"],"529":["기타 생활용품","life",6,"생활용품"],"611":["형강","steel",5,"철강금속제품"],"613":["철강판","steel",17,"철강금속제품"],"614":["철강관및철강선","steel",27,"철강금속제품"],"615":["레일및철구조물","steel",56,"철강금속제품"],"616":["철강재용기및체인","steel",5,"철강금속제품"],"617":["주단조품","steel",29,"철강금속제품"],"618":["합금철선철및고철","steel",6,"철강금속제품"],"619":["강반제품및기타철강제품","steel",10,"철강금속제품"],"621":["알루미늄","steel",48,"철강금속제품"],"622":["동제품","steel",11,"철강금속제품"],"623":["니켈제품","steel",3,"철강금속제품"],"624":["마그네슘제품","steel",3,"철강금속제품"],"625":["연제품","steel",3,"철강금속제품"],"626":["아연제품","steel",6,"철강금속제품"],"627":["주석제품","steel",13,"철강금속제품"],"628":["텅스텐몰리브덴및망간제품","steel",4,"철강금속제품"],"629":["기타비철금속제품","steel",6,"철강금속제품"],"630":["식탁용구","steel",4,"철강금속제품"],"641":["주화","steel",2,"철강금속제품"],"642":["못","steel",1,"철강금속제품"],"643":["컨테이너","steel",1,"철강금속제품"],"690":["기타철강금속제품","steel",36,"철강금속제품"],"711":["원동기및펌프","mach",67,"기계류"],"712":["운반하역기계","mach",92,"기계류"],"713":["공기조절기및냉난방기","mach",57,"기계류"],"715":["광학기기","mach",78,"기계류"],"721":["섬유및화학기계","mach",78,"기계류"],"722":["목재광물및유리가공기계","mach",25,"기계류"],"723":["금속공작기계","mach",33,"기계류"],"724":["식품가공포장기계","mach",50,"기계류"],"725":["건설광산기계","mach",63,"기계류"],"726":["압연기용접기및주조설비","mach",26,"기계류"],"727":["제지인쇄기계","mach",20,"기계류"],"728":["농기계","mach",46,"기계류"],"729":["기타산업기계","mach",151,"기계류"],"732":["반도체제조용장비","mach",98,"기계류"],"733":["의료용기기","mach",285,"기계류"],"735":["토지측량기","mach",9,"기계류"],"736":["평판 디스플레이 제조용 장비","mach",12,"기계류"],"741":["자동차","mach",47,"기계류"],"742":["자동차부품","mach",129,"기계류"],"743":["이륜차자전거및부품","mach",26,"기계류"],"744":["철도차량및부품","mach",5,"기계류"],"745":["엘리베이터및에스컬레이터","mach",10,"기계류"],"746":["선박해양구조물및부품","mach",61,"기계류"],"747":["항공기및부품","mach",212,"기계류"],"748":["우주선및부품","mach",4,"기계류"],"751":["기계요소","mach",120,"기계류"],"752":["공구","mach",83,"기계류"],"753":["금형","mach",34,"기계류"],"790":["기타기계류","mach",42,"기계류"],"811":["유선통신기기","elec",85,"전자전기제품"],"812":["무선통신기기","elec",126,"전자전기제품"],"813":["컴퓨터","elec",800,"전자전기제품"],"814":["전자응용기기","elec",397,"전자전기제품"],"815":["계측제어분석기","elec",150,"전자전기제품"],"821":["영상기기","elec",20,"전자전기제품"],"822":["음향기기","elec",56,"전자전기제품"],"823":["냉장고","elec",4,"전자전기제품"],"824":["가정용회전기기","elec",26,"전자전기제품"],"825":["난방및전열기기","elec",39,"전자전기제품"],"826":["조명기기","elec",90,"전자전기제품"],"829":["기타가정용전자","elec",73,"전자전기제품"],"831":["반도체","elec",54,"전자전기제품"],"832":["전자관","elec",50,"전자전기제품"],"833":["수동부품","elec",16,"전자전기제품"],"834":["기구부품","elec",22,"전자전기제품"],"835":["건전지및축전지","elec",30,"전자전기제품"],"836":["평판디스플레이및센서","elec",48,"전자전기제품"],"839":["기타전자부품","elec",44,"전자전기제품"],"841":["전력용기기","elec",109,"전자전기제품"],"842":["산업용 전기기기","elec",268,"전자전기제품"],"849":["기타중전기기","elec",105,"전자전기제품"],"911":["서적","life",22,"잡제품"],"912":["신문등정기간행물","life",2,"잡제품"],"919":["기타인쇄물","life",30,"잡제품"],"921":["그림","life",1,"잡제품"],"932":["골동품","life",1,"잡제품"],"939":["기타수집품","life",1,"잡제품"],"941":["안경","life",28,"잡제품"],"950":["의료위생용품","life",81,"잡제품"],"961":["보석","life",6,"잡제품"],"963":["공업용귀금속제품","life",14,"잡제품"],"970":["무기류","life",6,"잡제품"],"999":["기타 잡제품","life",14,"잡제품"]};
+
+const MQ_EX=['1248100998','수제 딸기잼','비건 세럼','330499','반려동물 사료','우리 회사에게 적합한 지원사업 찾아줘'];
+let homeInit=false;
+function initHome(){
+  const c=document.getElementById('mqChips');
+  if(c && !c.children.length)
+    c.innerHTML=MQ_EX.map(t=>`<button onclick="mqFill('${t}')">${t}</button>`).join('');
+  if(!homeInit){ homeInit=true; loadSaved(); }
+}
+function mqFill(t){ document.getElementById('mq').value=t; mainSearch(); }
+
+/* ═══════════ 통합 검색 — 무엇을 넣어도 알아서 분기 ═══════════ */
+function classifyQuery(raw){
+  const q=String(raw||'').trim();
+  const digits=q.replace(/\D/g,'');
+  if(/^[\d\-\s]+$/.test(q) && digits.length===10) return {kind:'bizno', v:digits};
+  if(/^[\d\.\s]+$/.test(q) && (digits.length===6||digits.length===10)) {
+    const h6=digits.slice(0,6);
+    if(HS6[h6]) return {kind:'hs', v:h6};
+  }
+  if(/^[\d\.\s]+$/.test(q) && digits.length===4){
+    const cand=Object.keys(HS6).filter(h=>h.startsWith(digits));
+    if(cand.length) return {kind:'hs4', v:digits, cand};
+  }
+  if(/^[\d\-\s]+$/.test(q) && digits.length>0 && digits.length!==10)
+    return {kind:'badnum', v:digits};
+  return {kind:'text', v:q};
+}
+function hsInfo(h6){
+  const c3=HS6[h6]; if(!c3) return null;
+  const m=MTI3[c3]||[];
+  return {hs:h6, mti3:c3, item:m[0]||'', key:m[1]||'etc', firms:m[2]||0, group:m[3]||''};
+}
+
+let searchBusy=false;
+async function mainSearch(){
+  if(searchBusy) return;
+  const el=document.getElementById('mq'); const q=el.value.trim();
+  if(q.length<2) return;
+  const out=document.getElementById('mqOut'); out.style.display='block';
+  const c=classifyQuery(q);
+  searchBusy=true; document.getElementById('mqBtn').disabled=true;
+  try{
+    if(c.kind==='bizno'){
+      if(!bizChecksum(c.v)){
+        out.innerHTML=card('입력하신 번호는 사업자등록번호 형식이 아닙니다',
+          '국세청 검증 규칙(체크섬)에 맞지 않습니다. 번호를 다시 확인해 주세요. 상품명이나 회사명으로 찾으셔도 됩니다.');
+        return;
+      }
+      out.innerHTML=loading('공공데이터 4개 기관에서 조회하고 있습니다');
+      await runBiznoSearch(c.v);
+      return;
+    }
+    if(c.kind==='hs'||c.kind==='hs4'){ renderHs(c, out); return; }
+    if(c.kind==='badnum'){
+      out.innerHTML=card('숫자를 조금 더 확인해 주세요',
+        `사업자등록번호는 10자리, HS코드는 4자리 또는 6자리입니다. 입력하신 숫자는 ${c.v.length}자리입니다.`);
+      return;
+    }
+    out.innerHTML=loading('기업과 상품 데이터에서 찾고 있습니다');
+    await renderTextSearch(c.v, out);
+  } finally { searchBusy=false; document.getElementById('mqBtn').disabled=false; }
+}
+const loading=t=>`<div class="card ask-a" style="text-align:center;color:var(--ink2)"><span class="spin"></span>${t}…</div>`;
+const card=(t,d)=>`<div class="card" style="padding:26px"><b style="font-size:17px">${t}</b><div style="color:var(--ink2);font-size:14.5px;margin-top:8px">${d}</div></div>`;
+
+/* ── 사업자번호 검색 ── */
+async function runBiznoSearch(bizno){
+  const out=document.getElementById('mqOut');
+  let r=null;
+  if(API.base!==null){
+    try{ r=await Promise.race([fetch(`/api/onboard?bizno=${bizno}`).then(x=>x.ok?x.json():null),
+      new Promise(res=>setTimeout(()=>res(null), 9000))]); }catch(e){}
+  }
+  liveBiz=r;
+  profile={bizno, masked:bizno.slice(0,3)+'-**-***'+bizno.slice(8), mti:'chem', mkt:'us',
+           stage:'novice', biz:'micro', auto:null, coName:'(주)한빛코스메틱'};
+  applyLive();
+  const nm=profile.coName||'조회한 기업';
+  const st=r?.store;
+  out.innerHTML=`<div class="nres-h">공공데이터 조회 결과 1건 — 기업 프로필에 저장했습니다.</div>`
+    + coCard({name:nm, sub:[liveBiz?.nps?.sector, liveBiz?.ftc?.addr?.split(' ').slice(0,2).join(' '),
+        liveBiz?.nps?.cnt!=null?`연금 가입자 ${Number(liveBiz.nps.cnt).toLocaleString()}명`:null].filter(Boolean).join(' · ')||'공공데이터 조회 완료'},
+        `go('profile')`, '기업 프로필 →')
+    + storeNote(st);
+}
+function coCard(c, act, label){
+  return `<button class="nres" onclick="${act}">
+    <span class="ic">${(c.name||'기').replace(/[^가-힣A-Za-z]/g,'').charAt(0)||'기'}</span>
+    <span><b>${c.name}</b><small>${c.sub||''}</small></span>
+    <span class="go">${label||'선택 →'}</span></button>`;
+}
+function storeNote(st){
+  if(!st) return '';
+  const p=st.persistent;
+  return `<div class="priv-note" style="margin-top:12px">
+    ${p?'이 기업의 공공데이터 조회 결과는 서버에 저장되어 다음에 같은 기업을 찾는 분에게 바로 표시됩니다.':'현재 조회 결과는 임시 보관 중입니다(서버 재시작 시 사라짐).'}
+    ${st.hits>1?` 지금까지 ${st.hits}번 조회된 기업입니다.`:''}
+    24시간이 지나면 변경 여부를 확인하기 위해 자동으로 다시 조회합니다.</div>`;
+}
+
+/* ── HS코드 검색 ── */
+function renderHs(c, out){
+  const list = c.kind==='hs' ? [hsInfo(c.v)] : [...new Set(c.cand.map(h=>HS6[h]))].slice(0,6).map(c3=>{
+    const h=c.cand.find(x=>HS6[x]===c3); return hsInfo(h);
+  });
+  const first=list[0];
+  if(!first){ out.innerHTML=card('해당 HS코드를 찾지 못했습니다','보유한 대응표는 중진공 수출기업이 실제로 신고한 HS 6단위 1,641개입니다. 4자리로 넣어 보시거나 상품명으로 찾아 주세요.'); return; }
+  out.innerHTML=`<div class="nres-h">HS ${c.kind==='hs4'?c.v+' 계열':c.v} 는 아래 품목으로 분류됩니다. 관련 기업 목록은 가명처리 규정상 제공되지 않으며, 대신 같은 품목 기업들의 실제 지원 이용 패턴을 보여드립니다.</div>`
+    + list.map(x=>`<button class="nres" onclick="pickHs('${x.hs}')">
+        <span class="ic" style="font-size:13px;letter-spacing:-.02em">${x.hs.slice(0,2)}</span>
+        <span><b>${x.item} <span style="color:var(--ink3);font-weight:600">· ${x.group}</span></b>
+          <small>HS ${x.hs} · MTI ${x.mti3} · 이 품목으로 수출바우처를 이용한 기업 ${x.firms.toLocaleString()}곳</small></span>
+        <span class="go">매칭 보기 →</span></button>`).join('')
+    + `<div class="priv-note" style="margin-top:12px">근거: 중소벤처기업진흥공단 수출바우처 지원기업 10,020건의 HS 6단위 ↔ MTI 품목 대응 1,641쌍(결측 0%). 확정 분류는 관세청 품목분류 조회에서 확인해 주세요.</div>`;
+}
+function pickHs(h6){
+  const x=hsInfo(h6); if(!x) return;
+  profile={bizno:null, masked:null, coName:`HS ${h6} · ${x.item}`, byName:true, byHs:true, hs:x,
+           cat:null, mti:x.key, mkt:'us', stage:'novice', biz:'micro', auto:null};
+  liveBiz=null; go('match');
+}
+
+/* ── 회사명·상품명 검색 ── */
+async function renderTextSearch(q, out){
+  let cos=[];
+  if(API.base!==null){
+    try{
+      const r=await Promise.race([fetch(`/api/onboard?q=${encodeURIComponent(q)}`).then(x=>x.ok?x.json():null),
+        new Promise(res=>setTimeout(()=>res(null), 7000))]);
+      cos=(r&&r.companies)||[];
+    }catch(e){}
+  }
+  const {ranked,hits}=matchProduct(q);
+  let html='';
+  if(cos.length===1){
+    html+=`<div class="nres-h">「${q}」와 일치하는 사업장 1곳을 찾았습니다.</div>`
+      + coCard({name:cos[0].name, sub:[cos[0].addr, cos[0].cnt!=null?`가입자 ${Number(cos[0].cnt).toLocaleString()}명`:null].filter(Boolean).join(' · ')},
+               `pickCompany(${cos[0].seq},${JSON.stringify(cos[0].name||'').replace(/"/g,'&quot;')})`);
+  }else if(cos.length>1){
+    html+=`<div class="nres-h">「${q}」와 이름이 비슷한 사업장 ${cos.length}곳입니다. 우리 회사를 골라 주세요.</div>`
+      + cos.map(c=>coCard({name:c.name, sub:[c.addr, c.cnt!=null?`가입자 ${Number(c.cnt).toLocaleString()}명`:null].filter(Boolean).join(' · ')},
+                          `pickCompany(${c.seq},${JSON.stringify(c.name||'').replace(/"/g,'&quot;')})`)).join('');
+  }
+  if(ranked.length){
+    const kw=[...new Set(hits.map(x=>x.k))].slice(0,6);
+    html+=`<div class="nres-h">「${kw.join(' · ')}」(으)로 판판대로 등록 상품과 대조했습니다. 해당하는 분야를 골라 주세요.</div>`
+      + ranked.map(r=>{const c=PCATS[r.i];
+        return `<button class="nres" onclick="pickMti('${c.mti}',${r.i})">
+          <span class="ic">${c.m.charAt(0)}</span>
+          <span><b>${c.m}</b><small>등록 상품 ${c.n.toLocaleString()}건 · 품목 ${MTIS[c.mti].replace(/\s*\(.*\)/,'')}</small></span>
+          <span class="go">매칭 보기 →</span></button>`;}).join('');
+  }
+  if(!html){
+    const kb=localAsk(q);
+    html=`<div class="card ask-a">${kb.answer.replace(/\n/g,'<br>')}</div>`;
+    if(kb.refs?.length) html+=`<div class="ask-refs"><div class="rt">근거</div>`
+      + kb.refs.map(r=>`<div class="card ref-card"><div><b>${r.t}</b><small>${r.src}</small></div><div class="rel">${r.rel}%</div></div>`).join('')+`</div>`;
+  }
+  out.innerHTML=html;
+}
+
+/* ── 저장된 기업 목록 (데이터 자원화) ── */
+async function loadSaved(){
+  const box=document.getElementById('savedBox'); if(!box || API.base===null) return;
+  try{
+    const r=await Promise.race([fetch('/api/profile?limit=8').then(x=>x.ok?x.json():null),
+      new Promise(res=>setTimeout(()=>res(null), 5000))]);
+    const list=(r&&r.companies)||[];
+    if(!list.length) return;
+    box.style.display='block';
+    box.innerHTML=`<h2 class="sect-title" style="margin-top:44px">최근 조회된 기업</h2>
+      <p class="muted" style="margin:-10px 0 18px">다른 이용자가 조회한 결과가 쌓여 있습니다. 같은 기업을 다시 찾으면 조회 없이 바로 표시되고, 24시간이 지나면 변경 여부를 자동으로 확인합니다.</p>
+      <div class="grid3">`+list.map(c=>`
+        <div class="card" style="padding:18px 20px">
+          <div style="font-size:16px;font-weight:800">${c.name||'-'}</div>
+          <div class="muted" style="margin-top:5px">${[c.sector,c.region,c.emp!=null?`가입자 ${Number(c.emp).toLocaleString()}명`:null].filter(Boolean).join(' · ')||'—'}</div>
+          <div class="muted" style="margin-top:8px;font-size:12.5px">${c.bizno} · 조회 ${c.hits}회</div>
+        </div>`).join('')+`</div>`;
+  }catch(e){}
+}
+
+/* ═══ 상품·서비스명 진입 — 판판대로 선정기업 제품 73,034건(상품 40,941종·카테고리 281종) 색인 ═══
+   PCATS: 카테고리 40종(중분류) + 품목(MTI) 매핑 + 등록 상품 수
+   PKW  : 상품명에서 추출한 특징 키워드 1,500개 → [카테고리 인덱스, 등장 상품 수]        */
+const NAME_EX=['수제 딸기잼','비건 세럼','반려동물 사료','친환경 주방세제','수제 가죽 가방','건강기능식품 홍삼','유아 원목 교구','캠핑 취사도구'];
+let entryMode='biz';
+function setEntry(m){
+  entryMode=m;
+  document.getElementById('otabBiz').classList.toggle('on',m==='biz');
+  document.getElementById('otabName').classList.toggle('on',m==='name');
+  document.getElementById('entryBiz').style.display = m==='biz'?'block':'none';
+  document.getElementById('entryName').style.display = m==='name'?'block':'none';
+  const ex=document.getElementById('nameEx');
+  if(m==='name' && ex && !ex.children.length)
+    ex.innerHTML=NAME_EX.map(t=>`<button onclick="fillName('${t}')">${t}</button>`).join('');
+}
+function fillName(t){ const el=document.getElementById('pname'); el.value=t; onNameInput(); searchByName(); }
+function onNameInput(){
+  const v=document.getElementById('pname').value.trim();
+  document.getElementById('nameGo').disabled = v.length<2;
+}
+function matchProduct(q){
+  const s=String(q||'').toLowerCase();
+  const score=new Array(PCATS.length).fill(0); const hits=[];
+  for(const k in PKW){
+    if(s.includes(k.toLowerCase())){
+      const [ci,cnt]=PKW[k];
+      score[ci]+= Math.log10(cnt+10)*Math.min(k.length,6);
+      hits.push({k,ci,cnt});
+    }
+  }
+  const ranked=score.map((v,i)=>({i,v})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,4);
+  return {ranked, hits};
+}
+async function searchCompany(q){
+  const box=document.getElementById('coOut'); if(!box) return;
+  if(API.base===null) return;   // 서버 없이 열었을 때는 회사명 검색 생략
+  box.style.display='none'; box.innerHTML='';
+  try{
+    const r=await Promise.race([
+      fetch(`/api/onboard?q=${encodeURIComponent(q)}`).then(x=>x.ok?x.json():null),
+      new Promise(res=>setTimeout(()=>res(null), 6000))
+    ]);
+    const list=(r&&r.companies)||[];
+    if(!list.length) return;                    // 결과 없으면 조용히 숨김
+    box.style.display='block';
+    box.innerHTML=`<div class="nres-h">「${q}」와 이름이 비슷한 사업장이 국민연금 가입 정보에서 ${list.length}곳 확인됩니다. 우리 회사가 있으면 골라 주세요.</div>`
+      + list.map(c=>`<button class="nres" onclick="pickCompany(${c.seq},${JSON.stringify(c.name||'').replace(/"/g,'&quot;')})">
+          <span class="ic">${(c.name||'기').replace(/[^가-힣A-Za-z]/g,'').charAt(0)||'기'}</span>
+          <span><b>${c.name||'-'}</b><small>${[c.addr,c.cnt!=null?'가입자 '+Number(c.cnt).toLocaleString()+'명':null].filter(Boolean).join(' · ')||'상세 정보 없음'}</small></span>
+          <span class="go">선택 →</span></button>`).join('');
+  }catch(e){ /* 검색 실패 시 상품명 결과만 사용 */ }
+}
+async function pickCompany(seq,name){
+  let d=null;
+  try{
+    const r=await Promise.race([
+      fetch(`/api/onboard?q=${encodeURIComponent(name||'x')}&seq=${seq}`).then(x=>x.ok?x.json():null),
+      new Promise(res=>setTimeout(()=>res(null), 6000))
+    ]);
+    d=r&&r.detail;
+  }catch(e){}
+  const emp=Number(d?.cnt)||0;
+  const sector=d?.sector||'';
+  const addr=d?.addr||'';
+  const RG=[['서울','서울시'],['부산','부산시'],['대구','대구시'],['인천','인천시'],['광주','광주시'],['대전','대전시'],['울산','울산시'],['세종','세종시'],
+    ['경기','경기도'],['강원','강원특별자치도'],['충북','충청북도'],['충남','충청남도'],['전북','전북특별자치도'],['전남','전라남도'],
+    ['경북','경상북도'],['경남','경상남도'],['제주','제주특별자치도']];
+  profile={bizno:null, masked:null, coName:name||'우리 회사', byName:true, byCompany:true,
+    cat:null, mti:guessMti(sector), mkt:'us',
+    biz: emp>=50?'mid' : emp>=5?'small' : 'micro',
+    stage: emp>=1000?'strong' : emp>=300?'growth' : emp>=50?'promising' : emp>=5?'novice':'domestic',
+    region:(RG.find(([k])=>addr.includes(k))||[])[1]||null,
+    auto: sector||emp ? {why:`${sector||'업종 정보'} · 국민연금 가입자 ${emp.toLocaleString()}명 기준 자동 판정`} : null,
+    npsSector:sector, npsCnt:emp, npsAddr:addr};
+  liveBiz=null;
+  go('match');
+}
+function searchByName(){
+  const q=document.getElementById('pname').value.trim();
+  if(q.length<2) return;
+  searchCompany(q);
+  const {ranked,hits}=matchProduct(q);
+  const out=document.getElementById('nameOut'), list=document.getElementById('nresList'), h=document.getElementById('nresH');
+  out.style.display='block';
+  if(!ranked.length){
+    h.textContent='입력하신 말과 같은 종류로 등록된 상품은 찾지 못했습니다. 회사명을 넣으셨다면 위의 사업장 검색 결과를 확인해 주세요.';
+    list.innerHTML=`<div class="priv-note">상품을 설명하는 단어를 넣어 보세요. 예를 들어 「딸기잼」보다 「수제 딸기잼 선물세트」처럼 쓰면 더 잘 찾습니다.<br>
+      아래에서 품목을 직접 고르셔도 됩니다.</div>
+      <div class="name-ex" style="margin-top:14px">${Object.entries(MTIS).map(([k,v])=>
+        `<button onclick="pickMti('${k}',null)">${v.replace(/\s*\(.*\)/,'')}</button>`).join('')}</div>`;
+    return;
+  }
+  const kw=[...new Set(hits.map(x=>x.k))].slice(0,6);
+  h.innerHTML=`「${q}」에서 <b>${kw.join(' · ')}</b> 를 인식했습니다. 판판대로에 등록된 비슷한 상품 분야입니다 — 해당하는 것을 골라 주세요.`;
+  list.innerHTML=ranked.map(r=>{
+    const c=PCATS[r.i];
+    return `<button class="nres" onclick="pickMti('${c.mti}',${r.i})">
+      <span class="ic">${c.m.charAt(0)}</span>
+      <span><b>${c.m}</b><small>등록 상품 ${c.n.toLocaleString()}건 · 품목 분류 ${MTIS[c.mti].replace(/\s*\(.*\)/,'')}</small></span>
+      <span class="go">선택 →</span></button>`;
+  }).join('') + `<div class="priv-note" style="margin-top:14px">찾는 분야가 없으면 사업자번호로 조회하시면 더 정확합니다.</div>`;
+}
+function pickMti(mti,ci){
+  const q=document.getElementById('pname').value.trim();
+  profile={bizno:null, masked:null, mti:mti, mkt:'us', stage:'domestic', biz:'micro', auto:null,
+           coName:q||'우리 회사', byName:true, cat: ci!=null?PCATS[ci].m:null};
+  liveBiz=null;
+  go('match');
+}
+
+/* ═══════════ 세로 리포트 — 정렬 · 필터 · 렌더 ═══════════ */
+/* 서비스별 실집행 금액 — 중진공 이용실적 분석대상 O 51,212건 중앙값 (원) */
+const SVC_AMT={"01":{u:6000000,s:4200000,sp:30},"02":{u:7058514,s:4657979,sp:30},"03":{u:7000000,s:4557700,sp:30},
+"04":{u:16430000,s:10680000,sp:30},"05":{u:13900000,s:8995000,sp:30},"06":{u:3182899,s:2100000,sp:30},
+"07":{u:2420000,s:1428600,sp:40},"08":{u:938870,s:588994,sp:30},"09":{u:19000000,s:12000000,sp:30},
+"10":{u:675000,s:420000,sp:30},"11":{u:6000000,s:3600000,sp:30},"12":{u:590000,s:344400,sp:30},
+"13":{u:514000,s:325325,sp:40},"14":{u:818170,s:512673,sp:40}};
+
+const SORT_A=[['fit','적합도순'],['amt','지원금액 높은순'],['use','이용 많은순'],['exc','우수기업 선호순']];
+const SORT_B=[['fit','적합도순'],['dday','모집 마감일순'],['rg','지역순']];
+const AMT_BANDS=[['lo','100만원 미만'],['mid','100만~500만원'],['hi','500만원 이상']];
+let sortA='fit', sortB='fit', showA=6, showB=6, curF='A';
+let filtA={amt:[]}, filtB={st:[],rg:[],cat:[]};
+
+/* 공고 데이터는 2023~2025년 이력이다. '진행상태'는 원본 추출 시점 값이므로
+   화면에는 오늘 날짜와 모집 종료월을 비교한 실제 상태를 표시한다. */
+const NOWYM=(()=>{const d=new Date();return String(d.getFullYear()%100).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');})();
+function pOpen(p){
+  const e=String(p.e||'');
+  if(!e) return {lbl:'기간 미정', cls:'far', open:false};
+  if(e>=NOWYM) return {lbl:'모집 중', cls:'', open:true};
+  return {lbl:'모집 종료', cls:'far', open:false};
+}
+const manwon=n=>{const v=Number(n)||0; return v>=1e8?(v/1e8).toFixed(1)+'억원':Math.round(v/1e4).toLocaleString()+'만원';};
+function jump(id){const el=document.getElementById(id); if(el) window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-124,behavior:'smooth'});}
+function setSort(t,k){ if(t==='A'){sortA=k;showA=6;} else {sortB=k;showB=6;} recalc(); }
+function showMore(t){ if(t==='A') showA+=6; else showB+=6; recalc(); }
+function setTrack(t){ jump(t==='A'?'sec3':'sec4'); }
+
+/* ── 필터 드로어 ── */
+function openFilter(t){
+  curF=t;
+  document.getElementById('drawerTitle').textContent = t==='A'?'수출바우처 필터':'지원사업 필터';
+  const body=document.getElementById('drawerBody');
+  const grp=(label,g,opts,sel)=>`<div class="fg"><b>${label}</b><div class="fo">${opts.map(([k,v])=>
+    `<label class="${sel.includes(k)?'on':''}" onclick="toggleF('${g}','${k}',this)">${v}</label>`).join('')}</div></div>`;
+  if(t==='A'){
+    body.innerHTML=grp('기업 자부담 포함 이용금액(중앙값)','amt',AMT_BANDS,filtA.amt);
+  }else{
+    const regs=[...new Set(PRG_REAL.map(p=>p.rg).filter(Boolean))].sort();
+    const cats=[...new Set(PRG_REAL.map(p=>p.c).filter(Boolean))].sort();
+    body.innerHTML=grp('원본 진행상태 (2023~2025 공고 기준)','st',[['공고중','공고중'],['운영중','운영중'],['사후관리','사후관리']],filtB.st)
+      + grp('지역','rg',[['전국','전국(지역 제한 없음)'],...regs.map(r=>[r,r])],filtB.rg)
+      + grp('사업 유형','cat',cats.map(c=>[c,c]),filtB.cat);
+  }
+  document.getElementById('drawerApply').textContent = `${t==='A'?lastA:lastB}건 보기`;
+  document.getElementById('drawerBg').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+  document.documentElement.style.overflow='hidden';
+  document.querySelectorAll('.drawer .fo label').forEach(l=>l.setAttribute('tabindex','0'));
+}
+function toggleF(g,k,el){
+  const box = curF==='A'?filtA:filtB;
+  const arr = box[g]; const i=arr.indexOf(k);
+  if(i<0) arr.push(k); else arr.splice(i,1);
+  el.classList.toggle('on', i<0);
+  if(curF==='A') showA=6; else showB=6;
+  recalc();
+  const n = curF==='A' ? lastA : lastB;
+  document.getElementById('drawerApply').textContent = `${n}건 보기`;
+}
+function closeFilter(){ document.getElementById('drawerBg').classList.remove('on'); document.getElementById('drawer').classList.remove('on'); document.documentElement.style.overflow=''; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && document.getElementById('drawer').classList.contains('on')) closeFilter(); });
+function resetFilter(){
+  if(curF==='A') { filtA={amt:[]}; showA=6; } else { filtB={st:[],rg:[],cat:[]}; showB=6; }
+  recalc(); openFilter(curF);
+}
+
+/* ── 스크롤스파이 ── */
+let spyTicking=false;
+function scrollSpy(){
+  if(spyTicking) return; spyTicking=true;
+  requestAnimationFrame(()=>{
+    spyTicking=false;
+    const nav=document.getElementById('rnav'); if(!nav) return;
+    let cur=null;
+    nav.querySelectorAll('a').forEach(a=>{
+      const el=document.getElementById(a.dataset.s);
+      if(el && el.getBoundingClientRect().top<=200) cur=a;
+    });
+    nav.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a===cur));
+  });
+}
+window.addEventListener('scroll',scrollSpy,{passive:true});
+
+/* ── 기업 확인 카드 4종 ── */
+function renderAgencies(){
+  const box=document.getElementById('agvGrid'); if(!box) return;
+  const hd=document.querySelector('#sec1 .shd h3'), sub=document.querySelector('#sec1 .ssub');
+  if(profile.byCompany){
+    if(hd) hd.textContent='회사명으로 조회한 결과';
+    if(sub) sub.innerHTML=`「${profile.coName}」의 국민연금 가입 사업장 정보로 조건을 판정했습니다.`;
+    box.innerHTML=`
+      <div class="card"><div class="ag-h">국민연금공단 · 업종<span class="live"><span class="d"></span>실시간</span></div>
+        <div class="ag-v">${profile.npsSector||'정보 없음'}</div><div class="ag-s">사업장 업종 분류</div></div>
+      <div class="card"><div class="ag-h">국민연금공단 · 근로자 규모<span class="live"><span class="d"></span>실시간</span></div>
+        <div class="ag-v">${profile.npsCnt?Number(profile.npsCnt).toLocaleString()+'명':'정보 없음'}</div><div class="ag-s">가입자 수 기준</div></div>
+      <div class="card" style="grid-column:1/-1;background:var(--blue-bg);border-color:#D6E2F8">
+        <div class="ag-h" style="color:var(--blue)">더 정확하게 보시려면</div>
+        <div class="ag-s" style="color:var(--ink2);font-size:14px;margin-top:0">
+          회사명 조회로는 업종과 근로자 규모까지만 확인됩니다. 사업자번호를 입력하시면 국세청 사업자 상태, 공정거래위원회 취급품목, 금융위원회 공시 재무까지 함께 조회해 더 정확히 판정합니다.</div>
+        <button class="btn btn-o" style="margin-top:14px" onclick="go('onboard');setEntry('biz')">사업자번호로 다시 찾기</button>
+      </div>`;
+    document.getElementById('sec1Foot').textContent=`근거: 국민연금공단 국민연금 가입 사업장 내역 공공 API${profile.npsAddr?' · 소재지 '+profile.npsAddr:''}.`;
+    return;
+  }
+  if(profile.byHs){
+    const x=profile.hs||{};
+    if(hd) hd.textContent='HS코드로 판정한 품목';
+    if(sub) sub.innerHTML=`HS ${x.hs} 를 중진공 수출기업 신고 데이터와 대조했습니다.`;
+    box.innerHTML=`
+      <div class="card"><div class="ag-h">HS 6단위</div><div class="ag-v" style="letter-spacing:.06em">${x.hs}</div>
+        <div class="ag-s">${x.group} 계열</div></div>
+      <div class="card"><div class="ag-h">MTI 품목 분류</div><div class="ag-v">${x.item}</div>
+        <div class="ag-s">MTI ${x.mti3} · 이 품목으로 수출바우처를 이용한 기업 ${Number(x.firms||0).toLocaleString()}곳</div></div>
+      <div class="card" style="grid-column:1/-1;background:var(--blue-bg);border-color:#D6E2F8">
+        <div class="ag-h" style="color:var(--blue)">기업 목록을 제공하지 않는 이유</div>
+        <div class="ag-s" style="color:var(--ink2);font-size:14px;margin-top:0">
+          제공받은 원본에서 기업 식별자가 가명으로 처리되어 있어, 특정 HS코드로 수출하는 기업의 실명 목록은 만들 수 없습니다.
+          대신 같은 품목 기업들이 실제로 어떤 지원을 받았는지를 아래에서 보여드립니다.</div>
+        <button class="btn btn-o" style="margin-top:14px" onclick="go('home')">사업자번호로 다시 찾기</button>
+      </div>`;
+    document.getElementById('sec1Foot').textContent='근거: 중소벤처기업진흥공단 수출바우처 지원기업 10,020건의 HS 6단위 ↔ MTI 품목 대응 1,641쌍(결측 0%).';
+    return;
+  }
+  if(profile.byName){
+    if(hd) hd.textContent='입력한 상품으로 판정한 조건';
+    if(sub) sub.innerHTML=`「${profile.coName}」을(를) 판판대로 등록 상품과 대조했습니다.`;
+    box.innerHTML=`
+      <div class="card" style="grid-column:1/-1">
+        <div class="ag-h">판판대로 선정기업 제품정보 · 상품 대조 결과</div>
+        <div class="ag-v">${profile.cat||MTIS[profile.mti].replace(/\s*\(.*\)/,'')}</div>
+        <div class="ag-s">품목 분류 ${MTIS[profile.mti]} · 같은 분야로 등록된 상품이 있는 기업들의 신청·선정 패턴을 기준으로 아래 결과를 계산했습니다.</div>
+      </div>
+      <div class="card" style="grid-column:1/-1;background:var(--blue-bg);border-color:#D6E2F8">
+        <div class="ag-h" style="color:var(--blue)">더 정확하게 보시려면</div>
+        <div class="ag-s" style="color:var(--ink2);font-size:14px;margin-top:0">
+          사업자번호를 입력하시면 국세청·공정거래위원회·국민연금공단·금융위원회에서 실제 업종·근로자 수·매출을 조회해
+          기업 규모와 수출 단계까지 자동으로 판정합니다. 지금은 상품 분야만으로 계산한 결과입니다.</div>
+        <button class="btn btn-o" style="margin-top:14px" onclick="go('onboard');setEntry('biz')">사업자번호로 다시 찾기</button>
+      </div>`;
+    document.getElementById('sec1Foot').textContent='근거: 한국중소벤처기업유통원 판판대로 선정기업 제품정보 73,034건(상품 40,941종·카테고리 281종) 상품명 색인.';
+    return;
+  }
+  if(hd) hd.textContent='기업 확인 결과';
+  if(sub) sub.innerHTML='공공데이터 4개 기관에서 조회한 값입니다. <span class="chip chip-demo" id="mDemoBadge">데모 데이터</span>';
+  const L=liveBiz||{}; const demo=!(L.ok && (L.ftc?.name||L.nps?.name||L.fsc?.corpNm));
+  const dt=v=>{const t=String(v||'').replace(/\D/g,''); return t.length===8?`${t.slice(0,4)}.${t.slice(4,6)}.${t.slice(6)}`:(t.length===6?`${t.slice(0,4)}.${t.slice(4)}`:'');};
+  const won=v=>{const n=Number(v); return !n||isNaN(n)?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':Math.round(n/1e8).toLocaleString()+'억원');};
+  const cards=[
+    {t:'국세청', ok:L.nts?.status==='LIVE', v:L.nts?.b_stt||'계속사업자', s:L.nts?.tax_type||'부가가치세 일반과세자', why:'사업자 등록 상태'},
+    {t:'공정거래위원회', ok:L.ftc?.status==='LIVE', v:L.ftc?.name||'(주)한빛코스메틱', s:(L.ftc?.items||'화장품 도소매')+(L.ftc?.dclrDate?' · 신고 '+dt(L.ftc.dclrDate):''), why:'통신판매사업자 정보'},
+    {t:'국민연금공단', ok:L.nps?.status==='LIVE', v:(L.nps?.cnt!=null?Number(L.nps.cnt).toLocaleString()+'명':'12명'), s:(L.nps?.sector||'화장품 제조업')+' · 가입자 수', why:'근로자 규모'},
+    {t:'금융위원회', ok:!!L.fsc?.disclosed, v:won(L.fsc?.sales)||'비공시', s:L.fsc?.disclosed?((L.fsc.bizYear||'최근')+'년 매출 · 영업이익 '+(won(L.fsc.opInc)||'-')):'외부감사 대상이 아닌 기업입니다', why:'공시 재무'}
+  ];
+  box.innerHTML=cards.map(c=>{
+    const fail = !c.ok && !demo && c.t!=='금융위원회';
+    if(fail) return `<div class="card fail"><div class="ag-h">${c.t}</div><div class="ag-v">조회 실패</div>
+      <div class="ag-s">응답이 없어 값을 표시하지 않습니다. 다른 항목 결과는 정상입니다.</div>
+      <button class="retry" onclick="go('onboard')">다시 조회</button></div>`;
+    return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
+      ${c.ok?'<span class="live"><span class="d"></span>실시간</span>':''}</div>
+      <div class="ag-v">${c.v}</div><div class="ag-s">${c.s}</div></div>`;
+  }).join('');
+  const t=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sec1Foot').textContent = demo
+    ? '데모 번호로 조회한 예시입니다. 실제 사업자번호를 넣으면 공공데이터 실시간 조회 결과가 표시됩니다.'
+    : `근거: 국세청·공정거래위원회·국민연금공단·금융위원회 공공 API · ${t} 조회 · 조회 결과는 24시간 캐시로 보관되며 이용자 정보는 저장하지 않습니다.`;
+}
+
+/* ── 스티키 요약 바 ── */
+function renderSticky(){
+  const nm=profile.coName || '우리 회사';
+  document.getElementById('sName').textContent=nm;
+  document.getElementById('sAvatar').textContent=nm.replace(/[^가-힣A-Za-z]/g,'').charAt(0)||'기';
+  const cut=v=>String(v||'').replace(/\s*\(.*\)\s*$/,'');
+  const c=[profile.byHs?('HS '+(profile.hs?.hs||'')):(profile.byCompany?'회사명으로 조회':(profile.byName?'상품명으로 조회':null)), cut(MTIS[profile.mti]), cut(MKTS[profile.mkt]), cut(STAGES[profile.stage]), cut(BIZTYPES[profile.biz||'micro']), profile.region].filter(Boolean);
+  document.getElementById('sChips').innerHTML=c.map(x=>`<span>${x}</span>`).join('');
+}
+
+let lastA=0, lastB=0;
 function recalc(){
   if(!profile) return;
   profile.mti=document.getElementById('condMti').value;
   profile.mkt=document.getElementById('condMkt').value;
   profile.stage=document.getElementById('condStage').value;
-  const g=document.getElementById('matchGrid');
-  if(track==='A'){
-    document.getElementById('basisLine').textContent=`${STAGE_SHORT[profile.stage]} 단계 실집행 패턴 + 수출우수(상위35%) 기업 배분 가중 순 · 근거: 중진공 수출바우처 이용실적 52,953건('21~'24, 연 4,921→19,129건) 원본 집계 · 이용금액 중앙값 500만원 · 자부담 중앙값 30%`;
-    const st=profile.stage;
-    const rows=SVC2.map(s=>{
-      const sh=s.share[st]||3;
-      // 단계 배분 70% + 우수기업 지향 30% — 우수기업이 더 쓰는 항목에 가중
-      const score=Math.max(40,Math.min(99,Math.round(40+sh*1.15+s.exc*0.62)));
-      return {...s,sh,score,isReal:true,delta:+(s.exc-s.gen).toFixed(1)};
-    }).sort((a,b)=>b.score-a.score).slice(0,4);
-    g.innerHTML=rows.map(s=>`
-      <div class="card mcard">
-        <div class="top"><div><div class="cat">수출바우처 서비스 유형</div><h4>${s.n}</h4><div class="agency">${STAGE_SHORT[st]} 단계 실집행 ${s.sh}% · 전체 이용 ${s.cnt.toLocaleString()}건</div></div><span class="chip chip-fit">적합 ${s.score}%</span></div>
-        <div class="why"><b>왜 추천했나요?</b> ${s.why[st]||''}</div>
-        <div class="meta"><span>${STAGE_SHORT[st]} 실집행 ${s.sh}%</span><span class="${s.delta>0?'cofund':''}">우수기업 ${s.exc}% vs 일반 ${s.gen}% (${s.delta>0?'+':''}${s.delta}%p)</span><span>자부담 중앙값 30%</span></div>
-        <div class="acts"><button class="btn btn-p" onclick="openPortal('voucher')">수출바우처 메뉴판에서 신청 ↗</button><button class="btn btn-ghost" onclick="toStudio()">이 결과로 콘텐츠 만들기</button></div>
-      </div>`).join('');
-  }else{
-    /* ★ Track B — 한유원 판판대로 지원사업 411건 실데이터 ('23~'25, 암호 해제 원본) */
-    const biz=document.getElementById('condBiz').value||'micro';
-    profile.biz=biz;
-    const tgWord={micro:'소상공인',small:'소기업',mid:'중기업'}[biz];
-    const elig=PRG_REAL.filter(p=>!p.tg || p.tg.includes(tgWord) || p.tg.includes('기타'));
-    document.getElementById('basisLine').textContent=`판판대로 지원사업 실데이터 ${PRG_REAL.length}건('23~'25) 중 ${tgWord} 신청 가능 ${elig.length}건 · 근거: 한유원 지원사업정보 원본 + 선정기업 76,794개사(소상공인 67.7%)`;
-    const rows=elig.map(p=>{
-      let sc=48;
-      if(p.tg===tgWord) sc+=18; else if(p.tg.includes(tgWord)) sc+=9;   // 대상 정합(전용 공고 우대)
-      sc+= p.st==='공고중'?10 : p.st==='운영중'?5 : 0;                    // 진행상태
-      const myRg = profile.region;
-      sc+= !p.rg ? 3 : (myRg && p.rg.includes(myRg.replace(/(특별자치도|특별시|광역시|도|시)$/,'')) ? 8 : -12); // 지역 정합
-      sc+= p.e>='25'?8 : p.e>='24'?4 : 0;                                // 최신 공고 가점
-      sc+= p.pc>=20?5 : p.pc>=5?2 : 0;                                   // 상품등록 활성도
-      sc+= (PRG_CATN[p.c]||0)>=50?3 : 0;                                 // 주력 카테고리
-      return {...p,score:Math.max(40,Math.min(97,sc))};
-    }).sort((a,b)=>b.score-a.score).slice(0,12);
-    g.innerHTML=rows.map(p=>`
-      <div class="card mcard">
-        <div class="top"><div><span class="chip chip-dday ${p.st==='공고중'?'':'far'}">${p.st}</span> <span class="cat" style="margin-left:4px">${p.o}</span><h4>${p.n}</h4></div><span class="chip chip-fit">적합 ${p.score}%</span></div>
-        <div style="font-size:14px;color:var(--ink2)">${p.C} · ${p.c}${p.t?' · '+p.t:''}</div>
-        <div class="why"><b>왜 추천했나요?</b> 대상(${p.tg||'전체'})에 ${tgWord}이 포함되고, ${p.rg? p.rg+' 지역 한정' : '전국'} 사업입니다.${p.rg&&profile.region?` (우리 회사 소재지: ${profile.region})`:''} 같은 유형(${p.c}) 공고가 '23~'25 ${PRG_CATN[p.c]||1}건 운영된 판판대로 주요 트랙${p.pc?` · 등록 상품 ${p.pc}개`:''}.</div>
-        <div class="meta"><span>모집 ${p.s||'-'} ~ ${p.e||'-'}</span><span>${p.rg||'전국'}</span></div>
-        <div class="acts"><button class="btn btn-p" onclick="openPortal('pnp')">공고 보기 ↗ 판판대로</button><button class="btn btn-ghost" onclick="toStudio()">이 결과로 콘텐츠 만들기</button></div>
-      </div>`).join('');
-  }
+  profile.biz=document.getElementById('condBiz').value||'micro';
+  renderAgencies(); renderSticky(); renderDomesticInsight(); renderBudgetNote();
+  const st=profile.stage;
+
+  /* ── 3. 수출바우처 (중진공 실집행 52,953건) ── */
+  let rowsA=SVC2.map(s=>{
+    const sh=s.share[st]||3;
+    const score=Math.max(40,Math.min(99,Math.round(40+sh*1.15+s.exc*0.62)));
+    const amt=SVC_AMT[s.k]||{u:0,s:0,sp:30};
+    return {...s,sh,score,isReal:true,delta:+(s.exc-s.gen).toFixed(1),amt};
+  });
+  if(filtA.amt.length) rowsA=rowsA.filter(s=>{
+    const u=s.amt.u; const b=u<1e6?'lo':u<5e6?'mid':'hi'; return filtA.amt.includes(b);
+  });
+  const cmpA={fit:(a,b)=>b.score-a.score, amt:(a,b)=>b.amt.u-a.amt.u, use:(a,b)=>b.cnt-a.cnt, exc:(a,b)=>b.delta-a.delta};
+  rowsA.sort(cmpA[sortA]||cmpA.fit);
+  lastA=rowsA.length;
+  document.getElementById('sortA').innerHTML=SORT_A.map(([k,v])=>`<button class="${sortA===k?'on':''}" onclick="setSort('A','${k}')">${v}</button>`).join('');
+  document.getElementById('fbtnA').classList.toggle('act', filtA.amt.length>0);
+  document.getElementById('basisA').textContent=`${STAGE_SHORT[st]} 단계 기업들의 실제 집행 비중과 수출우수 기업 선호도를 함께 반영해 ${rowsA.length}건을 정렬했습니다.`;
+  document.getElementById('gridA').innerHTML=rowsA.slice(0,showA).map(s=>`
+    <div class="card mcard">
+      <div class="top"><div><div class="cat">수출바우처 서비스</div><h4>${s.n}</h4>
+        <div class="agency">${STAGE_SHORT[st]} 단계 집행 비중 ${s.sh}% · 전체 이용 ${s.cnt.toLocaleString()}건</div></div>
+        <div class="fitwrap"><span class="chip chip-fit">적합도 ${s.score}</span><div class="fitbar"><i style="width:${s.score}%"></i></div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:4px">100점 만점</div></div></div>
+      <div class="why"><b>왜 추천했나요?</b> ${s.why[st]||''}</div>
+      ${fxBadge(s.k)}
+      <div class="meta"><span>이용금액 중앙값 ${manwon(s.amt.u)}</span><span>국고보조 ${manwon(s.amt.s)}</span>
+        <span class="cofund">자부담 ${s.amt.sp}%</span>
+        <span class="${s.delta>0?'cofund':''}">우수기업 ${s.exc}% vs 일반 ${s.gen}% (${s.delta>0?'+':''}${s.delta}%p)</span></div>
+      <div class="acts"><button class="btn btn-p" onclick="openPortal('voucher')">수출바우처에서 확인 ↗</button>
+        <button class="btn btn-ghost" onclick="toStudio()">콘텐츠 만들기</button></div>
+    </div>`).join('') || '<div class="card empty-state"><div class="big">🔍</div><h3>조건에 맞는 서비스가 없습니다</h3><p>필터를 조정해 보세요.</p></div>';
+  const mA=document.getElementById('moreA');
+  mA.style.display = rowsA.length>showA ? 'block':'none';
+  mA.textContent = `더 보기 (${Math.max(0,rowsA.length-showA)}건 남음)`;
+  document.getElementById('footA').textContent='근거: 중소벤처기업진흥공단 수출바우처 이용실적 52,953건(2021~2024) 중 분석대상 51,212건 원본 집계. 금액은 원(KRW) 중앙값입니다.';
+
+  /* ── 4. 판판대로 지원사업 (한유원 실공고) ── */
+  const tgWord={micro:'소상공인',small:'소기업',mid:'중기업',etc:'기타'}[profile.biz]||'소상공인';
+  let rowsB=PRG_REAL.filter(p=>!p.tg || p.tg.includes(tgWord) || p.tg.includes('기타')).map(p=>{
+    let sc=48;
+    if(p.tg===tgWord) sc+=18; else if(p.tg.includes(tgWord)) sc+=9;
+    sc+= p.st==='공고중'?10 : p.st==='운영중'?5 : 0;
+    sc+= pOpen(p).open?6:0;   // 오늘 기준 모집 중인 공고 우대
+    const myRg=profile.region;
+    sc+= !p.rg ? 3 : (myRg && p.rg.includes(myRg.replace(/(특별자치도|특별시|광역시|도|시)$/,'')) ? 8 : -12);
+    sc+= p.e>='25'?8 : p.e>='24'?4 : 0;
+    sc+= p.pc>=20?5 : p.pc>=5?2 : 0;
+    sc+= (PRG_CATN[p.c]||0)>=50?3 : 0;
+    return {...p,score:Math.max(40,Math.min(97,sc))};
+  });
+  if(filtB.st.length) rowsB=rowsB.filter(p=>filtB.st.includes(p.st));
+  if(filtB.rg.length) rowsB=rowsB.filter(p=>filtB.rg.includes(p.rg||'전국'));
+  if(filtB.cat.length) rowsB=rowsB.filter(p=>filtB.cat.includes(p.c));
+  const cmpB={fit:(a,b)=>b.score-a.score,
+    dday:(a,b)=>{const oa=pOpen(a).open,ob=pOpen(b).open;
+      if(oa!==ob) return oa?-1:1;                                   // 모집 중인 공고 먼저
+      return oa ? String(a.e).localeCompare(String(b.e))             // 모집 중 → 임박 순
+                : String(b.e||'').localeCompare(String(a.e||''));},  // 종료 → 최근 마감 순
+    rg:(a,b)=>String(a.rg||'힣').localeCompare(String(b.rg||'힣'))};
+  rowsB.sort(cmpB[sortB]||cmpB.fit);
+  lastB=rowsB.length;
+  document.getElementById('sortB').innerHTML=SORT_B.map(([k,v])=>`<button class="${sortB===k?'on':''}" onclick="setSort('B','${k}')">${v}</button>`).join('');
+  document.getElementById('fbtnB').classList.toggle('act', filtB.st.length+filtB.rg.length+filtB.cat.length>0);
+  document.getElementById('basisB').textContent=`판판대로 원본 411건 중 아직 공고 전인 '작성중' 39건을 뺀 ${PRG_REAL.length}건이 매칭 대상이며, 그중 ${tgWord} 신청 가능 ${rowsB.length}건입니다.`;
+  document.getElementById('gridB').innerHTML=rowsB.slice(0,showB).map(p=>`
+    <div class="card mcard">
+      <div class="top"><div><span class="chip chip-dday ${pOpen(p).cls}">${pOpen(p).lbl}</span>
+        <span class="cat" style="margin-left:4px">${p.o}</span><h4>${p.n}</h4></div>
+        <div class="fitwrap"><span class="chip chip-fit">적합도 ${p.score}</span><div class="fitbar"><i style="width:${p.score}%"></i></div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:4px">100점 만점</div></div></div>
+      <div style="font-size:14px;color:var(--ink2)">${p.C} · ${p.c}${p.t?' · '+p.t:''}</div>
+      <div class="why"><b>왜 추천했나요?</b> 신청 대상(${p.tg||'전체'})에 ${tgWord}이 포함되고, ${p.rg? p.rg+' 지역 사업' : '전국 대상 사업'}입니다.${p.rg&&profile.region?` (우리 회사 소재지 ${profile.region})`:''} 같은 유형(${p.c}) 공고가 2023~2025년 ${PRG_CATN[p.c]||1}건 운영되었습니다.${p.pc?` 등록 상품 ${p.pc}개.`:''}</div>
+      <div class="meta"><span>모집 ${p.s||'-'} ~ ${p.e||'-'}</span><span>${p.rg||'전국'}</span></div>
+      <div class="acts"><button class="btn btn-p" onclick="openPortal('pnp')">판판대로에서 공고 보기 ↗</button>
+        <button class="btn btn-ghost" onclick="toStudio()">콘텐츠 만들기</button></div>
+    </div>`).join('') || '<div class="card empty-state"><div class="big">🔍</div><h3>조건에 맞는 사업이 없습니다</h3><p>필터를 조정하거나 조건을 바꿔 보세요.</p></div>';
+  const mB=document.getElementById('moreB');
+  mB.style.display = rowsB.length>showB ? 'block':'none';
+  mB.textContent = `더 보기 (${Math.max(0,rowsB.length-showB)}건 남음)`;
+  document.getElementById('footB').textContent=`근거: 한국중소벤처기업유통원 판판대로 지원사업 정보 원본(2023~2025) + 선정 이력 76,794건·30,119개사(소상공인 67.7%). 제공된 공고 이력 기준이며 오늘(${NOWYM.replace('.','년 ')}월) 기준 모집 중인 사업은 ${PRG_REAL.filter(x=>pOpen(x).open).length}건입니다. 최신 공고는 판판대로 원문에서 확인해 주세요.`;
+
+  /* ── 5. 컨설팅 2트랙 ── */
+  const isDom = profile.stage==='domestic';
+  const topB = rowsB.slice(0,3), topA = rowsA.slice(0,3);
+  document.getElementById('consultBox').innerHTML=`
+    <div class="card">
+      <div class="tk">국내 판로</div><h4>먼저 국내에서 판매 기반을 만드세요</h4>
+      <div class="dg">${tgWord} 기준으로 신청 가능한 판판대로 사업이 ${rowsB.length}건 있습니다. 선정 기업의 67.7%가 소상공인이라 규모가 작아도 기회가 충분합니다.</div>
+      ${topB.map((p,i)=>`<div class="act"><i>${i+1}</i><div>${p.n}<br><span class="muted">${pOpen(p).lbl} · 모집 ~${p.e||'-'}</span></div></div>`).join('')}
+    </div>
+    <div class="card ${isDom?'dim':''}">
+      <div class="tk b">해외 수출</div><h4>${isDom?'수출은 다음 단계로 준비하세요':'지금 단계에서 효과가 큰 순서입니다'}</h4>
+      <div class="dg">${isDom?'아직 수출 실적이 없는 단계로 판정되었습니다. 국내 기반을 먼저 다진 뒤 아래 순서로 준비하시면 됩니다.':`${STAGE_SHORT[st]} 단계 기업들이 실제로 가장 많이 집행한 순서입니다.`} 목표 시장은 미국 51.3%·일본 8.4%·중국 8.2% 순으로 이용이 많습니다.</div>
+      ${topA.map((s,i)=>`<div class="act"><i>${i+1}</i><div>${s.n}<br><span class="muted">이용금액 중앙값 ${manwon(s.amt.u)} · 자부담 ${s.amt.sp}%</span></div></div>`).join('')}
+    </div>`;
+  document.getElementById('footC').textContent='근거: 수출단계는 조회된 근로자 수·매출 규모로 추정한 값입니다. 실제와 다르면 위 2번에서 직접 바꿔 주세요.';
+  stampSig();
+  scrollSpy();
 }
 function openPortal(k){
   const url = k==='voucher' ? 'https://www.exportvoucher.com/portal/menupan/menu' : 'https://fanfandaero.kr';
@@ -822,7 +1708,7 @@ function initStudio(){
 function renderStudio(i){
   curStudio=i;
   STUDIO.forEach((_,j)=>document.getElementById('st'+j).classList.toggle('on',j===i));
-  const p=profile||{mti:'cos',mkt:'jp',stage:'novice'};
+  const p=profile||{mti:'chem',mkt:'us',stage:'novice'};
   document.getElementById('studioOut').textContent=STUDIO[i].gen(p);
   document.getElementById('copyMsg').textContent='복사하면 어디든 붙여넣어 쓸 수 있습니다.';
 }
@@ -856,7 +1742,69 @@ async function doAsk(){
     document.getElementById('askOut').style.display='block';
   }, API.base?0:900);
 }
+/* 실데이터 기반 응답 — KB보다 우선. 매칭 결과와 같은 원본에서 답한다 */
+function dataAnswer(q){
+  const won=n=>Math.round(n/1e4).toLocaleString()+'만원';
+  const has=!!profile;
+  const stg=has?profile.stage:'novice';
+  const tgWord=has?({micro:'소상공인',small:'소기업',mid:'중기업',etc:'기타'}[profile.biz]||'소상공인'):'소상공인';
+  const need='\n\n※ 사업자번호를 입력하시면 회사 조건에 맞춰 더 정확히 골라 드립니다.';
+  const listP=(arr)=>arr.map((p,i)=>`${i+1}. ${p.n}\n   ${p.o} · ${pOpen(p).lbl} · 모집 ~${p.e||'미정'} · ${p.rg||'전국'}`).join('\n');
+  const svcTop=(n)=>SVC2.map(s=>({...s,sh:s.share[stg]||3})).sort((a,b)=>b.sh-a.sh).slice(0,n);
+  const ref=(t,src,rel)=>({t,src,rel});
+
+  if(/마감|임박|기한|언제까지/.test(q)){
+    const open=PRG_REAL.filter(p=>pOpen(p).open).sort((a,b)=>String(a.e).localeCompare(String(b.e)));
+    const rows=open.slice(0,5);
+    const closed=PRG_REAL.filter(p=>p.e&&!pOpen(p).open).sort((a,b)=>String(b.e).localeCompare(String(a.e))).slice(0,3);
+    return {answer: open.length
+      ? `제공된 공고 이력 가운데 오늘 기준 아직 모집 중인 사업 ${open.length}건입니다.\n\n${listP(rows)}\n\n나머지는 모집이 종료된 이력입니다. 최신 공고는 판판대로 원문에서 확인해 주세요.${has?'':need}`
+      : `제공된 데이터는 2023~2025년 공고 이력이라 오늘 기준으로 모집 중인 사업이 없습니다.\n\n대신 가장 최근에 마감된 사업을 보여드립니다. 같은 사업이 해마다 반복 공고되는 경우가 많아 참고가 됩니다.\n\n${listP(closed)}\n\n실제 모집 중인 공고는 판판대로 원문에서 확인해 주세요.${has?'':need}`,
+      refs:[ref('판판대로 지원사업 정보 (2023~2025)','한국중소벤처기업유통원',95),ref('공고 진행상태 분포','판판대로 원본 집계',82)]};
+  }
+  if(/지금 신청|신청할 수 있|모집 ?중|공고 ?중|가능한 사업/.test(q)){
+    const cand=PRG_REAL.filter(p=>(!p.tg||p.tg.includes(tgWord)));
+    const openN=cand.filter(p=>pOpen(p).open);
+    const rows=(openN.length?openN:cand).slice(0,5);
+    return {answer: openN.length
+      ? `오늘 기준 모집 중이면서 ${tgWord}이 신청할 수 있는 사업 ${openN.length}건입니다.\n\n${listP(rows)}\n\n제공된 데이터는 2023~2025년 공고 이력이라 모집 중인 건이 많지 않습니다. ${tgWord}이 신청 가능했던 사업은 모두 ${cand.length}건으로, 해마다 반복되는 사업이 많으니 「매칭 결과」에서 전체 목록을 확인해 보세요.${has?'':need}`
+      : `제공된 공고 이력(2023~2025년)에는 오늘 기준 모집 중인 ${tgWord} 대상 사업이 없습니다. ${tgWord}이 신청 가능했던 사업 ${cand.length}건 가운데 최근 사례를 보여드립니다.\n\n${listP(rows)}\n\n같은 사업이 해마다 반복 공고되는 경우가 많으니, 실제 모집 여부는 판판대로 원문에서 확인해 주세요.${has?'':need}`,
+      refs:[ref('판판대로 지원사업 정보 (2023~2025)','한국중소벤처기업유통원',96)]};
+  }
+  if(/적합|맞는 지원사업|추천|찾아 ?줘|대상이 되/.test(q)&&/지원사업|사업/.test(q)){
+    const rows=PRG_REAL.filter(p=>!p.tg||p.tg.includes(tgWord)).slice(0,5);
+    return {answer:`${tgWord} 기준으로 신청 가능한 사업이 ${PRG_REAL.filter(p=>!p.tg||p.tg.includes(tgWord)).length}건 있습니다. 상위 5건입니다.\n\n${listP(rows)}\n\n판판대로 선정 이력 76,794건(30,119개사) 가운데 67.7%가 소상공인이라, 규모가 작아도 기회가 충분합니다.${has?'\n\n전체 순위와 적합도는 「매칭 결과」 화면에서 볼 수 있습니다.':need}`,
+      refs:[ref('판판대로 지원사업 정보 (2023~2025)','한국중소벤처기업유통원',97),ref('선정기업 정보 76,794건','판판대로 원본 집계',88)]};
+  }
+  if(/수출.*(하고 싶|어떻게|뭘|무엇|시작|처음)|해외 ?진출/.test(q)){
+    const t=svcTop(3);
+    return {answer:`같은 단계(${STAGE_SHORT[stg]}) 기업들이 실제로 가장 많이 집행한 순서입니다.\n\n${t.map((s,i)=>`${i+1}. ${s.n}\n   집행 비중 ${s.sh}% · 이용금액 중앙값 ${won((SVC_AMT[s.k]||{u:0}).u)} · 자부담 ${(SVC_AMT[s.k]||{sp:30}).sp}%`).join('\n')}\n\n목표 시장은 미국 51.3%, 일본 8.4%, 중국 8.2% 순으로 이용이 많습니다.\n\n한편 국내 판로도 함께 보시려면 판판대로 지원사업 ${PRG_REAL.filter(p=>!p.tg||p.tg.includes(tgWord)).length}건이 대상입니다. 수출과 내수 중 어느 쪽을 먼저 보실지에 따라 순서가 달라집니다.${has?'':need}`,
+      refs:[ref('수출바우처 이용실적 51,212건 (2021~2024)','중소벤처기업진흥공단',96),ref('단계별 서비스 집행 분포','중진공 원본 집계',89)]};
+  }
+  if(/온라인|쇼핑몰|입점|판매를 늘|매출을 늘|국내 ?판로/.test(q)){
+    const rows=PRG_REAL.filter(p=>/온라인|유통|판매|커머스|쇼핑/.test(p.c+p.n)&&(!p.tg||p.tg.includes(tgWord))).slice(0,5);
+    return {answer:`온라인 판로와 관련된 판판대로 사업입니다.\n\n${rows.length?listP(rows):'조건에 맞는 공고를 찾지 못했습니다.'}\n\n참고로 판판대로 선정기업의 업종 1위는 전자상거래 소매업(10,511건)으로, 온라인 판매 기업의 참여가 가장 활발합니다.${has?'':need}`,
+      refs:[ref('판판대로 지원사업 정보 (2023~2025)','한국중소벤처기업유통원',94),ref('선정기업 업종 분포','판판대로 원본 집계',85)]};
+  }
+  if(/미국|일본|중국|베트남|독일|영국/.test(q)){
+    const c=(q.match(/미국|일본|중국|베트남|독일|영국/)||[])[0];
+    const share={'미국':'51.3%','일본':'8.4%','중국':'8.2%','베트남':'5.3%','독일':'3.5%','영국':'2.7%'}[c];
+    const t=svcTop(3);
+    return {answer:`${c}은 수출바우처 이용 기업의 목표 시장 가운데 ${share}를 차지합니다.\n\n${STAGE_SHORT[stg]} 단계 기업이 실제로 많이 쓴 서비스 순서입니다.\n\n${t.map((s,i)=>`${i+1}. ${s.n} — 집행 비중 ${s.sh}%`).join('\n')}\n\n국가별 필수 인증이나 표시사항은 품목마다 달라, 해외규격인증 서비스로 확인하시는 편이 안전합니다.${has?'':need}`,
+      refs:[ref('수출바우처 목표국가 분포','중소벤처기업진흥공단',95),ref('단계별 서비스 집행 분포','중진공 원본 집계',86)]};
+  }
+  if(/hs ?코드|에이치에스|품목 ?분류|세번/i.test(q)){
+    return {answer:'HS코드는 전 세계가 공통으로 쓰는 상품 분류 번호입니다. 앞 6자리까지가 국제 공통이고, 뒤 4자리는 나라마다 다릅니다.\n\n이 서비스는 중진공 지원기업 데이터에서 HS 6자리와 품목 분류(MTI)가 1:1로 대응하는 관계 1,641쌍을 확보해 두었습니다. 사업자번호로 조회된 업종·취급품목을 이 표에 대조해 품목군을 추정하고, 그 품목군의 실제 서비스 집행 패턴을 보여드립니다.\n\n다만 HS 6자리 확정 분류는 관세청 품목분류 조회에서 확인하셔야 합니다. 같은 상품이라도 성분·용도에 따라 번호가 달라질 수 있습니다.',
+      refs:[{t:'HS 6단위 ↔ MTI 품목 대응 1,641쌍',src:'중진공 지원기업 원본 집계',rel:93}]};
+  }
+  if(/상세페이지|문구|콘텐츠|홍보 ?글|제목|카피/.test(q)){
+    return {answer:'상품 홍보 문구는 「콘텐츠 스튜디오」에서 만들 수 있습니다.\n\n판판대로에 등록된 선정기업 제품 73,034건(상품 40,941종·카테고리 281종)의 상품명·설명·특징에서 표현 패턴을 뽑아 초안 구조를 제시합니다. 같은 카테고리 상품들이 어떤 순서로 무엇을 강조하는지를 참고하는 방식입니다.\n\n원문을 그대로 옮기지 않고 구조와 길이만 참고하므로, 최종 문구는 직접 다듬어 쓰시는 것을 권합니다.',
+      refs:[{t:'판판대로 선정기업 제품정보 73,034건',src:'한국중소벤처기업유통원',rel:94}]};
+  }
+  return null;
+}
 function localAsk(q){
+  const dq=dataAnswer(q); if(dq) return dq;
   const scored=KB.map(n=>{
     let s=0; n.kw.forEach(k=>{if(q.includes(k)) s+=k.length>2?3:2;});
     n.t.split(/\s/).forEach(w=>{if(w.length>1&&q.includes(w)) s+=1;});
@@ -864,7 +1812,7 @@ function localAsk(q){
   }).sort((a,b)=>b.s-a.s);
   const top=scored.filter(x=>x.s>0).slice(0,3);
   if(!top.length){
-    return {answer:'질문과 정확히 맞는 문서를 찾지 못했어요.\n\n이렇게 물어보시면 더 잘 찾습니다.\n· "화장품 수출이 처음인데 뭐부터 하나요?"\n· "수출바우처는 얼마나 지원되나요?"\n· "우리 회사도 지원사업 대상이 되나요?"\n\n또는 온보딩(사업자번호 입력)을 거치면 회사 조건에 맞는 판로를 바로 보여드립니다.',refs:KB.slice(0,3).map((n,i)=>({t:n.t,src:n.src,rel:60-i*7}))};
+    return {answer:'질문과 맞는 내용을 찾지 못했어요.\n\n이렇게 물어보시면 더 잘 찾습니다.\n· "우리 회사에게 적합한 지원사업 찾아줘"\n· "지금 신청할 수 있는 사업만 보여줘"\n· "마감 임박한 사업 알려줘"\n· "수출바우처는 얼마나 지원되나요?"\n\n사업자번호를 입력하시면 회사 조건에 맞춰 더 정확히 답해 드립니다.',refs:KB.slice(0,3).map((n,i)=>({t:n.t,src:n.src,rel:60-i*7}))};
   }
   const maxS=top[0].s;
   return {answer:top[0].n.a,refs:top.map((x,i)=>({t:x.n.t,src:x.n.src,rel:Math.max(48,Math.min(97,Math.round(x.s/maxS*97)-i*9))}))};
@@ -958,7 +1906,7 @@ function loop(cv,W,H){
     gnb.insertAdjacentHTML('beforeend','<span class="divider"></span><span class="full-badge">정식 오픈용</span><button onclick="alert(\'정식 오픈 시 제공됩니다\')">로그인</button><button onclick="alert(\'정식 오픈 시 제공됩니다\')">마이페이지</button>');
   }
   const h=location.hash.replace('#','');
-  if(PAGES.includes(h)) go(h);
+  if(PAGES.includes(h)) go(h); else initHome();
 })();
 </script>
 </body>
