@@ -1,7 +1,11 @@
 // 판로비서2 — 공공데이터 통합 조회 (Vercel Serverless Function)
-// GET /api/onboard?bizno=1234567891
+// GET /api/onboard?bizno=1234567891   — 사업자번호 통합 조회
+// GET /api/onboard?q=상호            — 회사명으로 국민연금 사업장 검색(사업자번호를 모를 때)
+// GET /api/onboard?q=상호&seq=12345  — 선택한 사업장의 업종·가입자수 상세
 // 국세청(상태) + 공정위(통신판매 상세) + 국민연금(가입 사업장) + 금융위(기업개요·요약재무)
 // 키는 서버측에서만 사용 — 브라우저에 노출되지 않음. 운영 시 Vercel 환경변수 DATA_GO_KR_KEY 권장.
+import { getProfile, putProfile, isStale, KV_ON } from "./_store.js";
+
 const KEY = process.env.DATA_GO_KR_KEY ||
   "MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D"; // 이미 URL 인코딩된 키 — 재인코딩 금지
 
@@ -29,7 +33,55 @@ const items = d => {
   return it == null ? [] : Array.isArray(it) ? it : [it];
 };
 
+// ── 회사명 검색 (사업자번호를 모르는 이용자용)
+// 국민연금 가입 사업장 목록을 사업장명으로 조회한다. 파라미터명이 스펙에 따라 다를 수 있어
+// 여러 후보를 순차 시도하고, 전부 실패하면 빈 배열을 돌려준다(프론트는 이 경우 조용히 숨김).
+async function searchWorkplaces(q) {
+  const enc = encodeURIComponent(q);
+  const bases = [
+    `wkplNm=${enc}`,
+    `wkpl_nm=${enc}`,
+    `wkpl_nm_encoded=${enc}`
+  ];
+  for (const qs of bases) {
+    const r = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getBassInfoSearchV2?serviceKey=${KEY}&${qs}&_type=json&numOfRows=20&pageNo=1`, {}, 6000);
+    const list = items(r);
+    if (list.length) {
+      const hit = list.filter(x => String(x.wkplNm || "").includes(q));
+      const use = (hit.length ? hit : list).slice(0, 8);
+      return use.map(x => ({
+        seq: x.seq ?? null,
+        name: x.wkplNm || null,
+        addr: x.wkplRoadNmDtlAddr || null,
+        cnt: x.jnngpCnt ?? null,
+        ym: x.dataCrtYm || null
+      }));
+    }
+  }
+  return [];
+}
+
 export default async function handler(req, res) {
+  // 회사명 검색 모드
+  const q = String(req.query.q || "").trim();
+  if (q) {
+    if (q.length < 2) return res.status(400).json({ ok: false, error: "query too short" });
+    let list = [];
+    try { list = await searchWorkplaces(q); } catch (e) { list = []; }
+    // 선택한 사업장의 업종·가입자수 상세 (seq 지정 시)
+    let detail = null;
+    const seq = String(req.query.seq || "").replace(/\D/g, "");
+    if (seq) {
+      const det = await j(`https://apis.data.go.kr/B552015/NpsBplcInfoInqireServiceV2/getDetailInfoSearchV2?serviceKey=${KEY}&seq=${seq}&_type=json`, {}, 6000);
+      const d0 = items(det)[0] || {};
+      if (d0 && Object.keys(d0).length) {
+        detail = { cnt: d0.jnngpCnt ?? null, sector: d0.vldtVlKrnNm || null, adptDt: d0.adptDt || null, addr: d0.wkplRoadNmDtlAddr || null };
+      }
+    }
+    res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate");
+    return res.status(200).json({ ok: true, mode: "name", q, companies: list, detail, persistent: KV_ON, fetchedAt: new Date().toISOString() });
+  }
+
   const bizno = String(req.query.bizno || "").replace(/\D/g, "");
   if (!/^\d{10}$/.test(bizno)) return res.status(400).json({ ok: false, error: "invalid bizno" });
 
@@ -118,8 +170,32 @@ export default async function handler(req, res) {
   }
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
   const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
+
+  // ── 5. 조회 결과 축적 (공개 공공데이터만 보관, 이용자 식별 정보는 저장하지 않음)
+  const name = ftcRow?.bzmnNm || nps?.name || fsc?.corpNm || null;
+  const RG = [["서울","서울시"],["부산","부산시"],["대구","대구시"],["인천","인천시"],["광주","광주시"],["대전","대전시"],
+    ["울산","울산시"],["세종","세종시"],["경기","경기도"],["강원","강원특별자치도"],["충북","충청북도"],["충남","충청남도"],
+    ["전북","전북특별자치도"],["전남","전라남도"],["경북","경상북도"],["경남","경상남도"],["제주","제주특별자치도"]];
+  const addrTxt = ftcRow?.lctnAddr || ftcRow?.rdnmAddr || nps?.addr || "";
+  let stored = null;
+  if (name) {
+    try {
+      stored = await putProfile(bizno, {
+        name,
+        sector: nps?.sector || ftcRow?.ntslPrdlstCn || null,
+        region: (RG.find(([k]) => addrTxt.includes(k)) || [])[1] || null,
+        emp: nps?.cnt ?? null,
+        sales: fsc?.sales ?? null,
+        status: ntsRow?.b_stt || null,
+        payload: { addr: addrTxt || null, taxType: ntsRow?.tax_type || null, crno: crno || null,
+                   bizYear: fsc?.bizYear || null, opInc: fsc?.opInc ?? null, dclrDate: ftcRow?.dclrDate || null }
+      });
+    } catch (e) { stored = null; }
+  }
+
   res.status(200).json({
     ok: true, bizno, dbg,
+    store: { persistent: KV_ON, hits: stored?.hits || 1, firstSeen: stored?.firstSeen || null, updatedAt: stored?.updatedAt || null },
     registered: !!(ntsRow && ntsRow.b_stt_cd && ntsRow.b_stt_cd !== ""),
     nts: ntsRow ? { status: "LIVE", b_stt: ntsRow.b_stt || null, b_stt_cd: ntsRow.b_stt_cd || null, tax_type: ntsRow.tax_type || null, end_dt: ntsRow.end_dt || null } : { status: "FAIL" },
     ftc: ftcRow ? {
