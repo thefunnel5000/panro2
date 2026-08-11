@@ -1,6 +1,9 @@
 {
   "regions": ["icn1"],
-  "functions": { "api/onboard.js": { "maxDuration": 10 } },
+  "functions": {
+    "api/onboard.js": { "maxDuration": 15 },
+    "api/profile.js": { "maxDuration": 10 }
+  },
   "headers": [
     { "source": "/api/(.*)", "headers": [ { "key": "Cache-Control", "value": "s-maxage=86400, stale-while-revalidate" } ] }
   ]
