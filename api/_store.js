@@ -64,6 +64,9 @@ export async function putProfile(bizno, data) {
     sales: data.sales ?? prev?.sales ?? null,
     status: data.status || prev?.status || null,
     payload: data.payload || prev?.payload || null,
+    // 4개 기관 응답 원본. 24시간 안에 같은 번호를 다시 찾으면 이 값을 그대로 돌려주어
+    // 공공 API 호출을 아낀다(국세청은 활용신청 건별 일일 한도가 낮다).
+    full: data.full || prev?.full || null,
     hits: (prev?.hits || 0) + 1,
     firstSeen: prev?.firstSeen || new Date().toISOString(),
     updatedAt: new Date().toISOString()

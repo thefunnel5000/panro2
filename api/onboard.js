@@ -93,6 +93,21 @@ export default async function handler(req, res) {
   const bizno = String(req.query.bizno || "").replace(/\D/g, "");
   if (!/^\d{10}$/.test(bizno)) return res.status(400).json({ ok: false, error: "invalid bizno" });
 
+  // ── 0. 저장된 조회 결과가 24시간 안이면 그대로 돌려준다 (공공 API 호출 절약)
+  //    ?fresh=1 을 붙이면 캐시를 건너뛰고 새로 조회한다.
+  if (!req.query.fresh && !req.query.debug) {
+    const hit = await getProfile(bizno);
+    if (hit?.full && !isStale(hit)) {
+      const bumped = await putProfile(bizno, {});   // 조회 횟수만 올린다
+      res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
+      return res.status(200).json({
+        ...hit.full,
+        cached: true, cachedAt: hit.updatedAt,
+        store: { persistent: KV_ON, hits: bumped?.hits || hit.hits, firstSeen: hit.firstSeen, updatedAt: hit.updatedAt }
+      });
+    }
+  }
+
   // ── 1. 국세청 사업자 상태 (POST) — 인코딩 키 → 실패 시 디코딩 키 재시도
   const ntsOpt = {
     method: "POST",
@@ -202,20 +217,6 @@ export default async function handler(req, res) {
     ["전북","전북특별자치도"],["전남","전라남도"],["경북","경상북도"],["경남","경상남도"],["제주","제주특별자치도"]];
   const addrTxt = ftcRow?.lctnAddr || ftcRow?.rdnmAddr || nps?.addr || "";
   let stored = null;
-  if (name) {
-    try {
-      stored = await putProfile(bizno, {
-        name,
-        sector: nps?.sector || ftcRow?.ntslPrdlstCn || null,
-        region: (RG.find(([k]) => addrTxt.includes(k)) || [])[1] || null,
-        emp: nps?.cnt ?? null,
-        sales: fsc?.sales ?? null,
-        status: ntsRow?.b_stt || null,
-        payload: { addr: addrTxt || null, taxType: ntsRow?.tax_type || null, crno: crno || null,
-                   bizYear: fsc?.bizYear || null, opInc: fsc?.opInc ?? null, dclrDate: ftcRow?.dclrDate || null }
-      });
-    } catch (e) { stored = null; }
-  }
 
   // 국세청이 한도·장애로 실패했고 예전에 성공한 기록이 있으면 그 값을 '저장된 값'으로 표시한다.
   // (새로 조회한 값처럼 보이지 않도록 cached 표시를 함께 내려보낸다)
@@ -230,9 +231,8 @@ export default async function handler(req, res) {
     }
   }
 
-  res.status(200).json({
-    ok: true, bizno, dbg,
-    store: { persistent: KV_ON, hits: stored?.hits || 1, firstSeen: stored?.firstSeen || null, updatedAt: stored?.updatedAt || null },
+  const body = {
+    ok: true, bizno,
     registered: !!(ntsRow && ntsRow.b_stt_cd && ntsRow.b_stt_cd !== ""),
     nts: ntsOut,
     ftc: ftcRow ? {
@@ -243,5 +243,27 @@ export default async function handler(req, res) {
     } : { status: "NONE" },
     nps, fsc,
     fetchedAt: new Date().toISOString()
+  };
+
+  // 응답 전체를 저장해 두면 24시간 안의 재조회는 API를 호출하지 않는다
+  if (name) {
+    try {
+      stored = await putProfile(bizno, {
+        name,
+        sector: nps?.sector || ftcRow?.ntslPrdlstCn || null,
+        region: (RG.find(([k]) => addrTxt.includes(k)) || [])[1] || null,
+        emp: nps?.cnt ?? null,
+        sales: fsc?.sales ?? null,
+        status: ntsRow?.b_stt || null,
+        payload: { addr: addrTxt || null, taxType: ntsRow?.tax_type || null, crno: crno || null,
+                   bizYear: fsc?.bizYear || null, opInc: fsc?.opInc ?? null, dclrDate: ftcRow?.dclrDate || null },
+        full: body
+      });
+    } catch (e) { stored = null; }
+  }
+
+  res.status(200).json({
+    ...body, dbg, cached: false,
+    store: { persistent: KV_ON, hits: stored?.hits || 1, firstSeen: stored?.firstSeen || null, updatedAt: stored?.updatedAt || null }
   });
 }
