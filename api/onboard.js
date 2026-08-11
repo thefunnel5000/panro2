@@ -6,8 +6,16 @@
 // 키는 서버측에서만 사용 — 브라우저에 노출되지 않음. 운영 시 Vercel 환경변수 DATA_GO_KR_KEY 권장.
 import { getProfile, putProfile, isStale, KV_ON } from "./_store.js";
 
-const KEY = process.env.DATA_GO_KR_KEY ||
-  "MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D"; // 이미 URL 인코딩된 키 — 재인코딩 금지
+// 인증키는 이미 URL 인코딩된 문자열이다 — 재인코딩 금지.
+// 공공데이터포털은 활용신청 건별로 일일 트래픽 한도를 따로 두므로, 키를 여러 개 등록하면
+// 하나가 한도(코드 -5)에 걸려도 다음 키로 넘어가 조회가 이어진다.
+const KEYS = [
+  process.env.DATA_GO_KR_KEY,
+  process.env.DATA_GO_KR_KEY2,
+  process.env.DATA_GO_KR_KEY3,
+  "MZOTX%2F4lAoLBnPvsfQfJjM0WKA9QJEc4WRAhVia02TuSTz7smlRWDdHizOC1VqD9b%2FC6%2FzdWFNjrxLrtzixo8g%3D%3D"
+].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+const KEY = KEYS[0];
 
 async function j(url, opt = {}, ms = 4500) {
   const c = new AbortController();
@@ -93,15 +101,28 @@ export default async function handler(req, res) {
   };
   // 실측상 Authorization: Infuser 헤더 방식이 가장 안정적이므로 이것을 1순위로 둔다.
   // 함수 전체 제한이 10초라 재시도 타임아웃 합이 그 안에 들어와야 한다 (3.2s × 3 ≈ 9.6s).
-  // 국세청 odcloud는 serviceKey를 쿼리로 넘기면 code -5를 돌려준다(실측). Authorization: Infuser 헤더만 동작한다.
-  // 다만 응답이 느려 넉넉한 타임아웃이 필요하다 — 3.2초에서는 매번 타임아웃, 7초면 응답한다.
-  // 함수 전체 제한이 10초이므로 7초 + 예비 2초로 구성한다.
+  // 국세청 odcloud: Authorization: Infuser 헤더 방식이 실측상 가장 안정적이다.
+  // 응답이 느려 넉넉한 타임아웃이 필요하고(3.2초에서는 타임아웃), 키가 일일 한도에 걸리면
+  // 문서에 없는 code -5를 돌려주므로 그때는 다음 키로 재시도한다.
+  const ntsTry = async (key, ms) => {
+    const hdrOpt = { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(key)}` } };
+    const r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, ms);
+    return r?.data ? r : null;
+  };
   const ntsP = (async () => {
-    const hdrOpt = { ...ntsOpt, headers: { ...ntsOpt.headers, Authorization: `Infuser ${decodeURIComponent(KEY)}` } };
-    let r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?returnType=JSON`, hdrOpt, 7000);
-    if (!r?.data) { globalThis.__nts1 = (r?.__xml || JSON.stringify(r||{})).slice(0,200);
-      r = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 2000); }
-    return r;
+    const budget = 11000;                       // 함수 제한 15초 안에서 국세청에 쓸 총 예산
+    const per = Math.floor(budget / Math.min(KEYS.length, 3));
+    const notes = [];
+    for (let i = 0; i < Math.min(KEYS.length, 3); i++) {
+      const r = await ntsTry(KEYS[i], per);
+      if (r) { globalThis.__ntsKey = i; return r; }
+      notes.push(`key${i}: no data`);
+    }
+    // 헤더 방식이 전부 실패하면 쿼리 방식으로 마지막 한 번
+    globalThis.__nts1 = notes.join(' / ');
+    const q = await j(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${KEY}&returnType=JSON`, ntsOpt, 2500);
+    globalThis.__nts2 = q?.data ? 'query ok' : (q?.__xml || JSON.stringify(q || {})).slice(0, 160);
+    return q;
   })();
 
   // ── 2. 공정위 통신판매 등록상세 (pageNo/numOfRows 필수)
@@ -172,7 +193,7 @@ export default async function handler(req, res) {
     }
   }
   res.setHeader("Cache-Control", "s-maxage=86400, stale-while-revalidate"); // 24h 캐시
-  const dbg = req.query.debug ? { npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
+  const dbg = req.query.debug ? { keys: KEYS.length, usedKey: globalThis.__ntsKey ?? null, npsRaw: globalThis.__npsRaw || null, nts1: globalThis.__nts1 || null, nts2: globalThis.__nts2 || null } : undefined;
 
   // ── 5. 조회 결과 축적 (공개 공공데이터만 보관, 이용자 식별 정보는 저장하지 않음)
   const name = ftcRow?.bzmnNm || nps?.name || fsc?.corpNm || null;
@@ -196,11 +217,24 @@ export default async function handler(req, res) {
     } catch (e) { stored = null; }
   }
 
+  // 국세청이 한도·장애로 실패했고 예전에 성공한 기록이 있으면 그 값을 '저장된 값'으로 표시한다.
+  // (새로 조회한 값처럼 보이지 않도록 cached 표시를 함께 내려보낸다)
+  let ntsOut = ntsRow
+    ? { status: "LIVE", b_stt: ntsRow.b_stt || null, b_stt_cd: ntsRow.b_stt_cd || null, tax_type: ntsRow.tax_type || null, end_dt: ntsRow.end_dt || null }
+    : { status: "FAIL" };
+  if (!ntsRow) {
+    const prevRec = await getProfile(bizno);
+    if (prevRec?.status) {
+      ntsOut = { status: "CACHED", b_stt: prevRec.status, b_stt_cd: null,
+                 tax_type: prevRec.payload?.taxType || null, cachedAt: prevRec.updatedAt || null };
+    }
+  }
+
   res.status(200).json({
     ok: true, bizno, dbg,
     store: { persistent: KV_ON, hits: stored?.hits || 1, firstSeen: stored?.firstSeen || null, updatedAt: stored?.updatedAt || null },
     registered: !!(ntsRow && ntsRow.b_stt_cd && ntsRow.b_stt_cd !== ""),
-    nts: ntsRow ? { status: "LIVE", b_stt: ntsRow.b_stt || null, b_stt_cd: ntsRow.b_stt_cd || null, tax_type: ntsRow.tax_type || null, end_dt: ntsRow.end_dt || null } : { status: "FAIL" },
+    nts: ntsOut,
     ftc: ftcRow ? {
       status: "LIVE", name: ftcRow.bzmnNm || null, crno: ftcRow.crno || null,
       addr: ftcRow.lctnAddr || ftcRow.rdnmAddr || null, mailNo: ftcRow.prmmiMnno || null,
