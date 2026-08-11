@@ -660,11 +660,9 @@ function guessMti(...texts){
 }
 const BIZTYPES={micro:'소상공인 (선정기업의 67.7%)',small:'소기업',mid:'중기업'};
 /* 목표국가 — 중진공 이용실적 52,953건 실집계 (건수 기준) */
-const MKTS={us:'미국 (26,515건·50.1%)',jp:'일본 (4,334건·8.2%)',cn:'중국 (4,218건·8.0%)',
-  vn:'베트남 (2,732건·5.2%)',de:'독일 (1,803건·3.4%)',uk:'영국 (1,410건·2.7%)'};
+const MKTS={us:'미국 (26,288건·51.3%)',jp:'일본 (4,307건·8.4%)',cn:'중국 (4,204건·8.2%)',vn:'베트남 (2,725건·5.3%)',de:'독일 (1,788건·3.5%)',uk:'영국 (1,402건·2.7%)'};
 /* 수출단계 — 이용실적 실분포 (건수·비중) */
-const STAGES={domestic:'내수기업 (14,752건·27.9%)',novice:'수출초보 (12,322건·23.3%)',
-  promising:'수출유망 (12,643건·23.9%)',growth:'수출성장 (6,398건·12.1%)',strong:'수출강소 (6,838건·12.9%)'};
+const STAGES={domestic:'내수기업 (13,980건·27.3%)',novice:'수출초보 (11,958건·23.3%)',promising:'수출유망 (12,366건·24.1%)',growth:'수출성장 (6,269건·12.2%)',strong:'수출강소 (6,639건·13.0%)'};
 const STAGE_SHORT={domestic:'내수기업',novice:'수출초보',promising:'수출유망',growth:'수출성장',strong:'수출강소'};
 /* ★ Track A — 서비스 대분류별 실집행 배분(%) : 중진공 실데이터 집계
    측정치: 내수(디자인26.8·홍보16.6·전시회15.3) / 수출성장(전시회36.6·홍보17.4·디자인13.1)
@@ -674,31 +672,39 @@ const STAGE_SHORT={domestic:'내수기업',novice:'수출초보',promising:'수�
    ① share: 수출단계별 이용금액 비중(%) — 내수·성장·강소 실측, 초보·유망은 인접 단계 보간
    ② gen/exc: 전체 기업 vs 수출우수(상위35%) 기업의 이용금액 비중(%) — 8개 서비스 전량 실측
    ③ first: 첫수출 달성 4,736개사의 이용 비중(%) */
+/* ★ Track A — 중진공 수출바우처 이용실적 원본(parquet) 직접 집계
+   분석대상 51,212건('21~'24) · 서비스 14종 전량 · 이용금액 중앙값 500만원 · 자부담 중앙값 30%
+   share: 수출단계별 이용금액 비중(%) 전량 실측 · gen/exc: 일반 vs 수출우수(상위35%, 19,286건)
+   first: 첫수출 달성 4,636개사의 이용 비중(%) · cnt: 이용 건수 */
 const SVC2=[
- {k:'exhibition',n:'전시회·행사·해외영업지원',share:{domestic:15.3,novice:18,promising:27,growth:36.6,strong:34.9},real:['domestic','growth','strong'],
-  gen:19.9,exc:29.6,first:14.4,
-  why:{growth:'수출성장 단계 기업의 실집행 <b>36.6%</b>가 전시회·해외영업에 배분됐습니다 (1위).',strong:'수출강소 기업 실집행의 <b>34.9%</b>가 전시회에 배분된 1위 항목입니다.',domestic:'수출우수 기업은 전시회에 <b>29.6%</b>를 쓰는 반면 일반 기업은 19.9% — 격차가 가장 큰 항목입니다.',novice:'첫수출 달성 4,736개사의 <b>14.4%</b>가 이용한 상위 3위 항목입니다.',promising:'단계가 오를수록 배분이 커지는 항목 — 우수기업 평균 <b>29.6%</b>.'}},
- {k:'design',n:'디자인 개발 (제품·패키지·상세페이지)',share:{domestic:26.8,novice:25,promising:19,growth:13.1,strong:10},real:['domestic','growth'],
-  gen:23.9,exc:15.8,first:26.8,
-  why:{domestic:'내수(수출 전) 기업 실집행 <b>26.8%</b>로 1위 — 첫수출 달성 기업도 디자인을 가장 많이 이용했습니다.',novice:'첫수출 달성 4,736개사가 가장 많이 이용한 서비스(<b>26.8%</b>)입니다.',promising:'수출 초기 단계의 핵심 투자 항목입니다.',growth:'우수기업은 15.8%, 일반기업은 23.9% — 우수기업일수록 <b>줄이는</b> 항목입니다. 이미 완료했다면 전시회로 전환할 시점입니다.',strong:'강소 단계에서는 우선순위가 낮은 항목입니다(우수 15.8%).'}},
- {k:'ad',n:'홍보·광고 (온라인 마케팅)',share:{domestic:16.6,novice:14,promising:16,growth:17.4,strong:14.0},real:['domestic','growth','strong'],
-  gen:16.4,exc:16.9,first:12.0,
-  why:{domestic:'내수 단계 실집행 2위(<b>16.6%</b>) 항목입니다.',novice:'첫수출 달성 기업의 <b>12.0%</b>가 이용했습니다.',promising:'우수기업(16.9%)과 일반기업(16.4%)의 차이가 거의 없는 — 단계 무관 기본 항목입니다.',growth:'수출성장 단계 실집행 2위(<b>17.4%</b>)입니다.',strong:'강소 단계 실집행 2위(<b>14.0%</b>)입니다.'}},
- {k:'video',n:'홍보 동영상 제작',share:{domestic:11,novice:10.5,promising:10,growth:9,strong:8.9},real:[],
-  gen:10.5,exc:8.9,first:9,
-  why:{domestic:'제품 소개 영상은 온라인 채널 진입의 기본 자산입니다.',novice:'바이어 상담·전시회 부스에서 함께 쓰이는 항목입니다.',promising:'일반기업 10.5% · 우수기업 8.9% — 초기 단계에 비중이 높습니다.',growth:'성장 단계에서는 비중이 낮아지는 항목입니다.',strong:'신규 라인 출시 시에만 필요한 항목입니다.'}},
- {k:'cert',n:'해외규격인증 (CPNP·FDA 등)',share:{domestic:5.2,novice:8,promising:7.5,growth:6.5,strong:9.5},real:['strong'],
-  gen:5.4,exc:8.0,first:7,
-  why:{strong:'수출강소 기업 실집행 3위(<b>9.5%</b>) — 시장 다변화의 관문입니다.',domestic:'우수기업은 인증에 <b>8.0%</b>, 일반기업은 5.4%를 씁니다 (+2.6%p).',novice:'인증 없이는 통관이 막히는 품목이 많습니다.',promising:'우수기업이 일반기업보다 <b>+2.6%p</b> 더 투자하는 항목입니다.',growth:'신규 시장 추가 시 필수 항목입니다.'}},
- {k:'logistics',n:'국제운송·물류',share:{domestic:2.6,novice:3,promising:3.5,growth:4.5,strong:7.2},real:['domestic','strong'],
-  gen:3.0,exc:7.2,first:3,
-  why:{strong:'우수기업은 국제운송에 <b>7.2%</b>, 일반기업은 3.0% — 비율로는 <b>2.4배</b> 차이나는 항목입니다.',domestic:'첫 선적 전 물류 견적 확보를 권장합니다.',novice:'첫 수출 물량의 통관·운송 대응 항목입니다.',promising:'정기 선적 체계를 갖출 단계입니다.',growth:'물동량이 늘수록 커지는 항목 — 우수기업 7.2%.'}},
- {k:'ip',n:'특허·지재권 (상표 출원)',share:{domestic:6,novice:15.1,promising:9,growth:5,strong:5.5},real:['novice'],
-  gen:7.3,exc:5.5,first:15.1,
-  why:{novice:'첫수출 달성 기업의 <b>15.1%</b>가 이용한 2위 항목 — 수출 전 상표 보호가 핵심입니다.',domestic:'수출 개시 전 상표 출원이 분쟁 예방의 기본입니다.',promising:'목표 시장 상표 등록 완료 여부를 점검할 단계입니다.',growth:'미등록 시장이 남았다면 지금이 마지막 시점입니다.',strong:'신규 시장 확장 시에만 필요한 항목입니다(우수 5.5%).'}},
- {k:'consult',n:'시장조사·수출 컨설팅',share:{domestic:9.4,novice:8,promising:7,growth:6.6,strong:4.6},real:['domestic'],
-  gen:8.6,exc:4.6,first:6,
-  why:{domestic:'수출 전 시장조사는 실패 비용을 줄이는 첫 투자입니다(일반기업 8.6%).',novice:'바이어 발굴 전 타깃 시장 검증에 활용됩니다.',promising:'진출 시장 확정 단계의 보조 항목입니다.',growth:'우수기업은 컨설팅을 <b>4.6%</b>로 줄이고 실행(전시회)에 집중했습니다.',strong:'신규 시장 진입 검토 시에만 권장합니다.'}}
+ {k:'01',n:'디자인 개발 (제품·패키지·상세페이지)',share:{"domestic": 32.3, "novice": 27.6, "promising": 21.8, "growth": 13.6, "strong": 9.7},gen:25.9,exc:18.9,first:27.5,cnt:11068,
+  why:{"domestic": "내수(수출 전) 기업 실집행 <b>32.3%</b>로 1위 — 첫수출 달성 4,636개사도 디자인을 가장 많이(27.5%) 이용했습니다.", "novice": "첫수출 달성 기업이 가장 많이 이용한 서비스(<b>27.5%</b>)입니다.", "promising": "수출 초기 단계의 핵심 투자 항목(21.8%)입니다.", "growth": "우수기업 18.9% vs 일반 25.9% — 우수기업일수록 <b>줄이는</b> 항목입니다. 완료했다면 전시회로 전환할 시점입니다.", "strong": "강소 단계에서는 비중이 9.7%까지 낮아지는 항목입니다."}},
+ {k:'02',n:'전시회·행사·해외영업지원',share:{"domestic": 11.3, "novice": 15.4, "promising": 21.6, "growth": 34.1, "strong": 35.5},gen:18.4,exc:25.2,first:15.6,cnt:7678,
+  why:{"domestic": "우수기업은 전시회에 <b>25.2%</b>, 일반기업은 18.4% — 격차가 가장 큰(+6.8%p) 항목입니다.", "novice": "첫수출 달성 기업의 <b>15.6%</b>가 이용한 상위 항목입니다.", "promising": "유망 단계부터 배분이 급증(21.6%)하는 항목입니다.", "growth": "수출성장 단계 실집행 <b>34.1%</b>로 1위 항목입니다.", "strong": "수출강소 실집행 <b>35.5%</b>로 1위 — 단계가 오를수록 커지는 대표 항목입니다."}},
+ {k:'03',n:'홍보·광고 (온라인 마케팅)',share:{"domestic": 12.2, "novice": 19.8, "promising": 21.0, "growth": 15.4, "strong": 10.9},gen:14.6,exc:18.4,first:14.6,cnt:6251,
+  why:{"domestic": "내수 단계 실집행 12.2% 항목입니다.", "novice": "수출초보 단계 실집행 <b>19.8%</b>로 2위 항목입니다.", "promising": "유망 단계 실집행 <b>21.0%</b>로 2위 항목입니다.", "growth": "우수기업 18.4% vs 일반 14.6% (+3.8%p) — 우수기업이 더 쓰는 항목입니다.", "strong": "강소 단계 10.9% — 전시회로 무게가 옮겨갑니다."}},
+ {k:'06',n:'특허·지재권 (상표 출원)',share:{"domestic": 10.3, "novice": 6.8, "promising": 5.5, "growth": 3.8, "strong": 6.0},gen:7.3,exc:6.5,first:8.8,cnt:6062,
+  why:{"domestic": "내수 단계 실집행 <b>10.3%</b> — 수출 개시 전 상표 보호가 기본입니다.", "novice": "첫수출 준비 기업의 핵심 항목(6.8%)입니다.", "promising": "목표 시장 상표 등록 완료 여부를 점검할 단계입니다.", "growth": "성장 단계 3.8% — 미등록 시장이 남았다면 지금이 시점입니다.", "strong": "강소 단계 6.0% — 시장 확장 시 재발생하는 항목입니다."}},
+ {k:'08',n:'국제운송·물류',share:{"domestic": 0.5, "novice": 1.3, "promising": 3.6, "growth": 6.4, "strong": 9.1},gen:2.6,exc:4.7,first:1.6,cnt:5845,
+  why:{"domestic": "내수 단계 0.5% — 첫 선적 전 물류 견적 확보를 권장합니다.", "novice": "초보 단계 1.3% — 첫 수출 물량 대응 항목입니다.", "promising": "유망 단계 3.6%로 급증 — 정기 선적 체계를 갖출 단계입니다.", "growth": "성장 단계 6.4% · 우수기업 4.7% vs 일반 2.6% (<b>1.8배</b>).", "strong": "수출강소 실집행 <b>9.1%</b> — 물동량이 늘수록 커지는 항목입니다."}},
+ {k:'07',n:'해외규격인증 (CPNP·FDA 등)',share:{"domestic": 3.0, "novice": 3.8, "promising": 6.7, "growth": 8.2, "strong": 9.7},gen:5.2,exc:6.4,first:3.6,cnt:5393,
+  why:{"domestic": "내수 단계 3.0% — 목표 시장 인증은 수출의 선행 조건입니다.", "novice": "인증 없이는 통관이 막히는 품목이 많습니다(3.8%).", "promising": "유망 단계 6.7%로 증가 — 진출 확정 시 필수입니다.", "growth": "성장 단계 8.2% · 우수기업 6.4% vs 일반 5.2% (+1.2%p).", "strong": "수출강소 실집행 <b>9.7%</b> — 시장 다변화의 관문입니다."}},
+ {k:'04',n:'홍보 동영상 제작',share:{"domestic": 12.3, "novice": 10.8, "promising": 9.8, "growth": 8.6, "strong": 8.5},gen:11.0,exc:9.3,first:11.6,cnt:2355,
+  why:{"domestic": "내수 단계 실집행 12.3% — 온라인 채널 진입의 기본 자산입니다.", "novice": "바이어 상담·전시회 부스에서 함께 쓰이는 항목(10.8%)입니다.", "promising": "단계가 오를수록 비중이 낮아지는 항목입니다.", "growth": "성장 단계 8.6% — 우선순위가 낮아집니다.", "strong": "신규 라인 출시 시에만 필요한 항목(8.5%)입니다."}},
+ {k:'05',n:'시장조사·일반 컨설팅',share:{"domestic": 12.4, "novice": 9.6, "promising": 5.6, "growth": 5.9, "strong": 4.8},gen:9.4,exc:6.6,first:11.0,cnt:2303,
+  why:{"domestic": "내수 단계 실집행 <b>12.4%</b> — 수출 전 시장조사가 실패 비용을 줄입니다.", "novice": "초보 단계 9.6% — 타깃 시장 검증에 활용됩니다.", "promising": "유망 단계부터 5.6%로 줄어듭니다.", "growth": "우수기업 6.6% vs 일반 9.4% — 우수기업은 컨설팅을 줄이고 실행에 집중했습니다.", "strong": "강소 단계 4.8% — 신규 시장 검토 시에만 권장합니다."}},
+ {k:'10',n:'통·번역 (표시사항·계약서)',share:{"domestic": 0.9, "novice": 0.8, "promising": 0.8, "growth": 1.1, "strong": 1.6},gen:1.1,exc:0.8,first:0.7,cnt:2063,
+  why:{"domestic": "표시사항 번역은 인증·통관의 선행 작업입니다.", "novice": "계약서·라벨 번역 수요가 발생하는 단계입니다.", "promising": "시장별 표시사항 현행화가 필요합니다.", "growth": "성장 단계 1.1% 항목입니다.", "strong": "강소 단계 <b>1.6%</b> — 시장이 늘수록 증가합니다."}},
+ {k:'12',n:'수출 역량강화 교육',share:{"domestic": 0.4, "novice": 0.2, "promising": 0.3, "growth": 0.2, "strong": 0.4},gen:0.3,exc:0.3,first:0.2,cnt:763,
+  why:{"domestic": "수출 실무 역량 확보 단계입니다.", "novice": "초보 단계 교육 수요 항목입니다.", "promising": "실무 인력 양성 항목입니다.", "growth": "성장 단계 0.2% 항목입니다.", "strong": "강소 단계 0.4% 항목입니다."}},
+ {k:'09',n:'브랜드 개발·관리',share:{"domestic": 3.7, "novice": 3.1, "promising": 2.6, "growth": 1.7, "strong": 1.1},gen:3.2,exc:1.9,first:3.9,cnt:630,
+  why:{"domestic": "내수 단계 3.7% — 브랜드 정체성 정립 단계입니다.", "novice": "초보 단계 3.1% 항목입니다.", "promising": "유망 단계 2.6%로 감소합니다.", "growth": "성장 단계 1.7% — 우선순위가 낮습니다.", "strong": "강소 단계 1.1% 항목입니다."}},
+ {k:'13',n:'서류대행·현지등록',share:{"domestic": 0.1, "novice": 0.1, "promising": 0.2, "growth": 0.3, "strong": 0.7},gen:0.2,exc:0.3,first:0.1,cnt:428,
+  why:{"domestic": "현지 등록 서류 대행 항목입니다.", "novice": "초보 단계 0.1% 항목입니다.", "promising": "현지 등록 절차 대응 항목입니다.", "growth": "성장 단계 0.3% 항목입니다.", "strong": "수출강소 <b>0.7%</b> — 다국 등록이 늘어납니다."}},
+ {k:'11',n:'법무·세무·회계 컨설팅',share:{"domestic": 0.6, "novice": 0.6, "promising": 0.5, "growth": 0.6, "strong": 1.7},gen:0.7,exc:0.7,first:0.7,cnt:312,
+  why:{"domestic": "계약 검토 수요가 낮은 단계입니다.", "novice": "초기 계약 검토 항목입니다.", "promising": "현지 세무 이슈 검토 단계입니다.", "growth": "성장 단계 0.6% 항목입니다.", "strong": "수출강소 <b>1.7%</b> — 현지 법인·세무 대응이 늘어납니다."}},
+ {k:'14',n:'무역보험·보증',share:{"domestic": 0.0, "novice": 0.0, "promising": 0.0, "growth": 0.1, "strong": 0.2},gen:0.0,exc:0.0,first:0.0,cnt:61,
+  why:{"domestic": "대금 미회수 위험 대비 항목입니다.", "novice": "첫 거래 보증 항목입니다.", "promising": "유망 단계 신규 항목입니다.", "growth": "성장 단계 0.1% 항목입니다.", "strong": "수출강소 0.2% — 거래 규모 확대 시 필요합니다."}}
 ];
 const SVC=[ // (구) 가상 데이터 — 폴백 참고용으로 유지
  {cat:'해외인증 취득',t:'유럽 화장품 인증(CPNP) 등록 대행',ag:'한서인증파트너스(가상)',why:{cos:'같은 품목(기초 스킨케어) 기업 <b>2,340곳</b>이 이 유형의 서비스를 선택했습니다.',food:'식품 수출 기업의 인증 1순위 유형입니다.',elec:'전자부품 인증 수요 상위 유형입니다.'},cost:640,wk:8,cofund:'자부담 30%',base:94,fit:{cos:0,food:-9,elec:-13},mk:{jp:-4,us:-2,cn:-6,eu:3},st:{ready:2,grow:0,expand:-3}},
@@ -755,11 +761,11 @@ function recalc(){
       const sh=s.share[st]||3;
       // 단계 배분 70% + 우수기업 지향 30% — 우수기업이 더 쓰는 항목에 가중
       const score=Math.max(40,Math.min(99,Math.round(40+sh*1.15+s.exc*0.62)));
-      return {...s,sh,score,isReal:s.real.includes(st),delta:+(s.exc-s.gen).toFixed(1)};
+      return {...s,sh,score,isReal:true,delta:+(s.exc-s.gen).toFixed(1)};
     }).sort((a,b)=>b.score-a.score).slice(0,4);
     g.innerHTML=rows.map(s=>`
       <div class="card mcard">
-        <div class="top"><div><div class="cat">수출바우처 서비스 유형</div><h4>${s.n}</h4><div class="agency">${STAGES[st]} 단계 실집행 비중 ${s.sh}%${s.isReal?' (실측)':''}</div></div><span class="chip chip-fit">적합 ${s.score}%</span></div>
+        <div class="top"><div><div class="cat">수출바우처 서비스 유형</div><h4>${s.n}</h4><div class="agency">${STAGE_SHORT[st]} 단계 실집행 ${s.sh}% · 전체 이용 ${s.cnt.toLocaleString()}건</div></div><span class="chip chip-fit">적합 ${s.score}%</span></div>
         <div class="why"><b>왜 추천했나요?</b> ${s.why[st]||''}</div>
         <div class="meta"><span>${STAGE_SHORT[st]} 실집행 ${s.sh}%</span><span class="${s.delta>0?'cofund':''}">우수기업 ${s.exc}% vs 일반 ${s.gen}% (${s.delta>0?'+':''}${s.delta}%p)</span><span>자부담 중앙값 30%</span></div>
         <div class="acts"><button class="btn btn-p" onclick="openPortal('voucher')">수출바우처 메뉴판에서 신청 ↗</button><button class="btn btn-ghost" onclick="toStudio()">이 결과로 콘텐츠 만들기</button></div>
