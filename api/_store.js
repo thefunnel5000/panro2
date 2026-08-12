@@ -67,6 +67,8 @@ export async function putProfile(bizno, data) {
     // 4개 기관 응답 원본. 24시간 안에 같은 번호를 다시 찾으면 이 값을 그대로 돌려주어
     // 공공 API 호출을 아낀다(국세청은 활용신청 건별 일일 한도가 낮다).
     full: data.full || prev?.full || null,
+    // 콘텐츠 스튜디오에서 만든 초안. 기업 단위로 누적 보관해 다시 열 수 있게 한다.
+    contents: data.contents || prev?.contents || null,
     hits: (prev?.hits || 0) + 1,
     firstSeen: prev?.firstSeen || new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -108,6 +110,28 @@ function slim(p) {
     name: p.name, sector: p.sector, region: p.region, emp: p.emp,
     hits: p.hits, updatedAt: p.updatedAt
   };
+}
+
+/** 콘텐츠 초안 저장. 같은 종류는 최신 1건만 남기고, 기업당 최대 12건 보관한다. */
+export async function putContent(bizno, item) {
+  const prev = await getProfile(bizno);
+  const list = Array.isArray(prev?.contents) ? prev.contents.slice() : [];
+  const i = list.findIndex(x => x.kind === item.kind);
+  const rec = { kind: item.kind, title: item.title || item.kind, text: String(item.text || "").slice(0, 8000),
+                savedAt: new Date().toISOString() };
+  if (i >= 0) list[i] = rec; else list.unshift(rec);
+  const next = list.slice(0, 12);
+  // hits 를 올리지 않기 위해 기존 레코드를 그대로 두고 contents 만 교체한다
+  const merged = { ...(prev || { bizno }), contents: next, updatedAt: prev?.updatedAt || new Date().toISOString() };
+  if (KV_ON) await kvSet(KEY(bizno), merged);
+  else MEM.map.set(bizno, merged);
+  return next;
+}
+
+/** 저장된 콘텐츠 초안 목록 */
+export async function getContents(bizno) {
+  const rec = await getProfile(bizno);
+  return Array.isArray(rec?.contents) ? rec.contents : [];
 }
 
 /** 저장된 값이 오래되어 다시 조회해야 하는지 */
