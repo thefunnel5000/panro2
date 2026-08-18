@@ -432,6 +432,19 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
 .seqbar i{font-style:normal;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:20px;padding:4px 11px;background:#fff;font-weight:700}
 .seqbar i.done{border-color:#0B7A4B;color:#0B7A4B;background:#E6F6EE}
 .seqbar i.busy{border-color:var(--blue);color:var(--blue);background:var(--blue-bg)}
+
+/* ── 어려운 낱말 도움말 ── 낱말 왼쪽의 작은 ?. 호버가 아니라 클릭이라 모바일에서도 열린다 */
+.qh{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;
+    margin-right:4px;padding:0;border-radius:50%;border:1px solid var(--line);background:#fff;
+    color:var(--ink3);font:700 10px/1 inherit;cursor:pointer;vertical-align:1px;flex:none}
+.qh:hover,.qh[aria-expanded=true]{border-color:var(--blue);color:var(--blue);background:#F1F6FE}
+.qpop{position:fixed;z-index:200;max-width:290px;background:#0E2439;color:#E7EEF4;
+      padding:11px 13px;border-radius:9px;font:400 12.5px/1.6 inherit;
+      box-shadow:0 10px 30px rgba(14,36,57,.3)}
+.qpop b{color:#FFC978}
+.qpop::after{content:"";position:absolute;left:var(--ax,14px);top:-6px;border:6px solid transparent;
+      border-top:0;border-bottom-color:#0E2439}
+.numrow .u{font-size:12.5px;font-weight:700;color:var(--ink3);margin-left:2px}
 </style>
 </head>
 <body>
@@ -486,13 +499,6 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
     </div>
   </div>
 
-  <div class="stats">
-    <div><b>76,794</b><span style="font-size:15px;font-weight:700"> 건</span><small>선정 이력 (30,119개사)</small></div>
-    <div><b>51,212</b><span style="font-size:15px;font-weight:700"> 건</span><small>분석한 수출바우처 이용실적</small></div>
-    <div><b id="homeNtc">372</b><span style="font-size:15px;font-weight:700"> 건</span><small id="homeNtcLbl">매칭 대상 지원사업 공고</small></div>
-    <div><b id="homeSvc">8,951</b><span style="font-size:15px;font-weight:700"> 건</span><small>수출바우처 등록 서비스</small></div>
-  </div>
-
   <h2 class="sect-title">데이터 처리 내역</h2>
   <p class="muted" style="margin:-10px 0 18px">제공받은 원본과 자체 수집분을 어떤 기준으로 가공해 이 화면의 수치를 만들었는지 공개합니다.</p>
   <div class="pipeline">
@@ -543,7 +549,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
       <label for="bizno">사업자등록번호</label>
       <input class="biz-input" id="bizno" inputmode="numeric" placeholder="000-00-00000" maxlength="12" oninput="fmtBiz(this)">
       <div class="priv-note">입력한 번호는 공공데이터 조회에만 사용하며, 조회 결과(공개 정보)는 24시간 캐시로 보관합니다.
-        <button class="demo-btn" onclick="fillDemo()">예시 번호 넣기 123-45-67891</button></div>
+        <button class="demo-btn" onclick="fillDemo()">예시 번호 넣기 123-45-67891 <small style="opacity:.75">(실제 등록된 사업자가 아닙니다)</small></button></div>
       <div class="err-msg" id="bizErr">사업자번호 형식이 올바르지 않습니다. 국세청 검증 규칙(체크섬)에 맞지 않는 번호입니다.</div>
       <button class="btn btn-p onb-go" id="onbGo" disabled onclick="runOnboard()">판로 찾기 시작</button>
     </div>
@@ -630,11 +636,14 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
           <div class="sfoot" id="sec2Foot"></div>
         </section>
 
-        <!-- ── 3. 수출바우처 서비스 매칭 ── -->
+        <!-- ── 3. 매칭 결과 (두 갈래를 같은 자리에서 전환) ── -->
         <section class="rsec" id="sec3">
-          <div class="shd"><div class="snum">3</div><h3>수출바우처 서비스 매칭</h3></div>
-          <p class="ssub"><span class="term">수출바우처 — 정부가 수출 준비 비용의 일부를 지원해 주는 제도입니다.</span><br><span id="sec3Sub">비슷한 조건의 기업들이 실제로 어떤 서비스를 썼는지 집계해 순서를 매겼습니다. 「수행기관 찾기」로 바꾸면 수출바우처에 실제 등록된 서비스와 수행기관을 조건에 맞춰 찾아 드립니다.</span></p>
+          <div class="shd"><div class="snum">3</div><h3>매칭 결과</h3></div>
+          <p class="ssub">조건 한 벌로 두 갈래를 함께 찾았습니다. 아래 버튼으로 <b>같은 자리에서</b> 바꿔 보실 수 있습니다.</p>
           <div class="trackbtns" id="trkA"></div>
+
+          <div id="paneA">
+          <p class="ssub"><span class="term">수출바우처 — 정부가 수출 준비 비용의 일부를 지원해 주는 제도입니다.</span><br><span id="sec3Sub">비슷한 조건의 기업들이 실제로 어떤 서비스를 썼는지 집계해 순서를 매겼습니다. 「수행기관 찾기」로 바꾸면 수출바우처에 실제 등록된 서비스와 수행기관을 조건에 맞춰 찾아 드립니다.</span></p>
           <div id="domBox" style="display:none;margin-bottom:22px"></div>
           <div class="viewtabs" id="viewA"></div>
           <div class="numrow" id="numA"></div>
@@ -647,13 +656,10 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
           <button class="morebtn" id="moreA" onclick="showMore('A')" style="display:none"></button>
           <div class="fxnote" id="budgetNote" style="margin-top:18px"></div>
           <div class="sfoot" id="footA"></div>
-        </section>
+          </div><!-- /paneA -->
 
-        <!-- ── 4. 판판대로 지원사업 매칭 ── -->
-        <section class="rsec alt" id="sec4">
-          <div class="shd"><div class="snum">4</div><h3>판판대로 지원사업 매칭</h3></div>
+          <div id="paneB" style="display:none">
           <p class="ssub"><span class="term">판판대로 — 중소기업·소상공인의 판로 개척을 돕는 정부 지원사업 포털입니다.</span><br><span id="sec4Sub">판판대로에서 지금 모집 중인 공고 가운데 우리 회사가 신청할 수 있는 사업만 골랐습니다. 「공고 이력」으로 바꾸면 2023~2025년에 어떤 사업이 반복 운영되었는지도 보실 수 있습니다.</span></p>
-          <div class="trackbtns" id="trkB"></div>
           <div class="viewtabs" id="viewB"></div>
           <div class="numrow" id="numB"></div>
           <div class="sortbar">
@@ -664,9 +670,10 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
           <div class="grid3" id="gridB"></div>
           <button class="morebtn" id="moreB" onclick="showMore('B')" style="display:none"></button>
           <div class="sfoot" id="footB"></div>
+          </div><!-- /paneB -->
         </section>
 
-        <!-- ── 5. 국내판매 · 수출 컨설팅 ── -->
+        <!-- ── 4. 국내판매 · 수출 컨설팅 ── -->
         <section class="rsec" id="sec5">
           <div class="shd"><div class="snum">5</div><h3>지금 무엇을 하면 되나요</h3></div>
           <p class="ssub">국내 판로와 해외 수출, 두 갈래로 나눠 다음 할 일을 정리했습니다.</p>
@@ -728,8 +735,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
       <nav class="rnav" id="rnav">
         <a onclick="jump('sec1')" data-s="sec1" class="on">기업 확인</a>
         <a onclick="jump('sec2')" data-s="sec2">분석 조건</a>
-        <a onclick="jump('sec3')" data-s="sec3">수출바우처</a>
-        <a onclick="jump('sec4')" data-s="sec4">지원사업</a>
+        <a onclick="jump('sec3')" data-s="sec3">매칭 결과</a>
         <a onclick="jump('sec5')" data-s="sec5">컨설팅</a>
         <a onclick="jump('sec6')" data-s="sec6">추가 질문</a>
         <a onclick="jump('sec7')" data-s="sec7">이어서 해보기</a>
@@ -758,6 +764,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:26px 0 34px;colo
   <div class="card studio-out" id="studioOut"></div>
   <div class="studio-bar">
     <button class="btn btn-p" onclick="copyStudio()">본문 복사</button>
+    <button class="btn btn-o" onclick="downloadPdpBrief()" id="stBrief">상세페이지 브리프 내려받기</button>
     <button class="btn btn-o" onclick="saveStudio()" id="stSave">기업 프로필에 저장</button>
     <button class="btn btn-ghost" onclick="renderStudio(curStudio)">다시 생성</button>
     <span class="guest-note" id="copyMsg">복사하면 어디든 붙여넣어 쓸 수 있습니다.</span>
@@ -1588,7 +1595,17 @@ const manwon=n=>{const v=Number(n)||0; return v>=1e8?(v/1e8).toFixed(1)+'억원'
 function jump(id){const el=document.getElementById(id); if(el) window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-124,behavior:'smooth'});}
 function setSort(t,k){ if(t==='A'){sortA=k;showA=6;} else {sortB=k;showB=6;} recalc(); }
 function showMore(t){ if(t==='A') showA+=6; else showB+=6; recalc(); }
-function setTrack(t){ jump(t==='A'?'sec3':'sec4'); }
+let TRACK='A';
+/* 두 매칭을 같은 자리에서 바꾼다. 화면이 오르내리면 안 되므로 스크롤은 건드리지 않는다. */
+function setTrack(t){
+  if(t!=='A' && t!=='B') t='A';
+  TRACK=t;
+  const pa=document.getElementById('paneA'), pb=document.getElementById('paneB');
+  if(pa) pa.style.display = t==='A' ? '' : 'none';
+  if(pb) pb.style.display = t==='B' ? '' : 'none';
+  renderTrackBtns();
+  qClose();
+}
 
 /* ── 필터 드로어 ── */
 const fcount=t=>{
@@ -1844,43 +1861,71 @@ function renderAgencies(){
     document.getElementById('sec1Foot').textContent='근거: 한국중소벤처기업유통원 판판대로 선정기업 제품정보 73,034건(상품 40,941종·카테고리 281종) 상품명 색인.';
     return;
   }
-  const L0=liveBiz||{}; const isDemo=!(L0.ok && (L0.ftc?.name||L0.nps?.name||L0.fsc?.corpNm));
+  const L0=liveBiz||{}; const isDemo=!(L0 && L0.ok);
   if(hd) hd.textContent='기업 확인 결과';
   if(sub) sub.innerHTML='공공데이터 4개 기관에서 조회한 값입니다.'
     + (isDemo?' <span class="chip chip-demo" id="mDemoBadge">예시 데이터</span>':'');
-  const L=liveBiz||{}; const demo=!(L.ok && (L.ftc?.name||L.nps?.name||L.fsc?.corpNm));
+  const L=liveBiz||{}; const demo=!(L && L.ok);
   const cachedAll=!!L.cached; const cAt=L.cachedAt;
   const ago=t=>{ if(!t) return ''; const m=Math.round((Date.now()-new Date(t))/60000);
     return m<60?`${m}분 전`:(m<1440?`${Math.round(m/60)}시간 전`:`${Math.round(m/1440)}일 전`); };
   const dt=v=>{const t=String(v||'').replace(/\D/g,''); return t.length===8?`${t.slice(0,4)}.${t.slice(4,6)}.${t.slice(6)}`:(t.length===6?`${t.slice(0,4)}.${t.slice(4)}`:'');};
   const won=v=>{const n=Number(v); return !n||isNaN(n)?null:(n>=1e12?(n/1e12).toFixed(1)+'조원':Math.round(n/1e8).toLocaleString()+'억원');};
+  /* 조회 결과는 네 갈래다 — 이걸 뭉뚱그리면 멀쩡한 회사가 '조회 실패'로 보인다.
+       LIVE   실시간 조회 성공
+       CACHED 저장해 둔 값
+       NONE   조회는 됐고 그 기관에 자료가 없음  ← 통신판매 미신고·직원 없는 회사의 정상 상태
+       FAIL   응답을 못 받음 (진짜 실패)
+     데모 기본값('계속사업자'·'(주)한빛코스메틱' 등)은 예시 모드에서만 쓴다.
+     실조회에서 없는 값을 채워 넣으면 이 서비스의 원칙을 스스로 어기는 것이다. */
+  const dv=(x,d)=>demo?(x??d):x;                 // 실조회면 없는 값은 없는 대로 둔다
+  const stOf=(o)=>{ const v=o?.status;
+    return (v==='LIVE'||v==='CACHED'||v==='NONE') ? v : 'FAIL'; };
   const cards=[
-    {t:'국세청', ok:L.nts?.status==='LIVE', cached:L.nts?.status==='CACHED', cachedAt:L.nts?.cachedAt,
-     v:L.nts?.b_stt||'계속사업자', s:L.nts?.tax_type||'부가가치세 일반과세자', why:'사업자 등록 상태'},
-    {t:'공정거래위원회', ok:L.ftc?.status==='LIVE', v:L.ftc?.name||'(주)한빛코스메틱', s:(L.ftc?.items||'화장품 도소매')+(L.ftc?.dclrDate?' · 신고 '+dt(L.ftc.dclrDate):''), why:'통신판매사업자 정보'},
-    {t:'국민연금공단', ok:L.nps?.status==='LIVE', v:(L.nps?.cnt!=null?Number(L.nps.cnt).toLocaleString()+'명':'12명'), s:(L.nps?.sector||'화장품 제조업')+' · 가입자 수', why:'근로자 규모'},
-    {t:'금융위원회', ok:!!L.fsc?.disclosed, v:won(L.fsc?.sales)||'비공시', s:L.fsc?.disclosed?((L.fsc.bizYear||'최근')+'년 매출 · 영업이익 '+(won(L.fsc.opInc)||'-')):'외부감사 대상이 아닌 기업입니다', why:'공시 재무'}
+    {t:'국세청', why:'사업자 등록 상태',
+     // 조회는 됐지만 국세청에 등록된 번호가 아니면 '자료 없음'이다. 실패가 아니다.
+     st:(L.registered===false && L.nts?.status==='LIVE') ? 'NONE' : stOf(L.nts),
+     cachedAt:L.nts?.cachedAt,
+     v:dv(L.nts?.b_stt,'계속사업자'), s:dv(L.nts?.tax_type,'부가가치세 일반과세자'),
+     none:(L.nts?.tax_type||'국세청에 등록된 사업자로 확인되지 않습니다')},
+    {t:'공정거래위원회', why:'통신판매사업자 정보', st:stOf(L.ftc),
+     v:dv(L.ftc?.name,'(주)한빛코스메틱'),
+     s:(dv(L.ftc?.items,'화장품 도소매')||'')+(L.ftc?.dclrDate?' · 신고 '+dt(L.ftc.dclrDate):''),
+     none:'통신판매업 신고 기록이 없습니다. 온라인 판매를 하지 않으면 정상입니다'},
+    {t:'국민연금공단', why:'근로자 규모', st:stOf(L.nps),
+     v:(L.nps?.cnt!=null?Number(L.nps.cnt).toLocaleString()+'명':dv(null,'12명')),
+     s:(dv(L.nps?.sector,'화장품 제조업')||'')+' · 가입자 수',
+     none:'연금 가입 근로자 기록이 없습니다. 대표자 혼자면 정상입니다'},
+    {t:'금융위원회', why:'공시 재무', st:L.fsc?.disclosed?'LIVE':'NONE',
+     v:won(L.fsc?.sales)||'비공시',
+     s:L.fsc?.disclosed?((L.fsc.bizYear||'최근')+'년 매출 · 영업이익 '+(won(L.fsc.opInc)||'-')):'외부감사 대상이 아닌 기업입니다',
+     none:'외부감사 대상이 아니라 공시 자료가 없습니다'}
   ];
   box.innerHTML=cards.map(c=>{
-    if(cachedAll && (c.ok||c.cached)){
+    if(cachedAll && (c.st==='LIVE'||c.st==='CACHED')){
       return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
         <span class="live" style="color:var(--ink2);background:var(--bg)">저장된 값</span></div>
         <div class="ag-v">${c.v}</div><div class="ag-s">${c.s}</div></div>`;
     }
-    if(c.cached){
+    if(c.st==='CACHED'){
       const at=c.cachedAt?new Date(c.cachedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):null;
       return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
         <span class="live" style="color:var(--ink2);background:var(--bg)">저장된 값</span></div>
         <div class="ag-v">${c.v}</div>
         <div class="ag-s">${c.s}<br>지금은 국세청 응답을 받지 못해 ${at?at+'에 ':''}조회해 둔 값을 보여드립니다.</div></div>`;
     }
-    const fail = !c.ok && !demo && c.t!=='금융위원회';
-    if(fail) return `<div class="card fail"><div class="ag-h">${c.t}</div><div class="ag-v">조회 실패</div>
-      <div class="ag-s">응답이 없어 값을 표시하지 않습니다. 다른 항목 결과는 정상입니다.</div>
-      <button class="retry" onclick="go('onboard')">다시 조회</button></div>`;
+    // 자료 없음 — 실패가 아니다. 붉게 칠하지 않고 재시도 버튼도 달지 않는다.
+    if(!demo && c.st==='NONE' && c.t!=='금융위원회')
+      return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
+        <span class="live" style="color:var(--ink3);background:var(--bg)">자료 없음</span></div>
+        <div class="ag-v" style="color:var(--ink3)">—</div><div class="ag-s">${c.none}</div></div>`;
+    if(!demo && c.st==='FAIL' && c.t!=='금융위원회')
+      return `<div class="card fail"><div class="ag-h">${c.t}</div><div class="ag-v">조회 실패</div>
+        <div class="ag-s">응답이 없어 값을 표시하지 않습니다. 다른 항목 결과는 정상입니다.</div>
+        <button class="retry" onclick="go('onboard')">다시 조회</button></div>`;
     return `<div class="card"><div class="ag-h">${c.t}<span style="font-weight:600">· ${c.why}</span>
-      ${c.ok?'<span class="live"><span class="d"></span>실시간</span>':''}</div>
-      <div class="ag-v">${c.v}</div><div class="ag-s">${c.s}</div></div>`;
+      ${c.st==='LIVE'?'<span class="live"><span class="d"></span>실시간</span>':''}</div>
+      <div class="ag-v">${c.v??'—'}</div><div class="ag-s">${c.s||''}</div></div>`;
   }).join('');
   // 「기업 프로필」 페이지와 같은 항목을 그대로 이어 붙인다 (요청: 기업확인 결과 = 기업 프로필)
   if(prof) prof.innerHTML=profilePanels(L, demo);
@@ -2001,27 +2046,68 @@ function fillCondsAuto(){
   put('condTgt', ({micro:'소상공인',small:'중소기업',mid:'중소기업',etc:'기타'})[profile.biz]||'중소기업');
 }
 
+/* ═══════════ 어려운 낱말 도움말 ═══════════
+   화면에 나오는 낱말 가운데 처음 보면 알기 어려운 것만 모았다.
+   낱말 왼쪽에 작은 ? 를 붙이고, 누르면 말풍선이 뜬다. */
+const GLOSS = {
+  '수행':'이 기관이 이 서비스를 지금까지 <b>실제로 해 본 횟수</b>입니다. 많을수록 익숙하다는 뜻입니다.',
+  '만족도':'서비스를 받은 기업이 매긴 점수입니다. <b>10점 만점</b>이고, 대부분 9점대라 높다고 다 같지는 않습니다.',
+  '적합도':'우리 회사 조건에 얼마나 맞는지를 <b>100점으로 환산</b>한 값입니다. 만족도 40점 + 수행 실적 30점 + 조건 맞음 30점을 더합니다. 만족도와 실적은 점수 자체가 아니라 <b>전체 안에서 몇 등인지</b>로 환산합니다.',
+  '중앙값':'값을 순서대로 늘어놓았을 때 <b>한가운데 있는 값</b>입니다. 아주 비싼 몇 건에 끌려가지 않아서 평균보다 실제 감각에 가깝습니다.',
+  '이용금액':'기업이 실제로 낸 <b>총액</b>입니다. 이 가운데 정부가 대 주는 몫과 기업이 내는 몫이 나뉩니다.',
+  '국고보조':'이용금액 가운데 <b>정부가 대 주는 몫</b>입니다.',
+  '자부담':'이용금액 가운데 <b>기업이 직접 내야 하는 몫</b>입니다.',
+  '실거래':'공시된 정가가 아니라 <b>실제로 거래된 금액의 범위</b>입니다. 수출바우처 서비스의 약 95%가 건별 협의라 정가가 없습니다.',
+  '기간':'이 서비스를 <b>마치는 데 걸리는 날짜 수</b>입니다.',
+  '하한':'사례가 적으면 운일 수 있어 <b>보수적으로 깎아 놓은 값</b>입니다. 못해도 이 정도는 된다는 뜻입니다.',
+  '병행률':'이 사업에 참여한 기업 가운데 <b>수출바우처도 함께 쓴 비율</b>입니다. <b>전환율이 아닙니다</b> — 이 사업을 거쳐 수출로 갔다는 뜻이 아닙니다.',
+  'MTI':'수출 품목을 나누는 <b>무역 분류 코드</b>입니다. 1단위는 기계류·화학공업제품처럼 큰 갈래입니다.',
+  '수출단계':'수출을 얼마나 해 봤는지에 따라 <b>내수 → 초보 → 유망 → 성장 → 강소</b> 다섯으로 나눈 구분입니다.',
+  '이용실적':'기업이 수출바우처로 서비스를 <b>한 번 산 기록</b>입니다.',
+  '선정이력':'판판대로 지원사업에 <b>뽑힌 기록 한 건</b>입니다.',
+  '점수배분':'적합도 100점을 <b>만족도 40 · 수행 실적 30 · 조건 맞음 30</b>으로 나눠 줍니다. 조건을 하나도 걸지 않으면 조건 30점은 빼고 나머지 70점을 100점으로 환산합니다.'
+};
+function qm(t){ return GLOSS[t] ? `<button type="button" class="qh" data-g="${t}" aria-expanded="false" aria-label="${t} 설명">?</button>` : ''; }
+let _qpop=null;
+function qClose(){ if(_qpop){ _qpop.remove(); _qpop=null; }
+  document.querySelectorAll('.qh[aria-expanded=true]').forEach(b=>b.setAttribute('aria-expanded','false')); }
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.qh');
+  if(!b){ if(!e.target.closest('.qpop')) qClose(); return; }
+  e.preventDefault(); e.stopPropagation();
+  const open = b.getAttribute('aria-expanded')==='true';
+  qClose(); if(open) return;
+  b.setAttribute('aria-expanded','true');
+  const d=document.createElement('div'); d.className='qpop';
+  d.innerHTML=`<b>${b.dataset.g}</b><br>${GLOSS[b.dataset.g]||''}`;
+  document.body.appendChild(d); _qpop=d;
+  const r=b.getBoundingClientRect(), w=d.offsetWidth, h=d.offsetHeight;
+  let x=Math.min(Math.max(8, r.left-14), innerWidth-w-8);
+  let y=r.bottom+8; if(y+h>innerHeight-8) y=Math.max(8, r.top-h-8);
+  d.style.left=x+'px'; d.style.top=y+'px';
+  d.style.setProperty('--ax', Math.max(8, Math.min(w-20, r.left+r.width/2-x-6))+'px');
+});
+addEventListener('scroll',qClose,true); addEventListener('resize',qClose);
+addEventListener('keydown',e=>{ if(e.key==='Escape') qClose(); });
+
 /* ═══════════ 트랙 전환 버튼 ═══════════ */
 /* 홈 화면 숫자를 실카탈로그 기준으로 맞춘다 */
 function syncHomeNumbers(){
   const n=GOV.ntc.total || GOV.meta?.건수?.notices || 0;
-  const el=document.getElementById('homeNtc'), tx=document.getElementById('homeNtcTxt');
-  if(n && el) el.textContent=n.toLocaleString();
+  // 홈 상단 통계 4칸은 걷어냈다. homeNtc·homeSvc·homeNtcLbl 은 이제 없다.
+  const tx=document.getElementById('homeNtcTxt');
   if(n && tx) tx.innerHTML=`한국중소벤처기업유통원 선정이력 <b>76,794건</b>으로 신청 자격과 선발 규모를 판정해, 지금 모집 중인 공고 <b>${n}건</b> 가운데 신청 가능한 사업만 추립니다. 마감일·경쟁 강도·수출 병행률을 함께 제시합니다.`;
-  const lb=document.getElementById('homeNtcLbl');
-  if(n && lb) lb.textContent='지금 모집 중인 지원사업 공고';
   const nsv=GOV.meta?.건수?.services;
-  if(nsv){ ['homeSvc','homeSvc2'].forEach(id=>{const e=document.getElementById(id); if(e) e.textContent=nsv.toLocaleString();}); }
+  const e2=document.getElementById('homeSvc2');
+  if(nsv && e2) e2.textContent=nsv.toLocaleString();
 }
 function renderTrackBtns(){
   const nSvc=(GOV.meta?.건수?.services||8951).toLocaleString();
   const nNtc=GOV.ntc.total||PRG_REAL.length;
-  const mk=(cur)=>`
-    <button class="${cur==='A'?'on':''}" onclick="jump('sec3')">수출바우처 서비스 매칭<small>등록 서비스 ${nSvc}건 · 이용실적 51,212건</small></button>
-    <button class="${cur==='B'?'on':''}" onclick="jump('sec4')">판판대로 지원사업 매칭<small>모집 중 공고 ${nNtc}건 · 선정이력 76,794건</small></button>`;
-  const a=document.getElementById('trkA'), b=document.getElementById('trkB');
-  if(a) a.innerHTML=mk('A');
-  if(b) b.innerHTML=mk('B');
+  const a=document.getElementById('trkA');
+  if(a) a.innerHTML=`
+    <button class="${TRACK==='A'?'on':''}" onclick="setTrack('A')" aria-pressed="${TRACK==='A'}">수출바우처 서비스 매칭<small>등록 서비스 ${nSvc}개 · 이용 기록 51,212건</small></button>
+    <button class="${TRACK==='B'?'on':''}" onclick="setTrack('B')" aria-pressed="${TRACK==='B'}">판판대로 지원사업 매칭<small>모집 중 공고 ${nNtc}건 · 선정 이력 76,794건</small></button>`;
 }
 
 /* ═══════════ 3. 수출바우처 ═══════════ */
@@ -2089,9 +2175,9 @@ function renderTrackA(){
     rowsA.sort(cmpA[sortA]||cmpA.fit);
     lastA=rowsA.length;
     document.getElementById('numA').innerHTML=
-      `<div><b>${rowsA.length}</b><small>서비스 유형</small></div>
-       <div><b>51,212</b><small>분석한 이용실적(건)</small></div>
-       <div><b>${rowsA[0]?manwon(rowsA[0].amt.u):'-'}</b><small>1순위 유형 이용금액 중앙값</small></div>`;
+      `<div><b>${rowsA.length}<span class="u">개</span></b><small>서비스 유형</small></div>
+       <div><b>51,212<span class="u">건</span></b><small>${qm('이용실적')}분석한 이용 기록</small></div>
+       <div><b>${rowsA[0]?manwon(rowsA[0].amt.u):'-'}</b><small>${qm('중앙값')}1순위 유형이 실제로 든 돈 (중앙값)</small></div>`;
     sortBox.innerHTML=SORT_A_TYPE.map(([k,v])=>`<button class="${sortA===k?'on':''}" onclick="setSort('A','${k}')">${v}</button>`).join('');
     document.getElementById('basisA').textContent=`${STAGE_SHORT[st]} 단계 기업들의 실제 집행 비중과 수출우수 기업 선호도를 함께 반영해 ${rowsA.length}건을 정렬했습니다.`;
     grid.innerHTML=rowsA.slice(0,showA).map(s=>`
@@ -2102,8 +2188,8 @@ function renderTrackA(){
           <div style="font-size:11px;color:var(--ink3);margin-top:4px">100점 만점</div></div></div>
         <div class="why"><b>왜 추천했나요?</b> ${s.why[st]||''}</div>
         ${fxBadge(s.k)}
-        <div class="meta"><span>이용금액 중앙값 ${manwon(s.amt.u)}</span><span>국고보조 ${manwon(s.amt.s)}</span>
-          <span class="cofund">자부담 ${s.amt.sp}%</span>
+        <div class="meta"><span>${qm('중앙값')}이용금액 중앙값 ${manwon(s.amt.u)}</span><span>${qm('국고보조')}국고보조 ${manwon(s.amt.s)}</span>
+          <span class="cofund">${qm('자부담')}자부담 ${s.amt.sp}%</span>
           <span class="${s.delta>0?'cofund':''}">우수기업 ${s.exc}% vs 일반 ${s.gen}% (${s.delta>0?'+':''}${s.delta}%p)</span></div>
         <div class="acts"><button class="btn btn-p" onclick="findVendors('${s.k}')">이 분야 수행기관 찾기</button>
           <button class="btn btn-ghost" onclick="openPortal('voucher')">수출바우처 ↗</button></div>
@@ -2122,9 +2208,9 @@ function renderTrackA(){
   lastA=GOV.vend.total;
   const w=GOV.meta?.점수배분||{만족도:40,실적:30,조건적합:30};
   document.getElementById('numA').innerHTML=
-    `<div><b>${(GOV.vend.total||0).toLocaleString()}</b><small>조건에 맞는 서비스</small></div>
-     <div><b>${(GOV.meta?.건수?.services||8951).toLocaleString()}</b><small>등록된 전체 서비스</small></div>
-     <div><b>${w.만족도}·${w.실적}·${w.조건적합}</b><small>점수 배분 (만족도·실적·조건)</small></div>`;
+    `<div><b>${(GOV.vend.total||0).toLocaleString()}<span class="u">개</span></b><small>조건에 맞는 서비스</small></div>
+     <div><b>${(GOV.meta?.건수?.services||8951).toLocaleString()}<span class="u">개</span></b><small>등록된 전체 서비스</small></div>
+     <div><b>${w.만족도}·${w.실적}·${w.조건적합}<span class="u">점</span></b><small>${qm('점수배분')}점수 배분 (만족도·실적·조건)</small></div>`;
   if(GOV.vend.loading && !it.length){
     document.getElementById('basisA').textContent='수출바우처 서비스 카탈로그에서 조건에 맞는 수행기관을 찾고 있습니다…';
     grid.innerHTML='<div class="card empty-state"><span class="spin"></span><h3>불러오는 중</h3></div>';
@@ -2142,7 +2228,7 @@ function renderTrackA(){
     document.getElementById('moreA').style.display='none';
     window.__topA=[]; return;
   }
-  document.getElementById('basisA').innerHTML=`<span class="livechip"><span class="d"></span>실시간</span> 수출바우처에 등록된 수행기관 중 조건에 맞는 <b>${GOV.vend.total.toLocaleString()}건</b>입니다. 적합도는 만족도 ${w.만족도} · 수행실적 ${w.실적} · 조건적합 ${w.조건적합}점 배분으로 계산됩니다.`;
+  document.getElementById('basisA').innerHTML=`<span class="livechip"><span class="d"></span>실시간</span> 수출바우처에 등록된 수행기관 중 조건에 맞는 <b>${GOV.vend.total.toLocaleString()}건</b>입니다. 적합도는 만족도 ${w.만족도} · 수행실적 ${w.실적} · 조건적합 ${w.조건적합}점 배분입니다. 만족도와 실적은 점수를 그대로 쓰지 않고 <b>전체 안에서 몇 등인지</b>로 환산합니다 — 만족도 10점이 전체의 절반 가까이라 그대로 쓰면 다 만점이 되기 때문입니다.`;
   grid.innerHTML=it.slice(0,showA).map(v=>{
     const sc=Number(v.매칭점수)||0;
     const price = v.가격유형==='협의' ? '건별 협의'
@@ -2152,13 +2238,13 @@ function renderTrackA(){
         <div class="vtag">${v.서비스대분류||''}${v.서비스중분류&&v.서비스중분류!==v.서비스대분류?' · '+v.서비스중분류:''}</div>
         <h4>${v.서비스명||'-'}</h4>
         <div class="vorg">${v.수행기관명||'-'}${v.지역?` · ${v.지역}`:''}</div></div>
-        ${sc?`<div class="fitwrap"><span class="chip chip-fit">적합도 ${sc}</span><div class="fitbar"><i style="width:${sc}%"></i></div>
+        ${sc?`<div class="fitwrap"><span class="chip chip-fit">${qm('적합도')}적합도 ${sc}</span><div class="fitbar"><i style="width:${sc}%"></i></div>
         <div style="font-size:11px;color:var(--ink3);margin-top:4px">100점 만점</div></div>`:''}</div>
       <div class="vmeta">
-        <span>${price}</span>
-        ${v.기간_일?`<span>${v.기간_일}일</span>`:''}
-        <span>수행 ${Number(v.수행건수||0).toLocaleString()}건</span>
-        ${v.만족도!=null?`<span>만족도 ${Number(v.만족도).toFixed(1)}</span>`:''}
+        <span>${v.가격유형==='실거래범위'?qm('실거래'):''}${price}</span>
+        ${v.기간_일?`<span>${qm('기간')}${v.기간_일}일</span>`:''}
+        <span>${qm('수행')}수행 ${Number(v.수행건수||0).toLocaleString()}건</span>
+        ${v.만족도!=null?`<span>${qm('만족도')}만족도 ${Number(v.만족도).toFixed(1)}</span>`:''}
         ${v.신규업체?'<span class="new">신규 업체</span>':''}
       </div>
       ${v.점수내역?.설명?`<div class="vwhy"><b style="color:var(--blue)">적합도 산출</b> ${v.점수내역.설명}</div>`:''}
@@ -2176,7 +2262,7 @@ function renderTrackA(){
 function findVendors(k){
   const name=(SVCAXIS.find(x=>x.startsWith(k))||'').replace(/^\d+\./,'');
   filtA=A_DEF(); filtA.cat=name||''; sortA='score'; showA=6; viewA='vendor';
-  loadVendors(); jump('sec3');
+  loadVendors(); setTrack('A'); jump('sec3');
 }
 
 /* ═══════════ 4. 판판대로 지원사업 ═══════════ */
@@ -2258,9 +2344,9 @@ function renderTrackB(){
     lastB=rows.length;
     const soon=rows.filter(p=>p.D_day!=null&&p.D_day<=7).length;
     document.getElementById('numB').innerHTML=
-      `<div><b>${rows.length}</b><small>신청 가능 공고</small></div>
-       <div><b>${soon}</b><small>7일 내 마감</small></div>
-       <div><b>${GOV.ntc.base?(GOV.ntc.base[2]*100).toFixed(1)+'%':'-'}</b><small>전체 평균 수출 병행률</small></div>`;
+      `<div><b>${rows.length}<span class="u">건</span></b><small>신청 가능 공고</small></div>
+       <div><b>${soon}<span class="u">건</span></b><small>7일 내 마감</small></div>
+       <div><b>${GOV.ntc.base?(GOV.ntc.base[2]*100).toFixed(1)+'%':'-'}</b><small>${qm('병행률')}전체 평균 수출 병행률</small></div>`;
     document.getElementById('basisB').innerHTML=`<span class="livechip"><span class="d"></span>실시간</span> 판판대로에서 <b>${profile.tgt||'중소기업'}</b> 자격으로 지금 신청할 수 있는 공고 ${rows.length}건입니다. 기준일 ${GOV.meta?.기준일||'-'}.`;
     grid.innerHTML=rows.slice(0,showB).map(p=>{
       const dd=p.D_day;
@@ -2512,7 +2598,48 @@ ${bullet([
   '실제 촬영 가능한 장면만 넣었습니다 — 없는 장면은 제품 컷으로 대체하세요.',
   '자막의 수치는 공공데이터 조회값이며, 영상에 넣기 전 현재 값인지 확인해 주세요.',
   f.svc.find(x=>/홍보동영상|영상/.test(x))?`수출바우처 「홍보동영상」 항목으로 제작비 지원을 받을 수 있습니다.`:null
-])}`}
+])}`},
+
+ {k:'pdp',n:'상세페이지 브리프',gen:f=>
+`[상세페이지 브리프 — 「한이룸의 상세페이지 마법사 3.0」에 넣는 파일]
+
+아래 내용을 담은 .json 파일을 내려받아 상세페이지 마법사의
+「추가 정보 등록」 → 「판로비서 브리프 불러오기」에 넣으면
+회사 정보를 다시 타이핑하지 않고 상세페이지 제작을 시작할 수 있습니다.
+
+■ 넘어가는 값 (조회로 확인된 것만)
+${bullet([
+  `상호: ${f.name}`,
+  f.ceo?`대표자: ${f.ceo}`:null,
+  f.sector?`업종: ${f.sector}`:null,
+  f.items?`취급 품목: ${f.items}`:null,
+  f.addr?`소재지: ${f.addr}`:null,
+  f.y0?`설립연도: ${f.y0}년 (${f.yrs}년차)`:null,
+  f.emp!=null?`고용 규모: 국민연금 가입자 ${f.emp.toLocaleString()}명`:null,
+  f.sales?`매출 규모: ${f.sales}`:null,
+  f.stt?`사업자 상태: ${f.stt}`:null,
+  f.stage?`수출 단계: ${f.stage}`:null,
+  f.mkt?`목표 시장: ${f.mkt}`:null,
+  f.item?`품목 분류: ${f.item}`:null,
+  f.svc.length?`활용 예정 지원사업: ${f.svc.slice(0,3).join(' / ')}`:null
+])}
+
+■ 함께 넘어가는 '쓰지 말 것' 목록
+${bullet([
+  '조회로 확인되지 않은 수치·인증·수상 이력을 문구로 만들지 말 것',
+  '「이 지원사업을 받으면 수출이 는다」 같은 인과 표현을 쓰지 말 것 — 근거는 참여 기록이지 인과가 아님',
+  '효능·효과·최상급 표현은 표시광고법·해당 품목 고시를 확인한 뒤에만 쓸 것',
+  f.stt&&!/계속/.test(f.stt)?`사업자 상태가 「${f.stt}」이므로 영업 관련 표현을 확인할 것`:null
+])}
+
+■ 넘어가지 않는 것
+${bullet([
+  '상품 사진 — 마법사에서 직접 올려야 합니다. 브리프에는 이미지가 들어 있지 않습니다.',
+  '헤드라인·판매 문구 — 판로비서가 지어내지 않습니다. 마법사의 분석이 사진과 위 사실을 보고 만듭니다.',
+  '사업자번호 — 조회에만 쓰고 파일에 담지 않습니다.'
+])}
+
+※ 아래 「상세페이지 브리프 내려받기」를 누르면 .json 파일이 저장됩니다.`}
 ];
 let curStudio=0, studioInit=false;
 function initStudio(){
@@ -2580,6 +2707,52 @@ function copyStudio(){
   }).catch(()=>{document.getElementById('copyMsg').textContent='복사 권한이 없어요 — 본문을 드래그해 복사해 주세요';});
 }
 
+/* ── 상세페이지 브리프 (panro-pdp-brief/v1) ──────────────────────────
+   「한이룸의 상세페이지 마법사 3.0」이 읽는 handoff 파일.
+   원칙: 조회로 확인된 값만 담는다. 없는 값은 키 자체를 넣지 않는다 —
+   빈 문자열을 넣으면 받는 쪽 AI 가 그걸 사실로 읽고 문장을 만든다.
+   사업자번호는 담지 않는다(AGENTS.md §1-5).                              */
+function buildPdpBrief(){
+  const f=coFacts();
+  const put=(o)=>{const r={};for(const k in o){const v=o[k];
+    if(v===null||v===undefined||v===''||(Array.isArray(v)&&!v.length))continue; r[k]=v;} return r;};
+  const cautions=[
+    '조회로 확인되지 않은 수치·인증·수상 이력을 문구로 만들지 말 것',
+    '지원사업 참여 기록을 「이걸 받아서 수출이 늘었다」는 인과로 쓰지 말 것 — 참여 기록일 뿐입니다',
+    '효능·효과·최상급 표현은 표시광고법과 해당 품목 고시를 확인한 뒤에만 쓸 것'
+  ];
+  if(f.stt&&!/계속/.test(f.stt)) cautions.push(`국세청 사업자 상태가 「${f.stt}」입니다 — 영업 관련 표현을 확인해 주세요`);
+  return {
+    format:'panro-pdp-brief', version:1, generatedAt:new Date().toISOString(),
+    source:{ app:'판로비서', url:location.origin||'https://panro2.vercel.app',
+      basis:'국세청 사업자상태 · 공정위 통신판매 · 국민연금 가입자 · 금융위 공시재무 · 수출바우처 서비스 카탈로그 · 판판대로 공고' },
+    company: put({ name:f.name==='[회사명]'?null:f.name, ceo:f.ceo, city:f.city, address:f.addr,
+      sector:f.sector, items:f.items, employees:f.emp, sales:f.sales, foundedYear:f.y0,
+      businessStatus:f.stt, exportStage:f.stage, targetMarkets:f.mkt?[f.mkt]:null }),
+    product: put({ category:f.cat, keywords:[f.item,f.sector,f.items].filter(Boolean) }),
+    /* notices 는 '쓰지 말 것' 칸에 합쳐진다 — 공고 제목을 여기 넣으면 금칙어로 읽힌다. */
+    support: put({ services:f.svc.slice(0,5) }),
+    cautions
+  };
+}
+function downloadPdpBrief(){
+  const msg=document.getElementById('copyMsg');
+  const b=buildPdpBrief();
+  if(!b.company.name){
+    msg.textContent='사업자번호로 조회를 먼저 해 주세요 — 회사명이 없으면 마법사가 브리프를 받지 않습니다.';
+    return;
+  }
+  try{
+    const url=URL.createObjectURL(new Blob([JSON.stringify(b,null,2)],{type:'application/json'}));
+    const a=document.createElement('a');
+    a.href=url; a.download=`상세페이지브리프_${b.company.name.replace(/[^가-힣A-Za-z0-9]/g,'')}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const n=Object.keys(b.company).length;
+    msg.textContent=`✓ 브리프를 내려받았습니다 (조회값 ${n}개). 상세페이지 마법사의 「추가 정보 등록」에서 불러오세요.`;
+  }catch(e){ msg.textContent='내려받지 못했습니다 — 본문을 복사해 직접 붙여넣어 주세요.'; }
+}
+
 /* ═══════════════ AI 검색 (GPU 연동 슬롯 + 로컬 폴백) ═══════════════ */
 const ASK_EX=['지금 신청할 수 있는 사업만 보여줘','마감이 임박한 사업 알려줘','우리 조건에 맞는 수출바우처 서비스는?',
   '수출바우처는 얼마나 지원되나요?','수출을 처음 시작하려면 무엇부터 하나요?','같은 규모 기업들은 어떤 순서로 준비했나요?',
@@ -2594,15 +2767,10 @@ async function doAsk(){
   if(!q) return;
   document.getElementById('askOut').style.display='none';
   document.getElementById('askLoading').style.display='block';
-  let ans=null;
-  if(API.base){ // Cloud Run → GPU RAG (타임아웃 폴백)
-    try{
-      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),API.timeout);
-      const r=await fetch(API.base+'/api/ask?q='+encodeURIComponent(q),{signal:ctl.signal});
-      clearTimeout(t); if(r.ok) ans=await r.json();
-    }catch(e){/* 폴백 */}
-  }
-  if(!ans) ans=localAsk(q);
+  // 답은 매칭 결과와 같은 원본(이용실적·공고)에서 만든다. 지어내지 않는다.
+  // 예전에 외부 RAG 서버(/api/ask)를 부르는 분기가 있었으나, 배포 시 API.base 가 ''(거짓)이라
+  // 한 번도 실행된 적이 없고 붙일 서버도 없어 걷어냈다.
+  const ans=localAsk(q);
   setTimeout(()=>{ // 로딩 체감 (실서버 연동 시 제거)
     document.getElementById('askLoading').style.display='none';
     document.getElementById('askQ').textContent='Q. '+q;
